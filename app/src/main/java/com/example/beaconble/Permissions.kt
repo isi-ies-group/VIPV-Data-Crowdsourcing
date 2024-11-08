@@ -129,14 +129,12 @@ open class BeaconScanPermissionsActivity: PermissionsActivity()  {
         super.onCreate(savedInstanceState)
         permissionGroups = PermissionsHelper(this).beaconScanPermissionGroupsNeeded(intent.getBooleanExtra("backgroundAccessRequested",true))
         setContent{
-            PermissionsScreen(permissionsHelper = PermissionsHelper(this))
+            R.layout.view_permissions
         }
     }
 
     @Composable
     fun PermissionsScreen(permissionsHelper: PermissionsHelper){
-        val context = LocalContext.current
-        val permissionsHelper = PermissionsHelper(context)
         val backgroundAccessRequested= intent.getBooleanExtra("backgroundAccessRequested", true)
         val title = intent.getStringExtra("title") ?: "Permissions Needed"
         val message = intent.getStringExtra("message") ?: "In order to scan for beacons, this app requrires the following permissions from the operating system.  Please tap each button to grant each required permission."
