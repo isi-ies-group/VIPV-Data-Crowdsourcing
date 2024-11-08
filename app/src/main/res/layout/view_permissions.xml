@@ -79,13 +79,13 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/text_permission_notification"
+                    android:id="@+id/text_permission_notifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/permission_notification" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/sw_permission_notication"
+                    android:id="@+id/sw_permission_notifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="" />
