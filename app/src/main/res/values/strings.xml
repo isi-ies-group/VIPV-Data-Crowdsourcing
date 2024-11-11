@@ -14,8 +14,8 @@
     // Permissions view
     <string name="permissions_needed">The following permissions are required to use Photovolta. You will have access to the app once all permissions are granted:</string>
     <string name="permissions_show_in_settings">View permissions in system settings</string>
-    <string name="permission_localization">Localization</string>
-    <string name="permission_localization_background">Localization in background</string>
+    <string name="permission_localization">Location</string>
+    <string name="permission_localization_background">Location in background</string>
     <string name="permission_bluetooth">Bluetooth access</string>
     <string name="permission_notification">Push notifications</string>
 </resources>
