@@ -7,7 +7,8 @@
     // Login view
     <string name="login">Log In</string>
     <string name="login_description">Log In to start sharing your solar resource data!</string>
-    <string name="login_no_account_question">Don\'t have an account? Request one <a href="TODO">here.</a></string>  // TODO: add link
+    <string name="login_no_account_question">Don\'t have an account? Request one <a href="TODO">here.</a></string>
+    // TODO: add link
     // Welcome view
     <string name="welcome_continue">Start sharing measurements</string>
     <string name="welcome_message">Welcome to \nPhotovolta!</string>
@@ -18,4 +19,14 @@
     <string name="permission_localization_background">Location in background</string>
     <string name="permission_bluetooth">Bluetooth access</string>
     <string name="permission_notification">Push notifications</string>
+    // Settings view
+    <string name="settings">Settings</string>
+    <string name="settings_app_behaviour">App behaviour</string>
+    <string name="settings_only_wifi_upload">Only post data through WiFi</string>
+    <string name="settings_api_endpoint">Experts zone</string>
+    <string name="settings_api_address">Server address</string>
+    <string name="settings_api_port">Endpoint</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
