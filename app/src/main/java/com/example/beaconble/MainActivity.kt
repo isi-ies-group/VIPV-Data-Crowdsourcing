@@ -1,65 +1,31 @@
 package com.example.beaconble
 
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
 import android.net.Uri
-import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.navigation.NavigationView
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
-import okhttp3.logging.HttpLoggingInterceptor
-import org.altbeacon.beacon.Beacon
-import org.altbeacon.beacon.BeaconManager
-import org.altbeacon.beacon.MonitorNotifier
-import org.altbeacon.beacon.utils.UrlBeaconUrlCompressor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Thread.sleep
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     lateinit var toolbar: Toolbar
     lateinit var drawerLayout: DrawerLayout
-
-
 
     lateinit var navController : NavController
 
@@ -72,8 +38,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle
         configureNavigationDrawer()
 
+        checkPermissionsAndTransferToViewIfNeeded()
+    }
 
+    private fun checkPermissionsAndTransferToViewIfNeeded() {
+        val arePermissionsOk = BeaconScanPermissionsActivity.allPermissionsGranted(this)
+        if (!arePermissionsOk) {  // If any permission is not granted, go to permissions activity and wait for user to grant permissions
+            val getAllPermissionsGranted = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode != Activity.RESULT_OK) {
+                    // If user did not grant permissions, close the app (this should not happen)
+                    Toast.makeText(this, "Permissions are required to continue", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+            getAllPermissionsGranted.launch(Intent(this, BeaconScanPermissionsActivity::class.java))
 
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
