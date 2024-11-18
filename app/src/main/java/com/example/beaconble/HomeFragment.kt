@@ -23,14 +23,13 @@ import org.altbeacon.beacon.BeaconManager
 
 class HomeFragment : Fragment() {
 
-    lateinit var fab_settings: FloatingActionButton
+    lateinit var postButton: FloatingActionButton
 
     //inicializacion de variables
     lateinit var beaconListView: ListView
     lateinit var beaconCountTextView: TextView
     lateinit var monitoringButton: Button
     lateinit var rangingButton: Button
-    lateinit var postButton: Button
     lateinit var beaconReferenceApplication: BeaconReferenceApplication
     var alertDialog: AlertDialog? = null
     lateinit var sensorData:SensorData
@@ -42,13 +41,13 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
-        fab_settings = view.findViewById<FloatingActionButton>(R.id.uploadButton)
+        postButton = view.findViewById<FloatingActionButton>(R.id.uploadButton)
 
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        fab_settings.setOnClickListener {
+        postButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
         }
         settings()

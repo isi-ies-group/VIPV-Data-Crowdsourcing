@@ -1,8 +1,8 @@
 package com.example.beaconble
 
 import com.google.gson.annotations.SerializedName
-import java.sql.Timestamp
 
+@Suppress("PropertyName")
 data class SensorData(
     @SerializedName("id_sensor") val id_sensor: String,
     @SerializedName("token")val token: String,

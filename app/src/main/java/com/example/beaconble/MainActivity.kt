@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val arePermissionsOk = BeaconScanPermissionsActivity.allPermissionsGranted(this)
         if (!arePermissionsOk) {  // If any permission is not granted, go to permissions activity and wait for user to grant permissions
             val getAllPermissionsGranted = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                if (result.resultCode != Activity.RESULT_OK) {
+                if (result.resultCode != RESULT_OK) {
                     // If user did not grant permissions, close the app (this should not happen)
                     Toast.makeText(this, "Permissions are required to continue", Toast.LENGTH_SHORT).show()
                     finish()
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         try {
             startActivity(intent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error opening link: $url")
+            Log.e(TAG, "Error opening link: $url; ${e.message}")
             Toast.makeText(this, "Could not open: $url", Toast.LENGTH_SHORT).show()
         }
     }

@@ -1,7 +1,6 @@
 package com.example.beaconble
 
 import android.app.*
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -26,23 +25,23 @@ class BeaconReferenceApplication: Application() {
         // Por defecto la biblioteca solo detecta AltBeacon si se quiere otro tipo de protocolo hay que añadir el layout
         //añadir iBeacons
         val iBeaconParser = BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-        beaconManager.getBeaconParsers().add(iBeaconParser)
+        beaconManager.beaconParsers.add(iBeaconParser)
 
         //añadir Eddystone UID
         val eddyStoneUIDParser = BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19")
-        beaconManager.getBeaconParsers().add(eddyStoneUIDParser)
+        beaconManager.beaconParsers.add(eddyStoneUIDParser)
 
         //añadir Eddystone TLM
         val eddyStoneTLMParser = BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15")
-        beaconManager.getBeaconParsers().add(eddyStoneTLMParser)
+        beaconManager.beaconParsers.add(eddyStoneTLMParser)
 
         //añadir Eddystone URL
         val eddyStoneURLParser = BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-20v")
-        beaconManager.getBeaconParsers().add(eddyStoneURLParser)
+        beaconManager.beaconParsers.add(eddyStoneURLParser)
 
         //añadir beacon Custom
         val customParser = BeaconParser().setBeaconLayout("m:0-1=0505")
-        beaconManager.getBeaconParsers().add(customParser)
+        beaconManager.beaconParsers.add(customParser)
 
         BeaconManager.setDebug(true)
 
@@ -72,10 +71,10 @@ class BeaconReferenceApplication: Application() {
     // si estas dentro te envia una notificacion
     val centralMonitoringObserver = Observer<Int> { state ->
         if (state == MonitorNotifier.OUTSIDE) {
-            Log.d(TAG, "outside beacon region: "+region)
+            Log.d(TAG, "Outside beacon region: $region")
         }
         else {
-            Log.d(TAG, "inside beacon region: "+region)
+            Log.d(TAG, "Inside beacon region: $region")
             sendNotification()
         }
     }
@@ -110,18 +109,20 @@ class BeaconReferenceApplication: Application() {
             PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE
         )
         builder.setContentIntent(resultPendingIntent)
-        val channel =  NotificationChannel("beacon-ref-notification-id",
-            "My Notification Name", NotificationManager.IMPORTANCE_DEFAULT)
-        channel.setDescription("My Notification Channel Description")
-        val notificationManager =  getSystemService(
-            Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel);
-        builder.setChannelId(channel.getId());
+        val channel =  NotificationChannel(
+            "beacon-ref-notification-id",
+            "My Notification Name",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        channel.description = "My Notification Channel Description"
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+        builder.setChannelId(channel.id)
         notificationManager.notify(1, builder.build())
     }
 
     companion object {
-        val TAG = "BeaconReference"
+        const val TAG = "BeaconReference"
     }
 
 }
