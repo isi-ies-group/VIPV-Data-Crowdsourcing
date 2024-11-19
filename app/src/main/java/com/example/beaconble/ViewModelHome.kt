@@ -2,6 +2,6 @@ package com.example.beaconble
 
 import androidx.lifecycle.ViewModel
 
-class HomeViewModel : ViewModel() {
+class ViewModelHome : ViewModel() {
     // TODO: Implement the ViewModel
 }

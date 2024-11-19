@@ -1,27 +1,19 @@
 package com.example.beaconble
 
 import android.app.AlertDialog
-import android.os.Build
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.content.SharedPreferences
-import android.util.Log
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.altbeacon.beacon.BeaconManager
 
-class HomeFragment : Fragment() {
+class FragHome : Fragment() {
 
     lateinit var postButton: FloatingActionButton
 
