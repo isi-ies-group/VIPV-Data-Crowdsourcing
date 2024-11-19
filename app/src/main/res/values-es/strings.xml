@@ -10,7 +10,7 @@
     <string name="logout">Cerrar sesión</string>
     <string name="toolbar_close">Cerrar menú</string>
     <string name="upload">Subir datos</string>
-    <string name="version">Versión: %1$s</string>
+    <string name="version">Versión: %1$s-%2$d</string>
     <string name="login">Iniciar sesión</string>
     <string name="login_description">Inicia sesión para compartir tus datos de ciencia ciudadana!</string>
     <string name="login_no_account_question">¿No tienes cuenta? Solicita una <a href="TODO">aquí.</a></string>  // TODO: add link
