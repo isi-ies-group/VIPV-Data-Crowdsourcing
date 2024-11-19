@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_help -> {  // Help
                 // TODO("Review")
-                open_link("https://github.com/isi-ies-group/VIPV-Data-Crowdsourcing")
+                open_link("https://github.com/isi-ies-group/VIPV-Data-Crowdsourcing-Client")
                 // findNavController(R.id.fragment_main).navigate(R.id.helpFragment)
                 true
             }
