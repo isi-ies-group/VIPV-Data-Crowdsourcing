@@ -10,6 +10,7 @@
     <string name="logout">Cerrar sesión</string>
     <string name="toolbar_close">Cerrar menú</string>
     <string name="upload">Subir datos</string>
+    <string name="settings_user_token_message">Token para publicar datos en el servidor</string>
     <string name="version">Versión: %1$s-%2$d</string>
     <string name="login">Iniciar sesión</string>
     <string name="login_description">Inicia sesión para compartir tus datos de ciencia ciudadana!</string>
@@ -35,5 +36,6 @@
     <string name="logo">Logo</string>
     <string name="credits">Aplicación desarrollada por el grupo ISI-IES de la Universidad Politécnica de Madrid.</string>
     <string name="permissions_title">Permisos necesarios</string>
-    <string name="grant_permission">Dar permiso</string>
+    <string name="permission_grant">Dar permiso</string>
+    <string name="settings_user_token">Clave del usuario</string>
 </resources>
