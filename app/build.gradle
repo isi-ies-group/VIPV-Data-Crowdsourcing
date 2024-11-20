@@ -22,9 +22,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // BuildConfigField for production server URL
+            buildConfigField "String", "SERVER_URL", "\"https://vps247.cesvima.upm.es/\""
         }
         debug {
-            buildConfigField "Boolean", "DEBUG", "true"  // flag for in-code debug
+            // BuildConfigField for debug server URL
+            buildConfigField "String", "SERVER_URL", "\"192.168.1.42\""
+            // BuildConfigField for in-code debug flag
+            buildConfigField "Boolean", "DEBUG", "true"
         }
     }
     compileOptions {
