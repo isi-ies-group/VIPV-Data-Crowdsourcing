@@ -13,9 +13,11 @@
         android:dialogMessage="@string/settings_user_token_message"
         android:defaultValue="10"/>
 
-    <SwitchPreferenceCompat
+    <!-- SwitchPreferenceCompat
         android:key="only_wifi_upload"
-        android:title="@string/settings_only_wifi_upload"/>
+        android:title="@string/settings_only_wifi_upload"
+        android:summaryOn="@string/settings_only_wifi_upload_on"
+        android:summaryOff="@string/settings_only_wifi_upload_off"/ -->
 
     </PreferenceCategory>
 
