@@ -1,7 +1,6 @@
 package com.example.beaconble
 
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setContentView(R.layout.activity_main)
 
-        configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle
+        configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle, .navController
         configureNavigationDrawer()
 
         checkPermissionsAndTransferToViewIfNeeded()
@@ -94,7 +93,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_help -> {  // Help
                 // TODO("Review")
-                open_link("https://github.com/isi-ies-group/VIPV-Data-Crowdsourcing-Client")
+                openURL("https://github.com/isi-ies-group/VIPV-Data-Crowdsourcing-Client")
                 // findNavController(R.id.fragment_main).navigate(R.id.helpFragment)
                 true
             }
@@ -125,7 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
     }
 
-    fun open_link(url: String) {
+    fun openURL(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         try {
             startActivity(intent)
