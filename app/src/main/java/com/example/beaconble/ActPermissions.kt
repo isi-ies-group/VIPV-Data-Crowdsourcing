@@ -10,27 +10,28 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View.OnClickListener
 import android.widget.Button
-import android.widget.CompoundButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.button.MaterialButton
 import android.widget.TableRow
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 
 
 class PermissionsRowAtomicHandler(
     val show: Boolean,
     val rowUI: TableRow,
-    val switchUI: SwitchMaterial,
+    val buttonUI: MaterialButton,
     // val clikedPermissionsCallback: (permissions: Array<String>) -> Unit,
 ) {
     // Group of permissions that are related to a single UI element
     // Ease access, management and UI interaction
     // manifestPermissions: Array of permissions that are related to the UI element (will depend on the target version)
     // rowUI: TableRow that contains the UI element
-    // switchUI: SwitchMaterial that is the UI element
+    // buttonUI: MaterialButton that is the UI element
 
     init {
         if (show == false) {
@@ -43,12 +44,12 @@ class PermissionsRowAtomicHandler(
         rowUI.visibility = TableRow.GONE
     }
     fun disable() {
-        // Disable the switch element
-        switchUI.isEnabled = false
+        // Disable the button element
+        buttonUI.isEnabled = false
     }
-    fun setOnCheckedChangeListener(clickedCallback: CompoundButton.OnCheckedChangeListener) {
-        // Set the callback for the switch
-        switchUI.setOnCheckedChangeListener(clickedCallback)
+    fun setOnCheckedChangeListener(clickedCallback: OnClickListener) {
+        // Set the callback for the button
+        buttonUI.setOnClickListener(clickedCallback)
     }
 }
 
@@ -62,6 +63,7 @@ open class BeaconScanPermissionsActivity: AppCompatActivity() {
     lateinit var rowPermissionsNotifications: PermissionsRowAtomicHandler
 
     lateinit var mapOfRowHandlers: Map<String, PermissionsRowAtomicHandler>
+    lateinit var toolbar: Toolbar
 
     val requestPermissionsLauncher =
         registerForActivityResult(
@@ -86,27 +88,27 @@ open class BeaconScanPermissionsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //hay que ejecutar el codigo de la AppCompatActivity padre antes que el de esta clase
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.view_permissions)
+        setContentView(R.layout.activity_permissions)
 
         rowPermissionsLocalization = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Location"]!=null,
             rowUI = findViewById<TableRow>(R.id.row_permission_localization),
-            switchUI = findViewById<SwitchMaterial>(R.id.sw_permission_localization),
+            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_localization),
         )
         rowPermissionsLocalizationInBackground = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Location in Background"]!=null,
             rowUI = findViewById<TableRow>(R.id.row_permission_localization_background),
-            switchUI = findViewById<SwitchMaterial>(R.id.sw_permission_localization_background),
+            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_localization_background),
         )
         rowPermissionsBluetooth = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Bluetooth"]!=null,
             rowUI = findViewById<TableRow>(R.id.row_permission_bluetooth),
-            switchUI = findViewById<SwitchMaterial>(R.id.sw_permission_bluetooth),
+            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_bluetooth),
         )
         rowPermissionsNotifications = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Notifications"]!=null,
             rowUI = findViewById<TableRow>(R.id.row_permission_notifications),
-            switchUI = findViewById<SwitchMaterial>(R.id.sw_permission_notifications),
+            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_notifications),
         )
 
         mapOfRowHandlers = mapOf(
@@ -119,10 +121,8 @@ open class BeaconScanPermissionsActivity: AppCompatActivity() {
         for (key in mapOfRowHandlers.keys) {
             val rowHandler = mapOfRowHandlers[key]
             rowHandler?.setOnCheckedChangeListener(
-                CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-                    if (isChecked) {
-                        promptForPermissions(key)
-                    }
+                OnClickListener {
+                    promptForPermissions(key)
                 }
             )
         }
@@ -134,6 +134,10 @@ open class BeaconScanPermissionsActivity: AppCompatActivity() {
             intent.data = uri
             startActivity(intent)
         }
+
+        toolbar = findViewById<Toolbar>(R.id.permissions_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.permissions_title)
     }
 
     override fun onResume() {

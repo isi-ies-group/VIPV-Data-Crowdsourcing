@@ -34,4 +34,6 @@
     <string name="toolbar_open">Abrir menú</string>
     <string name="logo">Logo</string>
     <string name="credits">Aplicación desarrollada por el grupo ISI-IES de la Universidad Politécnica de Madrid.</string>
+    <string name="permissions_title">Permisos necesarios</string>
+    <string name="grant_permission">Dar permiso</string>
 </resources>
