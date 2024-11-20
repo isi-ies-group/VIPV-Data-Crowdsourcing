@@ -11,6 +11,8 @@ import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.MonitorNotifier
 
+import com.example.beaconble.BuildConfig
+
 class BeaconReferenceApplication: Application() {
 
     var region = Region("all-beacons", null, null, null)
@@ -43,7 +45,8 @@ class BeaconReferenceApplication: Application() {
         val customParser = BeaconParser().setBeaconLayout("m:0-1=0505")
         beaconManager.beaconParsers.add(customParser)
 
-        BeaconManager.setDebug(true)
+        // Activate debug mode only if build is debug
+        BeaconManager.setDebug(BuildConfig.DEBUG)
 
         //configurar escaneo
         setupBeaconScanning()
