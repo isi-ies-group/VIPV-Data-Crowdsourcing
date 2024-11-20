@@ -123,6 +123,5 @@ class BeaconReferenceApplication: Application() {
 
     companion object {
         const val TAG = "BeaconReference"
-    }
-
+    }  // companion object
 }

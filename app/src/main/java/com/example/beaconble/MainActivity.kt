@@ -136,6 +136,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         const val TAG = "MainActivity"
-    }
-
+    }  // companion object
 }
