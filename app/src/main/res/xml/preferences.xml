@@ -10,8 +10,7 @@
         android:title="@string/settings_user_token"
         android:inputType="textPassword"
         android:dialogTitle="@string/settings_user_token"
-        android:dialogMessage="@string/settings_user_token_message"
-        android:defaultValue="10"/>
+        android:dialogMessage="@string/settings_user_token_message" />
 
     <!-- SwitchPreferenceCompat
         android:key="only_wifi_upload"
