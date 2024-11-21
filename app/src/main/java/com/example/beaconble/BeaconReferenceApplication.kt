@@ -11,8 +11,6 @@ import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.MonitorNotifier
 
-import com.example.beaconble.BuildConfig
-
 class BeaconReferenceApplication: Application() {
 
     var region = Region("all-beacons", null, null, null)
