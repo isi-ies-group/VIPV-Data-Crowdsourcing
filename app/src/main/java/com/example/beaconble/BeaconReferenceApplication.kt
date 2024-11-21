@@ -49,6 +49,8 @@ class BeaconReferenceApplication: Application() {
         //configurar escaneo
         setupBeaconScanning()
 
+        // Save instance for singleton access
+        instance = this
     }
 
 
@@ -123,6 +125,8 @@ class BeaconReferenceApplication: Application() {
     }
 
     companion object {
-        const val TAG = "BeaconReference"
+        lateinit var instance: BeaconReferenceApplication
+            private set  // This is a singleton, setter is private but access is public
+        const val TAG = "BeaconReferenceApplication"
     }  // companion object
 }
