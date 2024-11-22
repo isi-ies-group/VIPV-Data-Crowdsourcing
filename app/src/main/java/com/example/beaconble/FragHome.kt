@@ -50,17 +50,13 @@ class FragHome : Fragment() {
 
         // Assign observers and callbacks
         viewModel.value.exampleData.observe(viewLifecycleOwner) { data ->
-            // Update the list.
+            // Update the list
             beaconListView.adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, data)
         }
 
-        viewModel.value.counter.observe(viewLifecycleOwner) { count ->
-            // Update the text view.
-            if (count == 0) {
-                beaconCountTextView.text = getString(R.string.beacons_detected_zero)
-            } else {
-                beaconCountTextView.text = getString(R.string.beacons_detected_nonzero, count)
-            }
+        viewModel.value.topMessage.observe(viewLifecycleOwner) { message ->
+            // Update the top message textview
+            beaconCountTextView.text = message
         }
 
         return view
@@ -69,7 +65,8 @@ class FragHome : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         postButton.setOnClickListener {
             // findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
-            viewModel.value.incrementCounter()
+            // TODO("Implement post button")
+            viewModel.value.sendTestData()
         }
 
         beaconCountTextView.text = getString(R.string.beacons_detected_zero)
