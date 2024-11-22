@@ -7,6 +7,7 @@ import com.example.beaconble.BeaconReferenceApplication  // This is a singleton 
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.MonitorNotifier
 
+@OptIn(ExperimentalStdlibApi::class)
 class FragHomeViewModel() : ViewModel() {
     private val _exampleData = MutableLiveData<Array<String>>()
     val exampleData: LiveData<Array<String>> get() = _exampleData
@@ -24,7 +25,7 @@ class FragHomeViewModel() : ViewModel() {
             }
         }
         beaconReferenceApplication.rangedBeacons.observeForever { beacons ->
-            val beaconNames = beacons.map { it.id1.toString() }.toTypedArray()
+            val beaconNames = beacons.map { it.beaconTypeCode.toHexString() }.toTypedArray()
             _exampleData.value = beaconNames
         }
     }

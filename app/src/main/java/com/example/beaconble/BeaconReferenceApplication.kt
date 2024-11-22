@@ -123,7 +123,7 @@ class BeaconReferenceApplication : Application() {
         val builder = NotificationCompat.Builder(this, "beacon-ref-notification-id")
             .setContentTitle("Beacon Reference Application")
             .setContentText("A beacon is nearby.")
-            .setSmallIcon(R.mipmap.logo_ies)
+            .setSmallIcon(R.mipmap.logo_ies_round)
 
         //crea una pila de back para la Actividad que se lanza cuando el usuario toca la notificacion
         val stackBuilder = TaskStackBuilder.create(this)
