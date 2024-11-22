@@ -1,28 +1,30 @@
 package com.example.beaconble
 
+import androidx.fragment.app.viewModels
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
 
-class LoginFragment : Fragment() {
-    private lateinit var versionTextView: TextView
+class FragLogin : Fragment() {
+
+    companion object {
+        fun newInstance() = FragLogin()
+    }
+
+    private val viewModel: FragLoginViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // TODO: Use the ViewModel
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_about, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // Get the version name from the manifest
-        val versionName = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0).versionName
-        versionTextView = requireView().findViewById<TextView>(R.id.version_textview)
-        versionTextView.text = getString(R.string.version, versionName)
+    ): View {
+        return inflater.inflate(R.layout.fragment_login, container, false)
     }
 }
