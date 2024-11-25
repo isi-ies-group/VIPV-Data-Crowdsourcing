@@ -1,6 +1,7 @@
 package com.example.beaconble
 
 import android.os.Bundle
+import android.util.Log
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 
@@ -9,18 +10,20 @@ class FragSettings : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        findPreference<EditTextPreference>("api_uri")?.setOnBindEditTextListener { editText ->
+        // Get the API URI setting
+        val editTextPreference = findPreference<EditTextPreference>("api_uri")
+        if (editTextPreference == null) {
+            Log.w("FragSettings", "API URI setting not found")
+        }
+        // Callback to update the application API service when the value changes
+        editTextPreference?.setOnBindEditTextListener { editText ->
             editText.setOnEditorActionListener { _, _, _ ->
-                // Save the new value
-                val newValue = editText.text.toString()
-                val sharedPreferences = preferenceManager.sharedPreferences
-                sharedPreferences?.edit()?.putString("api_uri", newValue)?.apply()
-
                 // Update the endpoint in the API service
-                BeaconReferenceApplication.instance.updateService(newValue)
+                BeaconReferenceApplication.instance.setService(editText.text.toString())
                 true
             }
         }
+        editTextPreference?.setDefaultValue(BuildConfig.SERVER_URL)
     }
 
 }

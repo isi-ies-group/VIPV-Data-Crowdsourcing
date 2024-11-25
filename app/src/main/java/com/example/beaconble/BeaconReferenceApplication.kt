@@ -140,25 +140,21 @@ class BeaconReferenceApplication : Application() {
     }
 
     /**
-     * Set Retrofit instance for API calls
-     * @param baseURL Base URL for API service
+     * Update the API service endpoint (callback for configuration changes)
+     * If the endpoint is not provided or blank, the default value is used (from BuildConfig)
+     * @param baseURL New API endpoint
      * @return void
      */
-    private fun setService(baseURL: String) {
+    fun setService(baseURL: String?) {
+        var endpoint = baseURL
+        if (endpoint.isNullOrBlank()) {
+            endpoint = BuildConfig.SERVER_URL
+        }
         val retrofit = Retrofit.Builder()
-            .baseUrl(baseURL)
+            .baseUrl(endpoint)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         this.ApiService = retrofit.create(APIService::class.java)
-    }
-
-    /**
-     * Update the API service endpoint (callback for configuration changes)
-     * @param endpoint New API endpoint
-     * @return void
-     */
-    fun updateService(endpoint: String) {
-        setService(endpoint)
     }
 
     /**
