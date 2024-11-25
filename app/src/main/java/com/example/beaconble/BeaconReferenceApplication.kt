@@ -101,12 +101,13 @@ class BeaconReferenceApplication : Application() {
 
     //envia notificacion cuando se detecta un beacon en la region
     private fun sendNotification() {
-        val builder = NotificationCompat.Builder(this, "beacon-ref-notification-id")
+        val builder = NotificationCompat.Builder(this, "beacon-nearby-notifications-id")
             .setContentTitle("Beacon Reference Application")
             .setContentText("A beacon is nearby.")
-            .setSmallIcon(R.mipmap.logo_ies_round)
+            .setSmallIcon(R.mipmap.logo_ies_foreground)
+        // TODO: UPDATE i18n strings, double check icon
 
-        //crea una pila de back para la Actividad que se lanza cuando el usuario toca la notificacion
+        // Explicit intent to open the app when notification is clicked
         val stackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addNextIntent(Intent(this, MainActivity::class.java))
         val resultPendingIntent = stackBuilder.getPendingIntent(
@@ -115,11 +116,11 @@ class BeaconReferenceApplication : Application() {
         )
         builder.setContentIntent(resultPendingIntent)
         val channel = NotificationChannel(
-            "beacon-ref-notification-id",
-            "My Notification Name",
+            "beacon-nearby-notifications-id",
+            "Beacons Nearby",
             NotificationManager.IMPORTANCE_DEFAULT
         )
-        channel.description = "My Notification Channel Description"
+        channel.description = "Notifies when a beacon is nearby"
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
         builder.setChannelId(channel.id)
