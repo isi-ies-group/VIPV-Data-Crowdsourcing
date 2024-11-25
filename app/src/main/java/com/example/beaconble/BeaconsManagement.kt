@@ -47,8 +47,6 @@ class BeaconSimplified(val id: Identifier) {
 class BeaconCollectionDispatcher {
     private val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> = MutableLiveData<ArrayList<BeaconSimplified>>(ArrayList<BeaconSimplified>())
     val beacons: LiveData<ArrayList<BeaconSimplified>> = _beacons
-    private val _message: MutableLiveData<ArrayList<String>> = MutableLiveData<ArrayList<String>>(arrayListOf<String>("uwu"))
-    val messages: LiveData<ArrayList<String>> = _message
     /**
      * Adds a SensorEntry to the beacon with the given identifier. If the beacon is not found, it
      * creates a new instance of Beacon and adds it to the list.
@@ -76,10 +74,5 @@ class BeaconCollectionDispatcher {
      */
     fun getBeacons(): ArrayList<BeaconSimplified> {
         return _beacons.value!!
-    }
-
-    fun testStateMessage() {
-        _message.value?.add("Test message ${_message.value?.size}")
-        _message.notifyObservers()
     }
 }
