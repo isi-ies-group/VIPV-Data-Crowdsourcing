@@ -15,9 +15,11 @@ import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.Beacon
+import org.altbeacon.beacon.Identifier
 import org.altbeacon.beacon.MonitorNotifier
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.Instant
 
 
 class BeaconReferenceApplication : Application() {
@@ -94,9 +96,9 @@ class BeaconReferenceApplication : Application() {
     // si estas dentro te envia una notificacion
     val centralMonitoringObserver = Observer<Int> { state ->
         if (state == MonitorNotifier.OUTSIDE) {
-            Log.d(TAG, "Outside beacon region: $region")
+            //Log.d(TAG, "Outside beacon region: $region")
         } else {
-            Log.d(TAG, "Inside beacon region: $region")
+            //Log.d(TAG, "Inside beacon region: $region")
             // sendNotification()
         }
     }
@@ -122,27 +124,44 @@ class BeaconReferenceApplication : Application() {
                 Log.e(TAG, "Location permission denied")
                 // TODO handle location permission denied
             }
-            // iterate over beacons and log their data, if location retrieved
-            if (location != null) {
-                val currentInstant = java.time.Instant.now()
-                for (beacon: Beacon in beacons) {
-                    val id = beacon.id1
-                    Log.i(TAG, "ID: $id")
-                    val data = beacon.dataFields
-                    // analogReading is the CH1 analog value, as two bytes in little endian
-                    val analogReading = data[0].toShort()
-                    val hexString = analogReading.toString(16)
-                    Log.i(TAG, "Data: $analogReading (0x$hexString)")
-                    beaconManagementCollection.addSensorEntry(
-                        id,
-                        analogReading,
-                        location!!.latitude.toFloat(),
-                        location!!.longitude.toFloat(),
-                        currentInstant,
-                    )
-                }
+            // if location is null, set latitude and longitude to NaN
+            var latitude = location?.latitude
+            var longitude = location?.longitude
+            if (location == null) {
+                Log.e(TAG, "Location is null")
+                latitude = Double.NaN
+                longitude = Double.NaN
+            }
+
+            // iterate over beacons and log their data
+            val currentInstant = java.time.Instant.now()
+            for (beacon: Beacon in beacons) {
+                val id = beacon.id1
+                Log.i(TAG, "ID: $id")
+                val data = beacon.dataFields
+                // analogReading is the CH1 analog value, as two bytes in little endian
+                val analogReading = data[0].toShort()
+                val hexString = analogReading.toString(16)
+                Log.i(TAG, "Data: $analogReading (0x$hexString)")
+                addSensorDataEntry(
+                    id,
+                    analogReading,
+                    latitude!!.toFloat(),
+                    longitude!!.toFloat(),
+                    currentInstant
+                )
             }
         }
+    }
+
+    fun addSensorDataEntry(id: Identifier, data: Short, latitude: Float, longitude: Float, timestamp: Instant) {
+        beaconManagementCollection.addSensorEntry(
+            id,
+            data,
+            latitude,
+            longitude,
+            timestamp,
+        )
     }
 
     //envia notificacion cuando se detecta un beacon en la region
@@ -226,7 +245,7 @@ class BeaconReferenceApplication : Application() {
                     call: retrofit2.Call<ResponseBody>,
                     response: retrofit2.Response<ResponseBody>
                 ) {
-                    Log.d(TAG, "Data sent to server")
+                    //Log.d(TAG, "Data sent to server")
                 }
 
                 override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {

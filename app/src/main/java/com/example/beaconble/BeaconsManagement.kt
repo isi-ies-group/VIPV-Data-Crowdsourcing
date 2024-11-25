@@ -3,6 +3,8 @@ package com.example.beaconble
 import android.provider.ContactsContract
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
 import org.altbeacon.beacon.Identifier
 import java.time.Instant
 
@@ -25,13 +27,16 @@ data class SensorEntry(
  * @param id The identifier of the beacon.
  * @property sensorData The data received from the beacon.
  */
-class Beacon(val id: Identifier) {
+class BeaconSimplified(val id: Identifier) {
     /**
      * The data received from the analog channel of the beacon. From the NanoBeacon Config Tool User Guide EN.pdf:
      * "The ADC data is of 16-bit in 2’s complement format."
      * Set initial capacity of 360.
      */
     var sensorData: ArrayList<SensorEntry> = ArrayList<SensorEntry>(360)
+    var description: String = ""
+    var azimuth: Float? = null
+    var tilt: Float? = null
 }
 
 
@@ -40,8 +45,10 @@ class Beacon(val id: Identifier) {
  * identifier is not found in the list.
  */
 class BeaconCollectionDispatcher {
-    private val _beacons: MutableLiveData<ArrayList<Beacon>> = MutableLiveData<ArrayList<Beacon>>()
-    val beacons: LiveData<ArrayList<Beacon>> = _beacons
+    private val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> = MutableLiveData<ArrayList<BeaconSimplified>>(ArrayList<BeaconSimplified>())
+    val beacons: LiveData<ArrayList<BeaconSimplified>> = _beacons
+    private val _message: MutableLiveData<ArrayList<String>> = MutableLiveData<ArrayList<String>>(arrayListOf<String>("uwu"))
+    val messages: LiveData<ArrayList<String>> = _message
     /**
      * Adds a SensorEntry to the beacon with the given identifier. If the beacon is not found, it
      * creates a new instance of Beacon and adds it to the list.
@@ -52,13 +59,14 @@ class BeaconCollectionDispatcher {
      * @param timestamp The timestamp of the data.
      */
     fun addSensorEntry(id: Identifier, data: Short, latitude: Float, longitude: Float, timestamp: Instant) {
-        val beacon = _beacons.value!!.find { it.id == id }
+        val beacon = _beacons.value?.find { it.id == id }
         if (beacon != null) {
             beacon.sensorData.add(SensorEntry(data, latitude, longitude, timestamp))
         } else {
-            val newBeacon = Beacon(id)
+            val newBeacon = BeaconSimplified(id)
             newBeacon.sensorData.add(SensorEntry(data, latitude, longitude, timestamp))
             _beacons.value!!.add(newBeacon)
+            _beacons.notifyObservers()
         }
     }
 
@@ -66,7 +74,12 @@ class BeaconCollectionDispatcher {
      * Returns the list of beacons.
      * @return The list of beacons.
      */
-    fun getBeacons(): ArrayList<Beacon> {
+    fun getBeacons(): ArrayList<BeaconSimplified> {
         return _beacons.value!!
+    }
+
+    fun testStateMessage() {
+        _message.value?.add("Test message ${_message.value?.size}")
+        _message.notifyObservers()
     }
 }

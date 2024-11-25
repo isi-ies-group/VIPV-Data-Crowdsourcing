@@ -1,26 +1,26 @@
 package com.example.beaconble
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.beaconble.BeaconReferenceApplication  // This is a singleton class, access it with BeaconReferenceApplication.instance
 import org.altbeacon.beacon.BeaconManager
+import org.altbeacon.beacon.Identifier
 import org.altbeacon.beacon.MonitorNotifier
+import java.time.Instant
 
 @OptIn(ExperimentalStdlibApi::class)
 class FragHomeViewModel() : ViewModel() {
+    private val beaconReferenceApplication = BeaconReferenceApplication.instance
+
     private val _exampleData = MutableLiveData<Array<String>>()
     val exampleData: LiveData<Array<String>> get() = _exampleData
     private val _nRangedBeacons = MutableLiveData<Int>()
     val nRangedBeacons: LiveData<Int> get() = _nRangedBeacons
-
-    private val beaconReferenceApplication = BeaconReferenceApplication.instance
+    val rangedBeacons: LiveData<ArrayList<BeaconSimplified>> = beaconReferenceApplication.beaconManagementCollection.beacons
 
     init {
-        beaconReferenceApplication.rangedBeacons.observeForever { beacons ->
-            val beaconNames = beacons.map { it.beaconTypeCode.toHexString() }.toTypedArray()
-            _exampleData.value = beaconNames
-        }
         // update the number of beacons detected
         beaconReferenceApplication.nRangedBeacons.observeForever { n ->
             _nRangedBeacons.value = n?.toInt()
@@ -28,6 +28,7 @@ class FragHomeViewModel() : ViewModel() {
     }
 
     fun sendTestData() {
+        Log.d("FragHomeViewModel", "Sending test data")
         beaconReferenceApplication.sendSensorData(
             listOf(
                 SensorData(
@@ -42,5 +43,14 @@ class FragHomeViewModel() : ViewModel() {
                 )
             )
         )
+        beaconReferenceApplication.addSensorDataEntry(
+            Identifier.parse("0x1234"),
+            25,
+            40.416775f,
+            -3.703790f,
+            Instant.now()
+        )
+        val nUniqueBeacons = beaconReferenceApplication.beaconManagementCollection.beacons.value?.size
+        Log.i("FragHomeViewModel", "Unique beacons: $nUniqueBeacons")
     }
 }

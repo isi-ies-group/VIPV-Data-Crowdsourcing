@@ -3,6 +3,7 @@ package com.example.beaconble
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.altbeacon.beacon.Identifier
 
 class FragHome : Fragment() {
     lateinit var viewModel: Lazy<FragHomeViewModel>
@@ -42,17 +44,26 @@ class FragHome : Fragment() {
         // Re-created fragments receive the same ViewModel instance created by the first one.
         viewModel = viewModels<FragHomeViewModel>()
 
+        // Get the application instance
+        beaconReferenceApplication = BeaconReferenceApplication.instance
+
         // Inflate the layout for this fragment and find the IDs of the UI elements.
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         postButton = view.findViewById<FloatingActionButton>(R.id.uploadButton)
         beaconListView = view.findViewById<ListView>(R.id.beaconListView)
         beaconCountTextView = view.findViewById<TextView>(R.id.beaconCountTextView)
 
-        // Assign observers and callbacks
-        viewModel.value.exampleData.observe(viewLifecycleOwner) { data ->
-            // Update the list
-            beaconListView.adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, data)
+        // Assign observers and callbacks to the ViewModel's LiveData objects.
+        beaconReferenceApplication.beaconManagementCollection.beacons.observe(viewLifecycleOwner) { beacons ->
+            // val beacons_as_array = beacons.map { it.id.toString() }.toTypedArray()
+            Log.i("FragHome", "Updating beacon list")
+            Log.i("FragHome", "Beacons: ${beacons.size}")
+            val adapter = BeaconListAdapter(requireContext(), beacons)
+            // use simple adapter
+            // val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, beacons_as_array)
+            beaconListView.adapter = adapter
         }
+
 
         viewModel.value.nRangedBeacons.observe(viewLifecycleOwner) { n ->
             // Update the top message textview to show the number of beacons detected
@@ -62,7 +73,6 @@ class FragHome : Fragment() {
                 beaconCountTextView.text = getString(R.string.beacons_detected_nonzero, n)
             }
         }
-
         return view
     }
 
