@@ -34,27 +34,6 @@ class BeaconReferenceApplication : Application() {
         // Beacon Manager configura la interaccion con las beacons y el start/stop de ranging/monitoring
 
         // Por defecto la biblioteca solo detecta AltBeacon si se quiere otro tipo de protocolo hay que añadir el layout
-        //añadir iBeacons
-        val iBeaconParser =
-            BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-        beaconManager.beaconParsers.add(iBeaconParser)
-
-        //añadir Eddystone UID
-        val eddyStoneUIDParser =
-            BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19")
-        beaconManager.beaconParsers.add(eddyStoneUIDParser)
-
-        //añadir Eddystone TLM
-        val eddyStoneTLMParser =
-            BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15")
-        beaconManager.beaconParsers.add(eddyStoneTLMParser)
-
-        //añadir Eddystone URL
-        val eddyStoneURLParser =
-            BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-20v")
-        beaconManager.beaconParsers.add(eddyStoneURLParser)
-
-        //añadir beacon Custom
         val customParser = BeaconParser().setBeaconLayout("m:0-1=0505")
         beaconManager.beaconParsers.add(customParser)
 
