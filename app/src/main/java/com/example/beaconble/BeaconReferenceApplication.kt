@@ -34,7 +34,10 @@ class BeaconReferenceApplication : Application() {
         // Beacon Manager configura la interaccion con las beacons y el start/stop de ranging/monitoring
 
         // Por defecto la biblioteca solo detecta AltBeacon si se quiere otro tipo de protocolo hay que añadir el layout
-        val customParser = BeaconParser().setBeaconLayout("m:0-1=0505")
+        // m:0-1=0505 stands for InPlay's Company Identifier Code (0x0505), see https://www.bluetooth.com/specifications/assigned-numbers/
+        // i:2-7 stands for the identifier, UUID (MAC) [little endian]
+        // d:8-9 stands for the data, CH1 analog value [little endian]
+        val customParser = BeaconParser().setBeaconLayout("m:0-1=0505,i:2-7,d:8-9")
         beaconManager.beaconParsers.add(customParser)
 
         // Activate debug mode only if build variant is debug
@@ -93,6 +96,15 @@ class BeaconReferenceApplication : Application() {
             Log.d(MainActivity.TAG, "Ranged: ${beacons.count()} beacons")
             for (beacon: Beacon in beacons) {
                 Log.d(TAG, "$beacon about ${beacon.distance} meters away")
+                val uuid = beacon.serviceUuid
+                Log.i(TAG, "UUID: $uuid")
+                val id = beacon.id1
+                Log.i(TAG, "ID: $id")
+                val data = beacon.dataFields
+                // analogReading is the CH1 analog value, as two bytes in little endian
+                val analogReading = data[0]
+                val hexString = analogReading.toString(16)
+                Log.i(TAG, "Data: $analogReading (0x$hexString)")
             }
         } else {
             Log.d(MainActivity.TAG, "Ignoring stale ranged beacons from $rangeAgeMillis millis ago")
@@ -105,7 +117,7 @@ class BeaconReferenceApplication : Application() {
             .setContentTitle("Beacon Reference Application")
             .setContentText("A beacon is nearby.")
             .setSmallIcon(R.mipmap.logo_ies_foreground)
-        // TODO: UPDATE i18n strings, double check icon
+        // TODO: UPDATE i18n strings, double check icon (make one that is a silhouette of a beacon)
 
         // Explicit intent to open the app when notification is clicked
         val stackBuilder = TaskStackBuilder.create(this)
