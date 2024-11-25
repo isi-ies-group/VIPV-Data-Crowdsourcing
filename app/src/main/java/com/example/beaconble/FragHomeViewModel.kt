@@ -11,22 +11,19 @@ import org.altbeacon.beacon.MonitorNotifier
 class FragHomeViewModel() : ViewModel() {
     private val _exampleData = MutableLiveData<Array<String>>()
     val exampleData: LiveData<Array<String>> get() = _exampleData
-    private val _topMessage = MutableLiveData<String>()
-    val topMessage: LiveData<String> get() = _topMessage
+    private val _nRangedBeacons = MutableLiveData<Int>()
+    val nRangedBeacons: LiveData<Int> get() = _nRangedBeacons
 
     private val beaconReferenceApplication = BeaconReferenceApplication.instance
 
     init {
-        beaconReferenceApplication.regionState.observeForever { state ->
-            _topMessage.value = when (state) {
-                MonitorNotifier.INSIDE -> "Inside region"
-                MonitorNotifier.OUTSIDE -> "Outside region"
-                else -> "Unknown state"
-            }
-        }
         beaconReferenceApplication.rangedBeacons.observeForever { beacons ->
             val beaconNames = beacons.map { it.beaconTypeCode.toHexString() }.toTypedArray()
             _exampleData.value = beaconNames
+        }
+        // update the number of beacons detected
+        beaconReferenceApplication.nRangedBeacons.observeForever { n ->
+            _nRangedBeacons.value = n?.toInt()
         }
     }
 
@@ -40,7 +37,6 @@ class FragHomeViewModel() : ViewModel() {
                     longitud = "-3.703790",
                     orientacion = "0",
                     inclinacion = "0",
-                    tipo_medida = "irradiancia",
                     valor_medida = "25",
                     id = "4"
                 )

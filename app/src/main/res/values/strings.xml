@@ -44,7 +44,7 @@
     <string name="credits">App developed by the ISI-IES group at Universidad Politécnica de Madrid.</string>
     // Home view
     <string name="beacons_detected_zero">No beacons detected</string>
-    <string name="beacons_detected_nonzero">Visible beacons: %1$d</string>
+    <string name="beacons_detected_nonzero">Nearby beacons: %1$d</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

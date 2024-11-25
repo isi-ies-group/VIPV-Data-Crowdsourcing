@@ -54,9 +54,13 @@ class FragHome : Fragment() {
             beaconListView.adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, data)
         }
 
-        viewModel.value.topMessage.observe(viewLifecycleOwner) { message ->
-            // Update the top message textview
-            beaconCountTextView.text = message
+        viewModel.value.nRangedBeacons.observe(viewLifecycleOwner) { n ->
+            // Update the top message textview to show the number of beacons detected
+            if (n == 0) {
+                beaconCountTextView.text = getString(R.string.beacons_detected_zero)
+            } else {
+                beaconCountTextView.text = getString(R.string.beacons_detected_nonzero, n)
+            }
         }
 
         return view

@@ -41,5 +41,5 @@
     <string name="settings_user_token">Clave del usuario</string>
     <string name="settings_only_wifi_upload_on">Los datos se subirán automáticamente cuando se conecte a una red WiFi.</string>
     <string name="beacons_detected_zero">No se detectan balizas</string>
-    <string name="beacons_detected_nonzero">Balizas detectadas: %1$d</string>
+    <string name="beacons_detected_nonzero">Balizas cercanas: %1$d</string>
 </resources>
