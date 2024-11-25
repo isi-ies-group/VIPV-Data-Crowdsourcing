@@ -2,11 +2,14 @@ package com.example.beaconble
 
 import android.app.*
 import android.content.Intent
+import android.location.Location
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import okhttp3.ResponseBody
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
@@ -16,16 +19,26 @@ import org.altbeacon.beacon.MonitorNotifier
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 class BeaconReferenceApplication : Application() {
     // API service
     private lateinit var ApiService: APIService
 
     // Bluetooth scanning
-    var region = Region("all-beacons", null, null, null)  // representa el criterio que se usa para busacar las balizas, como no se quiere buscar una UUID especifica los 3 útlimos campos son null
+    var region = Region(
+        "all-beacons",
+        null,
+        null,
+        null
+    )  // representa el criterio que se usa para busacar las balizas, como no se quiere buscar una UUID especifica los 3 útlimos campos son null
+
+    // Beacons abstractions
+    var beaconManagementCollection = BeaconCollectionDispatcher()
 
     // LiveData observers for monitoring and ranging
     lateinit var regionState: MutableLiveData<Int>
     lateinit var rangedBeacons: MutableLiveData<Collection<Beacon>>
+    lateinit var nRangedBeacons: MutableLiveData<Int>
 
     override fun onCreate() {
         super.onCreate()
@@ -74,6 +87,7 @@ class BeaconReferenceApplication : Application() {
         // Save observers for public use in ViewModel(s)
         this.regionState = regionViewModel.regionState
         this.rangedBeacons = regionViewModel.rangedBeacons
+        this.nRangedBeacons = MutableLiveData(0)
     }
 
     //registra los cambios de si estas dentro o fuera de la region con la interfaz MonitorNotifier de la biblioteca
@@ -83,7 +97,7 @@ class BeaconReferenceApplication : Application() {
             Log.d(TAG, "Outside beacon region: $region")
         } else {
             Log.d(TAG, "Inside beacon region: $region")
-            sendNotification()
+            // sendNotification()
         }
     }
 
@@ -93,21 +107,41 @@ class BeaconReferenceApplication : Application() {
         val rangeAgeMillis =
             System.currentTimeMillis() - (beacons.firstOrNull()?.lastCycleDetectionTimestamp ?: 0)
         if (rangeAgeMillis < 10000) {
-            Log.d(MainActivity.TAG, "Ranged: ${beacons.count()} beacons")
-            for (beacon: Beacon in beacons) {
-                Log.d(TAG, "$beacon about ${beacon.distance} meters away")
-                val uuid = beacon.serviceUuid
-                Log.i(TAG, "UUID: $uuid")
-                val id = beacon.id1
-                Log.i(TAG, "ID: $id")
-                val data = beacon.dataFields
-                // analogReading is the CH1 analog value, as two bytes in little endian
-                val analogReading = data[0]
-                val hexString = analogReading.toString(16)
-                Log.i(TAG, "Data: $analogReading (0x$hexString)")
+            nRangedBeacons.value = beacons.count()
+            // get location latitude and longitude, common for all beacons detected here
+            val fusedLocationClient: FusedLocationProviderClient =
+                LocationServices.getFusedLocationProviderClient(applicationContext)
+            var location: Location? = null
+            try {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { loc: Location? ->
+                        // Got last known location. In some rare situations this can be null.
+                        location = loc
+                    }
+            } catch (e: SecurityException) {
+                Log.e(TAG, "Location permission denied")
+                // TODO handle location permission denied
             }
-        } else {
-            Log.d(MainActivity.TAG, "Ignoring stale ranged beacons from $rangeAgeMillis millis ago")
+            // iterate over beacons and log their data, if location retrieved
+            if (location != null) {
+                val currentInstant = java.time.Instant.now()
+                for (beacon: Beacon in beacons) {
+                    val id = beacon.id1
+                    Log.i(TAG, "ID: $id")
+                    val data = beacon.dataFields
+                    // analogReading is the CH1 analog value, as two bytes in little endian
+                    val analogReading = data[0].toShort()
+                    val hexString = analogReading.toString(16)
+                    Log.i(TAG, "Data: $analogReading (0x$hexString)")
+                    beaconManagementCollection.addSensorEntry(
+                        id,
+                        analogReading,
+                        location!!.latitude.toFloat(),
+                        location!!.longitude.toFloat(),
+                        currentInstant,
+                    )
+                }
+            }
         }
     }
 
@@ -155,6 +189,26 @@ class BeaconReferenceApplication : Application() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         this.ApiService = retrofit.create(APIService::class.java)
+    }
+
+    /**
+     * Stop monitoring and ranging for beacons
+     * @return void
+     */
+    fun stopBeaconScanning() {
+        val beaconManager = BeaconManager.getInstanceForApplication(this)
+        beaconManager.stopMonitoring(region)
+        beaconManager.stopRangingBeacons(region)
+    }
+
+    /**
+     * Start monitoring and ranging for beacons
+     * @return void
+     */
+    fun startBeaconScanning() {
+        val beaconManager = BeaconManager.getInstanceForApplication(this)
+        beaconManager.startMonitoring(region)
+        beaconManager.startRangingBeacons(region)
     }
 
     /**
