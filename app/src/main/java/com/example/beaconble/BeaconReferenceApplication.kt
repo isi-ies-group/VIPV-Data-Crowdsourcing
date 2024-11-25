@@ -44,7 +44,9 @@ class BeaconReferenceApplication : Application() {
         setupBeaconScanning()
 
         // Set API service
-        setService(BuildConfig.SERVER_URL)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val apiEndpoint = sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL)!!
+        setService(apiEndpoint)
 
         // Save instance for singleton access
         instance = this
@@ -124,13 +126,26 @@ class BeaconReferenceApplication : Application() {
         notificationManager.notify(1, builder.build())
     }
 
-    // Set Retrofit instance for API calls
+    /**
+     * Set Retrofit instance for API calls
+     * @param baseURL Base URL for API service
+     * @return void
+     */
     private fun setService(baseURL: String) {
         val retrofit = Retrofit.Builder()
             .baseUrl(baseURL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         this.ApiService = retrofit.create(APIService::class.java)
+    }
+
+    /**
+     * Update the API service endpoint (callback for configuration changes)
+     * @param endpoint New API endpoint
+     * @return void
+     */
+    fun updateService(endpoint: String) {
+        setService(endpoint)
     }
 
     /**
