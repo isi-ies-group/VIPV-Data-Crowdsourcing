@@ -45,6 +45,7 @@
     // Home view
     <string name="beacons_detected_zero">No beacons detected</string>
     <string name="beacons_detected_nonzero">Nearby beacons: %1$d</string>
+    <string name="beacon_last_read">Last read:</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -54,4 +55,5 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
 </resources>
