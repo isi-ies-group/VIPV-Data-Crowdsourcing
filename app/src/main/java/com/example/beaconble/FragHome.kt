@@ -33,8 +33,8 @@ class FragHome : Fragment() {
     lateinit var rangingButton: Button
     lateinit var beaconReferenceApplication: BeaconReferenceApplication
     var alertDialog: AlertDialog? = null
-    lateinit var sensorData:SensorData
-    var sensorDataList:MutableList<SensorData> = mutableListOf()
+    lateinit var sensorData: SensorData
+    var sensorDataList: MutableList<SensorData> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

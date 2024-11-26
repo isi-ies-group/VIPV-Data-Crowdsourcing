@@ -18,7 +18,8 @@ class FragHomeViewModel() : ViewModel() {
     val exampleData: LiveData<Array<String>> get() = _exampleData
     private val _nRangedBeacons = MutableLiveData<Int>()
     val nRangedBeacons: LiveData<Int> get() = _nRangedBeacons
-    val rangedBeacons: LiveData<ArrayList<BeaconSimplified>> = beaconReferenceApplication.beaconManagementCollection.beacons
+    val rangedBeacons: LiveData<ArrayList<BeaconSimplified>> =
+        beaconReferenceApplication.beaconManagementCollection.beacons
 
     init {
         // update the number of beacons detected
@@ -50,7 +51,8 @@ class FragHomeViewModel() : ViewModel() {
             -3.703790f,
             Instant.now()
         )
-        val nUniqueBeacons = beaconReferenceApplication.beaconManagementCollection.beacons.value?.size
+        val nUniqueBeacons =
+            beaconReferenceApplication.beaconManagementCollection.beacons.value?.size
         Log.i("FragHomeViewModel", "Unique beacons: $nUniqueBeacons")
     }
 }

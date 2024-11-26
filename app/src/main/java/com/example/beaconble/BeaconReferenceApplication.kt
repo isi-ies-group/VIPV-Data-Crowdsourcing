@@ -154,7 +154,13 @@ class BeaconReferenceApplication : Application() {
         }
     }
 
-    fun addSensorDataEntry(id: Identifier, data: Short, latitude: Float, longitude: Float, timestamp: Instant) {
+    fun addSensorDataEntry(
+        id: Identifier,
+        data: Short,
+        latitude: Float,
+        longitude: Float,
+        timestamp: Instant
+    ) {
         beaconManagementCollection.addSensorEntry(
             id,
             data,

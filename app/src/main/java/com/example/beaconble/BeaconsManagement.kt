@@ -45,8 +45,10 @@ class BeaconSimplified(val id: Identifier) {
  * identifier is not found in the list.
  */
 class BeaconCollectionDispatcher {
-    private val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> = MutableLiveData<ArrayList<BeaconSimplified>>(ArrayList<BeaconSimplified>())
+    private val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> =
+        MutableLiveData<ArrayList<BeaconSimplified>>(ArrayList<BeaconSimplified>())
     val beacons: LiveData<ArrayList<BeaconSimplified>> = _beacons
+
     /**
      * Adds a SensorEntry to the beacon with the given identifier. If the beacon is not found, it
      * creates a new instance of Beacon and adds it to the list.
@@ -56,7 +58,13 @@ class BeaconCollectionDispatcher {
      * @param longitude The longitude of the beacon.
      * @param timestamp The timestamp of the data.
      */
-    fun addSensorEntry(id: Identifier, data: Short, latitude: Float, longitude: Float, timestamp: Instant) {
+    fun addSensorEntry(
+        id: Identifier,
+        data: Short,
+        latitude: Float,
+        longitude: Float,
+        timestamp: Instant
+    ) {
         val beacon = _beacons.value?.find { it.id == id }
         if (beacon != null) {
             beacon.sensorData.add(SensorEntry(data, latitude, longitude, timestamp))

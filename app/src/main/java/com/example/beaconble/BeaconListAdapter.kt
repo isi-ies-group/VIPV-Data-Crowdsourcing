@@ -14,13 +14,15 @@ import android.widget.ArrayAdapter
  * @param layout The layout of the list item.
  * @param beaconsList The list of beacons to be displayed.
  */
-class BeaconListAdapter(val activityContext: Context, val beaconsList: List<BeaconSimplified>) : ArrayAdapter<BeaconSimplified>(activityContext, R.layout.row_item_beacon, beaconsList) {
+class BeaconListAdapter(val activityContext: Context, val beaconsList: List<BeaconSimplified>) :
+    ArrayAdapter<BeaconSimplified>(activityContext, R.layout.row_item_beacon, beaconsList) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val beacon = getItem(position)
         if (beacon == null) {
             Log.e("BeaconListAdapter", "Beacon is null")
         }
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.row_item_beacon, parent, false)
+        val view = convertView ?: LayoutInflater.from(context)
+            .inflate(R.layout.row_item_beacon, parent, false)
 
         val beaconIdTextView = view.findViewById<TextView>(R.id.tvBeaconIdentifier)
         val beaconLastReadingTextView = view.findViewById<TextView>(R.id.tvBeaconLastReading)
