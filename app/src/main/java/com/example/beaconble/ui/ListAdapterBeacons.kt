@@ -16,7 +16,7 @@ import com.example.beaconble.R
  * @param layout The layout of the list item.
  * @param beaconsList The list of beacons to be displayed.
  */
-class BeaconListAdapter(activityContext: Context, layout: Int, beaconsList: List<BeaconSimplified>) :
+class ListAdapterBeacons(activityContext: Context, layout: Int, beaconsList: List<BeaconSimplified>) :
     ArrayAdapter<BeaconSimplified>(activityContext, layout, beaconsList) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

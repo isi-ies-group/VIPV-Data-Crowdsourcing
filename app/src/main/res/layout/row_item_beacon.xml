@@ -17,9 +17,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/tvLastText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvLastText"
         android:gravity="start"
         android:text="@string/beacon_last_read"
         android:layout_marginStart="20sp"

@@ -43,7 +43,7 @@ class FragHome : Fragment() {
 
         // Assign observers and callbacks to the ViewModel's LiveData objects.
         viewModel.value.rangedBeacons.observe(viewLifecycleOwner) { beacons ->
-            val adapter = BeaconListAdapter(requireContext(), R.layout.row_item_beacon, beacons)
+            val adapter = ListAdapterBeacons(requireContext(), R.layout.row_item_beacon, beacons)
             beaconListView.adapter = adapter
         }
 
