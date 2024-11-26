@@ -25,7 +25,7 @@
         android:theme="@style/Theme.BeaconBLE"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.ActMain"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.beaconble.BeaconScanPermissionsActivity"
+            android:name="com.example.beaconble.ui.BeaconScanPermissionsActivity"
             android:exported="false">
         </activity>
 

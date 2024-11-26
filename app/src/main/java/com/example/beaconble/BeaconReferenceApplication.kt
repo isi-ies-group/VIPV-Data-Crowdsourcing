@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import com.example.beaconble.ui.ActMain
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import okhttp3.ResponseBody
@@ -180,7 +181,7 @@ class BeaconReferenceApplication : Application() {
 
         // Explicit intent to open the app when notification is clicked
         val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addNextIntent(Intent(this, MainActivity::class.java))
+        stackBuilder.addNextIntent(Intent(this, ActMain::class.java))
         val resultPendingIntent = stackBuilder.getPendingIntent(
             0,
             PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE

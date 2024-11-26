@@ -1,40 +1,28 @@
-package com.example.beaconble
+package com.example.beaconble.ui
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
+import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
+import com.example.beaconble.BeaconReferenceApplication
+import com.example.beaconble.BeaconSimplified
+import com.example.beaconble.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.altbeacon.beacon.Identifier
 
 class FragHome : Fragment() {
     lateinit var viewModel: Lazy<FragHomeViewModel>
 
     lateinit var postButton: FloatingActionButton
 
-    //inicializacion de variables
     lateinit var beaconListView: ListView
     lateinit var beaconCountTextView: TextView
-    lateinit var monitoringButton: Button
-    lateinit var rangingButton: Button
     lateinit var beaconReferenceApplication: BeaconReferenceApplication
-    var alertDialog: AlertDialog? = null
-    lateinit var sensorData: SensorData
-    var sensorDataList: MutableList<SensorData> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +33,7 @@ class FragHome : Fragment() {
         viewModel = viewModels<FragHomeViewModel>()
 
         // Get the application instance
-        beaconReferenceApplication = BeaconReferenceApplication.instance
+        beaconReferenceApplication = BeaconReferenceApplication.Companion.instance
 
         // Inflate the layout for this fragment and find the IDs of the UI elements.
         val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -54,16 +42,17 @@ class FragHome : Fragment() {
         beaconCountTextView = view.findViewById<TextView>(R.id.beaconCountTextView)
 
         // Assign observers and callbacks to the ViewModel's LiveData objects.
-        beaconReferenceApplication.beaconManagementCollection.beacons.observe(viewLifecycleOwner) { beacons ->
-            // val beacons_as_array = beacons.map { it.id.toString() }.toTypedArray()
-            Log.i("FragHome", "Updating beacon list")
-            Log.i("FragHome", "Beacons: ${beacons.size}")
-            val adapter = BeaconListAdapter(requireContext(), beacons)
-            // use simple adapter
-            // val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, beacons_as_array)
+        viewModel.value.rangedBeacons.observe(viewLifecycleOwner) { beacons ->
+            val adapter = BeaconListAdapter(requireContext(), R.layout.row_item_beacon, beacons)
             beaconListView.adapter = adapter
         }
 
+        beaconListView.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
+                val beacon = parent.getItemAtPosition(position) as BeaconSimplified
+                val beaconId = beacon.id
+                Log.d("FragHome", "Beacon clicked: $beaconId")
+            }
 
         viewModel.value.nRangedBeacons.observe(viewLifecycleOwner) { n ->
             // Update the top message textview to show the number of beacons detected

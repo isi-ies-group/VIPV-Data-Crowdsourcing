@@ -1,19 +1,20 @@
-package com.example.beaconble
+package com.example.beaconble.ui
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.beaconble.R
 
-class FragLogin : Fragment() {
+class FragBeaconDetails : Fragment() {
 
     companion object {
-        fun newInstance() = FragLogin()
+        fun newInstance() = FragBeaconDetails()
     }
 
-    private val viewModel: FragLoginViewModel by viewModels()
+    private val viewModel: FragBeaconDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +26,6 @@ class FragLogin : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_login, container, false)
+        return inflater.inflate(R.layout.fragment_beacon_details, container, false)
     }
 }

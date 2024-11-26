@@ -1,4 +1,4 @@
-package com.example.beaconble
+package com.example.beaconble.ui
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.ArrayAdapter
+import com.example.beaconble.BeaconSimplified
+import com.example.beaconble.R
 
 /**
  * Adapter for the list of beacons.
@@ -14,8 +16,9 @@ import android.widget.ArrayAdapter
  * @param layout The layout of the list item.
  * @param beaconsList The list of beacons to be displayed.
  */
-class BeaconListAdapter(val activityContext: Context, val beaconsList: List<BeaconSimplified>) :
-    ArrayAdapter<BeaconSimplified>(activityContext, R.layout.row_item_beacon, beaconsList) {
+class BeaconListAdapter(activityContext: Context, layout: Int, beaconsList: List<BeaconSimplified>) :
+    ArrayAdapter<BeaconSimplified>(activityContext, layout, beaconsList) {
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val beacon = getItem(position)
         if (beacon == null) {

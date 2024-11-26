@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.beaconble.FragHome"
+        android:name="com.example.beaconble.ui.FragHome"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_home">
         <action
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.beaconble.FragSettings"
+        android:name="com.example.beaconble.ui.FragSettings"
         android:label="Settings" >
         <action
             android:id="@+id/action_settingsFragment_to_homeFragment"
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.example.beaconble.AboutFragment"
+        android:name="com.example.beaconble.ui.AboutFragment"
         android:label="About" >
         <action
             android:id="@+id/action_aboutFragment_to_homeFragment"

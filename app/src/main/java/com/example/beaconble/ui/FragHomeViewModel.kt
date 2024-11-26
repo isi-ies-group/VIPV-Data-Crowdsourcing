@@ -1,21 +1,19 @@
-package com.example.beaconble
+package com.example.beaconble.ui
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.beaconble.BeaconReferenceApplication  // This is a singleton class, access it with BeaconReferenceApplication.instance
-import org.altbeacon.beacon.BeaconManager
+import com.example.beaconble.BeaconSimplified
+import com.example.beaconble.SensorData
 import org.altbeacon.beacon.Identifier
-import org.altbeacon.beacon.MonitorNotifier
 import java.time.Instant
 
 @OptIn(ExperimentalStdlibApi::class)
 class FragHomeViewModel() : ViewModel() {
     private val beaconReferenceApplication = BeaconReferenceApplication.instance
 
-    private val _exampleData = MutableLiveData<Array<String>>()
-    val exampleData: LiveData<Array<String>> get() = _exampleData
     private val _nRangedBeacons = MutableLiveData<Int>()
     val nRangedBeacons: LiveData<Int> get() = _nRangedBeacons
     val rangedBeacons: LiveData<ArrayList<BeaconSimplified>> =

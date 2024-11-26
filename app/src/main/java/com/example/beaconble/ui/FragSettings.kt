@@ -1,9 +1,12 @@
-package com.example.beaconble
+package com.example.beaconble.ui
 
 import android.os.Bundle
 import android.util.Log
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
+import com.example.beaconble.BeaconReferenceApplication
+import com.example.beaconble.BuildConfig
+import com.example.beaconble.R
 
 class FragSettings : PreferenceFragmentCompat() {
 
@@ -19,7 +22,7 @@ class FragSettings : PreferenceFragmentCompat() {
         editTextPreference?.setOnBindEditTextListener { editText ->
             editText.setOnEditorActionListener { _, _, _ ->
                 // Update the endpoint in the API service
-                BeaconReferenceApplication.instance.setService(editText.text.toString())
+                BeaconReferenceApplication.Companion.instance.setService(editText.text.toString())
                 true
             }
         }
