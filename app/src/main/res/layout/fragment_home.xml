@@ -26,7 +26,7 @@
         <TextView
             android:id="@+id/beaconCountTextView"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="20sp"
             android:text=""
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,6 @@
             android:id="@+id/beaconListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/beaconCountTextView"/>
