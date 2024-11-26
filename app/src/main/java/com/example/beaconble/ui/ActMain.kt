@@ -42,7 +42,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun checkPermissionsAndTransferToViewIfNeeded() {
-        val arePermissionsOk = BeaconScanPermissionsActivity.Companion.allPermissionsGranted(this)
+        val arePermissionsOk = ActPermissions.Companion.allPermissionsGranted(this)
         if (!arePermissionsOk) {  // If any permission is not granted, go to permissions activity and wait for user to grant permissions
             val getAllPermissionsGranted = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 if (result.resultCode != RESULT_OK) {
@@ -51,7 +51,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
                     finish()
                 }
             }
-            getAllPermissionsGranted.launch(Intent(this, BeaconScanPermissionsActivity::class.java))
+            getAllPermissionsGranted.launch(Intent(this, ActPermissions::class.java))
 
         }
     }

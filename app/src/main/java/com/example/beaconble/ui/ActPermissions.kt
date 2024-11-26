@@ -55,7 +55,7 @@ class PermissionsRowAtomicHandler(
 }
 
 
-open class BeaconScanPermissionsActivity: AppCompatActivity() {
+class ActPermissions: AppCompatActivity() {
     lateinit var sysSettingsButton: Button
 
     lateinit var rowPermissionsLocalization: PermissionsRowAtomicHandler

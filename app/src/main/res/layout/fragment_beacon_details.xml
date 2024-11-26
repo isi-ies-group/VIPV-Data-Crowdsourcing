@@ -1,13 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.FragBeaconDetails">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+        android:id="@+id/tvBeaconIdentifier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:layout_marginHorizontal="30sp"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <EditText
+        android:id="@+id/editTextDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="1"
+        android:layout_marginStart="30sp"
+        android:layout_marginTop="10sp"
+        android:layout_marginEnd="30sp"
+        android:autofillHints=""
+        android:gravity="start|top"
+        android:hint="@string/beacon_detail_description_hint"
+        android:inputType="textMultiLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvBeaconIdentifier" />
+
+    <TableLayout
+        android:id="@+id/tableLayoutTiltDirection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30sp"
+        android:layout_marginVertical="5sp"
+        android:shrinkColumns="0,2"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDescription">
+
+        <TableRow
+            android:id="@+id/tableRowTilt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" >
+
+            <TextView
+                android:id="@+id/textViewTilt"
+                android:text="@string/beacon_detail_tilt"
+                android:labelFor="@id/editTextTilt" />
+
+            <Space
+                android:layout_width="80sp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/editTextTilt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48sp"
+                android:autofillHints=""
+                android:ems="5"
+                android:inputType="number" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowDirection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" >
+
+            <TextView
+                android:id="@+id/textViewDirection"
+                android:text="@string/beacon_detail_direction"
+                android:labelFor="@id/editTextDirection" />
+
+            <Space
+                android:layout_width="80sp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/editTextDirection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48sp"
+                android:autofillHints=""
+                android:ems="5"
+                android:inputType="number" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        app:layout_constraintVertical_weight="1"
+        android:orientation="vertical"
+        android:layout_marginTop="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayoutTiltDirection"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ListView
+            android:id="@+id/listViewSensorEntries"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

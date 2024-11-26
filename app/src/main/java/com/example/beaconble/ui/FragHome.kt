@@ -10,6 +10,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.beaconble.BeaconReferenceApplication
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.R
@@ -23,6 +24,8 @@ class FragHome : Fragment() {
     lateinit var beaconListView: ListView
     lateinit var beaconCountTextView: TextView
     lateinit var beaconReferenceApplication: BeaconReferenceApplication
+
+    lateinit var adapter: ListAdapterBeacons
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,12 +42,13 @@ class FragHome : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         postButton = view.findViewById<FloatingActionButton>(R.id.uploadButton)
         beaconListView = view.findViewById<ListView>(R.id.beaconListView)
+        adapter = ListAdapterBeacons(requireContext(), ArrayList())
+        beaconListView.adapter = adapter
         beaconCountTextView = view.findViewById<TextView>(R.id.beaconCountTextView)
 
         // Assign observers and callbacks to the ViewModel's LiveData objects.
         viewModel.value.rangedBeacons.observe(viewLifecycleOwner) { beacons ->
-            val adapter = ListAdapterBeacons(requireContext(), R.layout.row_item_beacon, beacons)
-            beaconListView.adapter = adapter
+            adapter.updateData(beacons)
         }
 
         beaconListView.onItemClickListener =
@@ -52,6 +56,10 @@ class FragHome : Fragment() {
                 val beacon = parent.getItemAtPosition(position) as BeaconSimplified
                 val beaconId = beacon.id
                 Log.d("FragHome", "Beacon clicked: $beaconId")
+                // navigate to the details fragment, passing the beacon ID
+                findNavController().navigate(R.id.action_homeFragment_to_fragBeaconDetails, Bundle().apply {
+                    putString("beaconId", beaconId.toString())
+                })
             }
 
         viewModel.value.nRangedBeacons.observe(viewLifecycleOwner) { n ->

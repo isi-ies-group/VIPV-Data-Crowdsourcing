@@ -46,6 +46,11 @@
     <string name="beacons_detected_zero">No beacons detected</string>
     <string name="beacons_detected_nonzero">Nearby beacons: %1$d</string>
     <string name="beacon_last_read">Last read:</string>
+    // Beacon details view
+    <string name="beacon_details">Beacon details</string>
+    <string name="beacon_detail_description_hint">Optional beacon description</string>
+    <string name="beacon_detail_tilt">Tilt [degrees]</string>
+    <string name="beacon_detail_direction">Direction [degrees]</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

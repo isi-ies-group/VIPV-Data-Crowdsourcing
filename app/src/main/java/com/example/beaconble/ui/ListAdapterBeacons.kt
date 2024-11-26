@@ -16,8 +16,8 @@ import com.example.beaconble.R
  * @param layout The layout of the list item.
  * @param beaconsList The list of beacons to be displayed.
  */
-class ListAdapterBeacons(activityContext: Context, layout: Int, beaconsList: List<BeaconSimplified>) :
-    ArrayAdapter<BeaconSimplified>(activityContext, layout, beaconsList) {
+class ListAdapterBeacons(activityContext: Context, beaconsList: List<BeaconSimplified>) :
+    ArrayAdapter<BeaconSimplified>(activityContext, R.layout.row_item_beacon, beaconsList) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val beacon = getItem(position)
@@ -32,9 +32,19 @@ class ListAdapterBeacons(activityContext: Context, layout: Int, beaconsList: Lis
         val beaconLastSeenTextView = view.findViewById<TextView>(R.id.tvBeaconLastSeen)
 
         beaconIdTextView.text = beacon?.id.toString()
-        beaconLastReadingTextView.text = beacon?.sensorData?.lastOrNull()?.data.toString()
-        beaconLastSeenTextView.text = beacon?.sensorData?.lastOrNull()?.timestamp.toString()
+        beaconLastReadingTextView.text = beacon?.sensorData?.value?.lastOrNull()?.data.toString()
+        beaconLastSeenTextView.text = beacon?.sensorData?.value?.lastOrNull()?.timestamp.toString()
 
         return view
+    }
+
+    /**
+     * Updates the data in the adapter.
+     * @param beacons The new list of beacons.
+     */
+    fun updateData(beacons: List<BeaconSimplified>) {
+        clear()
+        addAll(beacons)
+        notifyDataSetChanged()
     }
 }

@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.beaconble.ui.BeaconScanPermissionsActivity"
+            android:name="com.example.beaconble.ui.ActPermissions"
             android:exported="false">
         </activity>
 

@@ -43,4 +43,8 @@
     <string name="beacons_detected_zero">No se detectan balizas</string>
     <string name="beacons_detected_nonzero">Balizas cercanas: %1$d</string>
     <string name="beacon_last_read">Última lectura:</string>
+    <string name="beacon_details">Detalles de la baliza</string>
+    <string name="beacon_detail_description_hint">Descripción opcional de la baliza</string>
+    <string name="beacon_detail_tilt">Inclinación [grados]</string>
+    <string name="beacon_detail_direction">Orientación [grados]</string>
 </resources>

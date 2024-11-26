@@ -33,9 +33,10 @@ class BeaconSimplified(val id: Identifier) {
      * "The ADC data is of 16-bit in 2’s complement format."
      * Set initial capacity of 360.
      */
-    var sensorData: ArrayList<SensorEntry> = ArrayList<SensorEntry>(360)
+    var sensorData: MutableLiveData<ArrayList<SensorEntry>> =
+        MutableLiveData<ArrayList<SensorEntry>>(ArrayList(360))
     var description: String = ""
-    var azimuth: Float? = null
+    var direction: Float? = null
     var tilt: Float? = null
 }
 
@@ -67,10 +68,12 @@ class BeaconCollectionDispatcher {
     ) {
         val beacon = _beacons.value?.find { it.id == id }
         if (beacon != null) {
-            beacon.sensorData.add(SensorEntry(data, latitude, longitude, timestamp))
+            beacon.sensorData.value?.add(SensorEntry(data, latitude, longitude, timestamp))
+            beacon.sensorData.notifyObservers()
+            _beacons.notifyObservers()
         } else {
             val newBeacon = BeaconSimplified(id)
-            newBeacon.sensorData.add(SensorEntry(data, latitude, longitude, timestamp))
+            newBeacon.sensorData.value?.add(SensorEntry(data, latitude, longitude, timestamp))
             _beacons.value!!.add(newBeacon)
             _beacons.notifyObservers()
         }
@@ -82,5 +85,14 @@ class BeaconCollectionDispatcher {
      */
     fun getBeacons(): ArrayList<BeaconSimplified> {
         return _beacons.value!!
+    }
+
+    /**
+     * Returns the beacon with the given identifier.
+     * @param id The identifier of the beacon.
+     * @return The beacon with the given identifier.
+     */
+    fun getBeacon(id: Identifier): BeaconSimplified? {
+        return _beacons.value?.find { it.id == id }
     }
 }
