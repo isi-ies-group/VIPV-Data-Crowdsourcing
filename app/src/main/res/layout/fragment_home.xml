@@ -24,16 +24,6 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/text_central_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            app:layout_constraintBottom_toBottomOf="@+id/beaconListView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/beaconListView"
-            app:layout_constraintTop_toBottomOf="@+id/beaconCountTextView" />
-
-        <TextView
             android:id="@+id/beaconCountTextView"
             android:layout_width="match_parent"
             android:layout_height="20dp"
