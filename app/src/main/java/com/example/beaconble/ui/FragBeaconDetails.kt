@@ -3,7 +3,6 @@ package com.example.beaconble.ui
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +13,6 @@ import androidx.fragment.app.Fragment
 import com.example.beaconble.R
 
 class FragBeaconDetails : Fragment() {
-
-    companion object {
-        fun newInstance() = FragBeaconDetails()
-    }
-
     private val viewModel: FragBeaconDetailsViewModel by viewModels()
 
     lateinit var textViewBeaconId: TextView
@@ -28,6 +22,25 @@ class FragBeaconDetails : Fragment() {
     lateinit var listViewBeaconMeasurements: ListView
 
     lateinit var adapter: ListAdapterSensorEntries
+
+    val textWatcher4AllFields: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            // do nothing
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // do nothing
+        }
+
+        override fun afterTextChanged(s: android.text.Editable?) {
+            // call the updateBeaconFields method
+            viewModel.updateBeacon4Fields(
+                editTextBeaconDescription.text.toString(),
+                editTextBeaconTilt.text.toString().toFloatOrNull(),
+                editTextBeaconDirection.text.toString().toFloatOrNull()
+            )
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,38 +70,37 @@ class FragBeaconDetails : Fragment() {
 
         // Assign observers and callbacks to the ViewModel's LiveData objects.
         viewModel.beacon.observe(viewLifecycleOwner) { beacon ->
-            textViewBeaconId.text = beacon.id.toString()
-            editTextBeaconDescription.setText(beacon.description)
-            editTextBeaconTilt.setText(beacon.tilt.toString())
-            editTextBeaconDirection.setText(beacon.direction.toString())
+            updateTextFields()
         }
 
         viewModel.sensorEntries.observe(viewLifecycleOwner) { sensorEntries ->
             adapter.updateData(sensorEntries.asReversed())
         }
 
-        // set callbacks for modified text fields
-        editTextBeaconDescription.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // do nothing
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // do nothing
-            }
-
-            override fun afterTextChanged(s: android.text.Editable?) {
-                // call the updateBeaconFields method
-                viewModel.updateBeacon4Fields(
-                    editTextBeaconDescription.text.toString(),
-                    editTextBeaconTilt.text.toString().toFloatOrNull(),
-                    editTextBeaconDirection.text.toString().toFloatOrNull()
-                )
-            }
-        })
-
-
         // Return the view.
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Update text fields with the beacon's data.
+        updateTextFields()
+
+        // Set callbacks / text watchers for the text fields AFTER the view texts have been set.
+        editTextBeaconDescription.addTextChangedListener(textWatcher4AllFields)
+        editTextBeaconTilt.addTextChangedListener(textWatcher4AllFields)
+        editTextBeaconDirection.addTextChangedListener(textWatcher4AllFields)
+    }
+
+    fun updateTextFields() {
+        // Update text fields with the beacon's data.
+        viewModel.beacon.value?.let {
+            textViewBeaconId.text = it.id.toString()
+            editTextBeaconDescription.setText(it.description)
+
+            editTextBeaconTilt.setText(if (it.tilt != null) it.tilt.toString() else "")
+            editTextBeaconDirection.setText(if (it.direction != null) it.direction.toString() else "")
+        }
     }
 }

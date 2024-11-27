@@ -16,7 +16,7 @@ class FragBeaconDetailsViewModel : ViewModel() {
     private val beaconReferenceApplication = BeaconReferenceApplication.instance
 
     private var _beacon = MutableLiveData<BeaconSimplified>()
-    val beacon: MutableLiveData<BeaconSimplified> get() = _beacon
+    val beacon: LiveData<BeaconSimplified> get() = _beacon
 
     var sensorEntries: MutableLiveData<ArrayList<SensorEntry>> =
         MutableLiveData<ArrayList<SensorEntry>>()
@@ -30,9 +30,11 @@ class FragBeaconDetailsViewModel : ViewModel() {
      * @param id The identifier of the beacon.
      */
     fun setBeaconId(id: Identifier) {
-        beaconId = id
-        _beacon.value = beaconReferenceApplication.beaconManagementCollection.getBeacon(id)
-        sensorEntries = _beacon.value?.sensorData!!
+        if (id != beaconId) {
+            beaconId = id
+            _beacon.value = beaconReferenceApplication.beaconManagementCollection.getBeacon(id)
+            sensorEntries = _beacon.value?.sensorData!!
+        }
     }
 
     /**
@@ -47,11 +49,15 @@ class FragBeaconDetailsViewModel : ViewModel() {
     /**
      * Updates the beacon fields with the given values.
      */
-    fun updateBeaconFields(description: String, tilt: Float?, direction: Float?) {
+    fun updateBeacon4Fields(description: String, tilt: Float?, direction: Float?) {
         if (_beacon.value != null) {
             _beacon.value?.description = description
             _beacon.value?.tilt = tilt
             _beacon.value?.direction = direction
         }
+    }
+
+    companion object {
+        private const val TAG = "FragBeaconDetailsViewModel"
     }
 }

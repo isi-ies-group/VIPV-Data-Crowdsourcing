@@ -11,6 +11,7 @@
     <string name="toolbar_close">Close menu</string>
     <string name="upload">Upload data</string>
     <string name="logo">Logo</string>
+    <string name="NaN" translatable="false">NaN</string>
     // Login view
     <string name="login">Log In</string>
     <string name="login_description">Log In to start sharing your solar resource data!</string>
