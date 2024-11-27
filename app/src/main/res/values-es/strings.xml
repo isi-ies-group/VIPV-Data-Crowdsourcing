@@ -13,6 +13,9 @@
     <string name="settings_user_token_message">Token para publicar datos en el servidor</string>
     <string name="settings_only_wifi_upload_off">Los datos no se subirán automáticamente. Se requiere intervención del Usuario mediante el botón de Publicar.</string>
     <string name="version">Versión: %1$s-%2$d</string>
+    <string name="delete">Eliminar</string>
+    <string name="stop_button">Detener sesión medidas</string>
+    <string name="start_button">Iniciar sesión medidas</string>
     <string name="login">Iniciar sesión</string>
     <string name="login_description">Inicia sesión para compartir tus datos de ciencia ciudadana!</string>
     <string name="login_no_account_question">¿No tienes cuenta? Solicita una <a href="TODO">aquí.</a></string>  // TODO: add link
