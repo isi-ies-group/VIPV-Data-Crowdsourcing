@@ -90,7 +90,8 @@ object SessionWriter {
 
             result.append("}")
         }
-        result.append("}")
+        result.append("}")  // Close the "beacons" object.
+        result.append("}")  // Close the JSON object.
         return result.toString()
     }
 }
