@@ -17,13 +17,13 @@ class SessionWriterUT {
         beacon1.tilt = 0.0f
         beacon1.direction = 0.0f
         beacon1.description = "Soy la cosita más linda y mona de este mundo."
-        beacons?.add(beacon1)
+        beacons.add(beacon1)
 
         val beacon2 = BeaconSimplified(Identifier.parse("0x010203040507"))
         beacon2.tilt = 10.0f
         beacon2.direction = 180.0f
         beacon2.description = "Soy la cosita más linda y mona de este mundo."
-        beacons?.add(beacon2)
+        beacons.add(beacon2)
 
         val jsonHeader = SessionWriter.createJSONHeader(beacons)
 
