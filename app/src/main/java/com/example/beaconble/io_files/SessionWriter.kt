@@ -4,6 +4,7 @@ import com.example.beaconble.BeaconCollectionDispatcher
 import com.example.beaconble.BeaconSimplified
 import java.io.File
 import java.io.FileWriter
+import java.io.OutputStream
 import java.util.Base64
 
 object SessionWriter {
@@ -15,41 +16,39 @@ object SessionWriter {
      *   - The remaining lines is a CSV file with each SensorEntry field and, in the first column, the beacon ID.
      *     The fields are: beacon ID, timestamp, data, latitude, longitude
      *     No assumptions are made on the order of the entries.
-     *   - File extension is recommended to be .vipv_session
-     * @param beaconsCollectionRef The reference to the beacons collection.
+     *   - File extension is recommended to be VIPV_${timestamp}.vipv_session
+     * @param outFile The file to write to.
+     * @param beacons The collection of beacons to dump.
      */
-    fun dump2file(beaconsCollectionRef: BeaconCollectionDispatcher, file: File) {
-        val beacons = beaconsCollectionRef.beacons.value
-        if (beacons != null) {
-            val fileWriter = FileWriter(file)
-            // Write the JSON header.
-            fileWriter.write(createJSONHeader(beacons))
-            // Separate the JSON header from the rest of the file with a blank line.
-            fileWriter.write("\n\n")
-            // Write the CSV header.
-            fileWriter.write("beacon_id,timestamp,data,latitude,longitude\n")
-            // Write the CSV data.
-            for (beacon in beacons) {
-                for (entry in beacon.sensorData.value!!) {
-                    fileWriter.write(beacon.id.toString())
-                    fileWriter.write(",")
-                    fileWriter.write(entry.data.toString())
-                    fileWriter.write(",")
-                    fileWriter.write(entry.latitude.toString())
-                    fileWriter.write(",")
-                    fileWriter.write(entry.longitude.toString())
-                    fileWriter.write(",")
-                    fileWriter.write(entry.timestamp.toString())
-                    fileWriter.write("\n")
+    fun dump2file(outFile: OutputStream, beacons: Collection<BeaconSimplified>) {
+            outFile.writer(Charsets.UTF_8).use {
+                // Write the JSON header.
+                it.write(createJSONHeader(beacons))
+                // Separate the JSON header from the rest of the file with a blank line.
+                it.write("\n\n")
+                // Write the CSV header.
+                it.write("beacon_id,timestamp,data,latitude,longitude\n")
+                // Write the CSV data.
+                for (beacon in beacons) {
+                    for (entry in beacon.sensorData.value!!) {
+                        it.write(beacon.id.toString())
+                        it.write(",")
+                        it.write(entry.data.toString())
+                        it.write(",")
+                        it.write(entry.latitude.toString())
+                        it.write(",")
+                        it.write(entry.longitude.toString())
+                        it.write(",")
+                        it.write(entry.timestamp.toString())
+                        it.write("\n")
+                    }
                 }
             }
-            fileWriter.close()
-        }
     }
 
     /**
      * Creates the JSON line for the beacons static data (ID, tilt, orientation, description).
-     * @param beacons The list of beacons.
+     * @param beacons The collection of beacons.
      * @return The JSON line String.
      *
      * Output example, formatted for readability:
@@ -68,7 +67,7 @@ object SessionWriter {
      *   }
      *  }
      */
-    fun createJSONHeader(beacons: ArrayList<BeaconSimplified>): String {
+    fun createJSONHeader(beacons: Collection<BeaconSimplified>): String {
         val result = StringBuilder()
         result.append("{")
         result.append("\"beacons\": {")

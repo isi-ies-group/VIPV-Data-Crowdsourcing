@@ -95,4 +95,21 @@ class BeaconCollectionDispatcher {
     fun getBeacon(id: Identifier): BeaconSimplified? {
         return _beacons.value?.find { it.id == id }
     }
+
+    /**
+     * Removes all the beacons from the list.
+     */
+    fun emptyAll() {
+        _beacons.value?.clear()
+        _beacons.notifyObservers()
+    }
+
+    /**
+     * Removes the beacon with the given identifier from the list.
+     * @param id The identifier of the beacon.
+     */
+    fun removeBeacon(id: Identifier) {
+        _beacons.value?.removeIf { it.id == id }
+        _beacons.notifyObservers()
+    }
 }

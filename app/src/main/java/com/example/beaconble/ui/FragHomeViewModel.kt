@@ -1,5 +1,6 @@
 package com.example.beaconble.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,7 @@ class FragHomeViewModel() : ViewModel() {
     val nRangedBeacons: LiveData<Int> get() = _nRangedBeacons
     val rangedBeacons: LiveData<ArrayList<BeaconSimplified>> =
         beaconReferenceApplication.beaconManagementCollection.beacons
+    val isSessionActive: LiveData<Boolean> = beaconReferenceApplication.isSessionActive
 
     init {
         // update the number of beacons detected
@@ -52,5 +54,17 @@ class FragHomeViewModel() : ViewModel() {
         val nUniqueBeacons =
             beaconReferenceApplication.beaconManagementCollection.beacons.value?.size
         Log.i("FragHomeViewModel", "Unique beacons: $nUniqueBeacons")
+    }
+
+    fun toggleSession() {
+        beaconReferenceApplication.toggleSession()
+    }
+
+    fun emptyAll() {
+        beaconReferenceApplication.emptyAll()
+    }
+
+    fun exportAll(file: Uri) {
+        beaconReferenceApplication.exportAll(file)
     }
 }

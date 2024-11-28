@@ -15,8 +15,8 @@ class FragBeaconDetailsViewModel : ViewModel() {
 
     private val beaconReferenceApplication = BeaconReferenceApplication.instance
 
-    private var _beacon = MutableLiveData<BeaconSimplified>()
-    val beacon: LiveData<BeaconSimplified> get() = _beacon
+    private var _beacon = MutableLiveData<BeaconSimplified?>()
+    val beacon: LiveData<BeaconSimplified?> get() = _beacon
 
     var sensorEntries: MutableLiveData<ArrayList<SensorEntry>> =
         MutableLiveData<ArrayList<SensorEntry>>()
@@ -54,6 +54,16 @@ class FragBeaconDetailsViewModel : ViewModel() {
             _beacon.value?.description = description
             _beacon.value?.tilt = tilt
             _beacon.value?.direction = direction
+        }
+    }
+
+    /**
+     * Deletes the current shown beacon of this ViewModel.
+     */
+    fun deleteBeacon() {
+        if (_beacon.value != null) {
+            beaconReferenceApplication.beaconManagementCollection.removeBeacon(_beacon.value!!.id)
+            _beacon.value = null
         }
     }
 

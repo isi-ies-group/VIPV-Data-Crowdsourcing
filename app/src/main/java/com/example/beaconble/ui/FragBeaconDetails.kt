@@ -1,5 +1,6 @@
 package com.example.beaconble.ui
 
+import android.app.AlertDialog
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -20,6 +22,7 @@ class FragBeaconDetails : Fragment() {
     lateinit var editTextBeaconTilt: EditText
     lateinit var editTextBeaconDirection: EditText
     lateinit var listViewBeaconMeasurements: ListView
+    lateinit var deleteBeaconButton: ImageButton
 
     lateinit var adapter: ListAdapterSensorEntries
 
@@ -64,17 +67,38 @@ class FragBeaconDetails : Fragment() {
         editTextBeaconTilt = view.findViewById<EditText>(R.id.editTextTilt)
         editTextBeaconDirection = view.findViewById<EditText>(R.id.editTextDirection)
         listViewBeaconMeasurements = view.findViewById<ListView>(R.id.listViewSensorEntries)
+        deleteBeaconButton = view.findViewById<ImageButton>(R.id.imageButtonDeleteBeacon)
 
         adapter = ListAdapterSensorEntries(requireContext(), ArrayList())
         listViewBeaconMeasurements.adapter = adapter
 
         // Assign observers and callbacks to the ViewModel's LiveData objects.
         viewModel.beacon.observe(viewLifecycleOwner) { beacon ->
-            updateTextFields()
+            if (beacon != null) {
+                updateTextFields()
+            } else {
+                // If the beacon is null, go back to the previous fragment,
+                // which is almost certainly due to the beacon being deleted.
+                activity?.onBackPressedDispatcher?.onBackPressed()
+            }
         }
 
         viewModel.sensorEntries.observe(viewLifecycleOwner) { sensorEntries ->
             adapter.updateData(sensorEntries.asReversed())
+        }
+
+        // Set the delete button callback
+        deleteBeaconButton.setOnClickListener {
+            // Create alertDialog to confirm the action
+            val alertDialog = AlertDialog.Builder(requireContext())
+            alertDialog.setTitle(getString(R.string.empty_all_data))
+            alertDialog.setMessage(getString(R.string.empty_all_data_confirmation))
+            alertDialog.setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                viewModel.deleteBeacon()
+            }
+            alertDialog.setNegativeButton(getString(R.string.no)) { dialog, which ->
+            }
+            alertDialog.show()
         }
 
         // Return the view.
