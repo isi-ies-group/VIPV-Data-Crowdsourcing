@@ -3,12 +3,11 @@ package com.example.beaconble
 import com.example.beaconble.io_files.SessionWriter
 import org.altbeacon.beacon.Identifier
 import org.junit.Test
-import java.io.File
 
 class SessionWriterUT {
     @Test
     fun createJSONHeader() {
-        val beaconsCollectionRef = BeaconCollectionDispatcher()
+        val beaconsCollectionRef = BeaconsCollection()
 
         val beacons = beaconsCollectionRef.beacons.value!!
 

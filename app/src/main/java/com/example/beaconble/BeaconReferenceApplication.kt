@@ -23,7 +23,6 @@ import org.altbeacon.beacon.Identifier
 import org.altbeacon.beacon.MonitorNotifier
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
 import java.time.Instant
 
 
@@ -40,7 +39,7 @@ class BeaconReferenceApplication : Application() {
     )  // representa el criterio que se usa para busacar las balizas, como no se quiere buscar una UUID especifica los 3 útlimos campos son null
 
     // Beacons abstractions
-    var beaconManagementCollection = BeaconCollectionDispatcher()
+    var beaconManagementCollection = BeaconsCollection()
 
     // LiveData observers for monitoring and ranging
     lateinit var regionState: MutableLiveData<Int>

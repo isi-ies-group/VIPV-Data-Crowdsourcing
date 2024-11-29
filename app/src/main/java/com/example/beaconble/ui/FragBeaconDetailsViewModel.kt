@@ -3,7 +3,6 @@ package com.example.beaconble.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.beaconble.BeaconCollectionDispatcher
 import com.example.beaconble.BeaconReferenceApplication
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.SensorEntry

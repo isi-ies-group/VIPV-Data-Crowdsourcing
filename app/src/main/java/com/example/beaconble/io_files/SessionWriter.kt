@@ -1,9 +1,6 @@
 package com.example.beaconble.io_files
 
-import com.example.beaconble.BeaconCollectionDispatcher
 import com.example.beaconble.BeaconSimplified
-import java.io.File
-import java.io.FileWriter
 import java.io.OutputStream
 import java.util.Base64
 

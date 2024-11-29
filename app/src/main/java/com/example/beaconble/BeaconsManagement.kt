@@ -1,10 +1,7 @@
 package com.example.beaconble
 
-import android.provider.ContactsContract
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import okhttp3.internal.notify
-import okhttp3.internal.notifyAll
 import org.altbeacon.beacon.Identifier
 import java.time.Instant
 
@@ -45,7 +42,7 @@ class BeaconSimplified(val id: Identifier) {
  * Handles the addition of SensorEntries to the beacons. Creates new instances of Beacon if the
  * identifier is not found in the list.
  */
-class BeaconCollectionDispatcher {
+class BeaconsCollection {
     private val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> =
         MutableLiveData<ArrayList<BeaconSimplified>>(ArrayList<BeaconSimplified>())
     val beacons: LiveData<ArrayList<BeaconSimplified>> = _beacons
