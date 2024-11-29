@@ -55,7 +55,8 @@
             android:contentDescription="@string/delete_all"
             android:padding="14sp"
             android:scaleType="centerInside"
-            android:src="@drawable/round_delete_forever_24" />
+            android:src="@drawable/round_delete_forever_24"
+            app:tint="?attr/colorOnPrimary"/>
 
         <ImageButton
             android:id="@+id/imageButtonActionExportAll"
@@ -67,7 +68,8 @@
             android:contentDescription="@string/upload"
             android:padding="14sp"
             android:scaleType="centerInside"
-            android:src="@drawable/save_as_24" />
+            android:src="@drawable/save_as_24"
+            app:tint="?attr/colorOnPrimary"/>
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 
