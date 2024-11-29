@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -97,6 +98,12 @@ class FragHome : Fragment() {
         viewModel.value.isSessionActive.observe(viewLifecycleOwner) { isSessionActive ->
             updateStartStopButton(isSessionActive)
             updateBeaconCountTextView(viewModel.value.nRangedBeacons.value!!, isSessionActive)
+            // Show a toast message to indicate whether the session has started or stopped
+            if (isSessionActive) {
+                Toast.makeText(requireContext(), getString(R.string.session_started), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), getString(R.string.session_stopped), Toast.LENGTH_SHORT).show()
+            }
         }
 
         return view  // Return the view
@@ -115,6 +122,11 @@ class FragHome : Fragment() {
         }
 
         emptyAllButton.setOnClickListener {
+            if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
+                // If there are no beacons, show a toast message and return
+                Toast.makeText(requireContext(), getString(R.string.no_data_to_empty), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             // Create alertDialog to confirm the action
             val alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle(getString(R.string.empty_all_data))
@@ -128,6 +140,12 @@ class FragHome : Fragment() {
         }
 
         exportAllButton.setOnClickListener {
+            // Check if there is data to export
+            if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
+                // If there are no beacons, show a toast message and return
+                Toast.makeText(requireContext(), getString(R.string.no_data_to_export), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             // Open the file picker intention for document files
             val filename = "VIPV_${Instant.now()}.vipv_session"
             activityResultContract.launch(filename)
