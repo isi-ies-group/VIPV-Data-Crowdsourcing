@@ -41,6 +41,7 @@
     <string name="settings_only_wifi_upload">Upload only on WiFi</string>
     <string name="settings_api_endpoint">Self-hosting zone</string>
     <string name="settings_api_address">IP</string>
+    <string name="settings_api_address_hint">http:// or https://</string>
     <string name="settings_api_port">Port</string>
     <string name="settings_user_token">User access token</string>
     <string name="settings_user_token_message">Token to post data to server</string>
@@ -56,6 +57,10 @@
     <string name="beacons_detected_paused">Monitoring is disabled</string>
     <string name="empty_all_data">Delete all data?</string>
     <string name="empty_all_data_confirmation">This action can\'t be undone.</string>
+    <string name="no_data_to_empty">No beacons to empty!</string>
+    <string name="no_data_to_export">There isn\'t any data to export!</string>
+    <string name="session_started">Measurements session has been started</string>
+    <string name="session_stopped">Measurements session has been stopped</string>
     // Beacon details view
     <string name="beacon_details">Beacon details</string>
     <string name="beacon_detail_description_hint">Optional beacon description</string>
