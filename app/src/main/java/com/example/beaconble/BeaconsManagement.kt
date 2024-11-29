@@ -42,8 +42,8 @@ class BeaconSimplified(val id: Identifier) {
  * Handles the addition of SensorEntries to the beacons. Creates new instances of Beacon if the
  * identifier is not found in the list.
  */
-class BeaconsCollection {
-    private val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> =
+open class BeaconsCollection {
+    protected val _beacons: MutableLiveData<ArrayList<BeaconSimplified>> =
         MutableLiveData<ArrayList<BeaconSimplified>>(ArrayList<BeaconSimplified>())
     val beacons: LiveData<ArrayList<BeaconSimplified>> = _beacons
 
