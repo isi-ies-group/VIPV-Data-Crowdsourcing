@@ -45,4 +45,15 @@
             android:id="@+id/action_fragBeaconDetails_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/fragLogin"
+        android:name="com.example.beaconble.ui.FragLogin"
+        android:label="@string/login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_fragLogin_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@+id/main_nav"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>

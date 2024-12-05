@@ -27,8 +27,9 @@ import java.time.Instant
 
 
 class BeaconReferenceApplication : Application() {
-    // API service
-    private lateinit var ApiService: APIService
+    // API & user services
+    private lateinit var apiService: APIService
+    lateinit var apiUserSession: ApiUserSession? = null
 
     // Bluetooth scanning
     var region = Region(
@@ -76,6 +77,13 @@ class BeaconReferenceApplication : Application() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val apiEndpoint = sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL)!!
         setService(apiEndpoint)
+
+        // Find username, email and passHash in shared preferences, if they exist
+        val username = sharedPreferences.getString("username", null)
+        val passHash = sharedPreferences.getString("passHash", null)
+        val email = sharedPreferences.getString("email", null)
+        apiUserSession = ApiUserSession(username = username, passHash = passHash, email = "", passSalt = "")
+
 
         // Save instance for singleton access
         instance = this
@@ -219,7 +227,7 @@ class BeaconReferenceApplication : Application() {
             .baseUrl(endpoint)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        this.ApiService = retrofit.create(APIService::class.java)
+        this.apiService = retrofit.create(APIService::class.java)
     }
 
     /**
@@ -249,7 +257,7 @@ class BeaconReferenceApplication : Application() {
      */
     fun sendSensorData(data: List<SensorData>): Boolean {
         for (sensorData in data) {
-            ApiService.sendSensorData(
+            apiService.sendSensorData(
                 PreferenceManager.getDefaultSharedPreferences(this).getString("user_token", "")!!,
                 sensorData,
             ).enqueue(object : retrofit2.Callback<ResponseBody> {
@@ -295,6 +303,10 @@ class BeaconReferenceApplication : Application() {
         }
         SessionWriter.dump2file(outStream!!, beaconManagementCollection.getBeacons())
         outStream.close()
+    }
+
+    fun login(username: String, password: String) {
+        // TODO()
     }
 
     companion object {

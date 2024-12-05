@@ -39,6 +39,19 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         configureNavigationDrawer()
 
         checkPermissionsAndTransferToViewIfNeeded()
+        checkNeedFirstLogin()
+    }
+
+    /**
+     * Check if this is the first time the user opens the app and transfer to login in that case
+     */
+    private fun checkNeedFirstLogin() {
+        val userMayWantToLogin = getSharedPreferences("main_prefs", MODE_PRIVATE).getBoolean("userMayWantToLogin", true)
+        if (userMayWantToLogin) {
+            // Navigate to login fragment
+            // userMayWantToLogin may be set to false in the login fragment
+            findNavController(R.id.fragment_main).navigate(R.id.fragLogin)
+        }
     }
 
     private fun checkPermissionsAndTransferToViewIfNeeded() {
@@ -52,7 +65,6 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
                 }
             }
             getAllPermissionsGranted.launch(Intent(this, ActPermissions::class.java))
-
         }
     }
 
