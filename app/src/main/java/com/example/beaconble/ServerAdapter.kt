@@ -1,9 +1,7 @@
 package com.example.beaconble
 
-import com.example.beaconble.APIService
-
 class ServerAdapter {
-    fun fromServerAndLoginInfo(apiService: APIService, loginInfo: LoginInfo) {
+    fun fromServerAndLoginInfo(apiService: APIService, loginInfo: ApiUserSession) {
 
     }
 

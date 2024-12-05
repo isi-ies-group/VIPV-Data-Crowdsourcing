@@ -110,6 +110,7 @@ class FragHome : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // Set click listeners for the buttons
         /*postButton.setOnClickListener {
             // findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
