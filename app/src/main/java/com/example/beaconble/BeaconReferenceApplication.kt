@@ -29,7 +29,7 @@ import java.time.Instant
 class BeaconReferenceApplication : Application() {
     // API & user services
     private lateinit var apiService: APIService
-    lateinit var apiUserSession: ApiUserSession? = null
+    lateinit var apiUserSession: ApiUserSession
 
     // Bluetooth scanning
     var region = Region(
@@ -78,11 +78,8 @@ class BeaconReferenceApplication : Application() {
         val apiEndpoint = sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL)!!
         setService(apiEndpoint)
 
-        // Find username, email and passHash in shared preferences, if they exist
-        val username = sharedPreferences.getString("username", null)
-        val passHash = sharedPreferences.getString("passHash", null)
-        val email = sharedPreferences.getString("email", null)
-        apiUserSession = ApiUserSession(username = username, passHash = passHash, email = "", passSalt = "")
+        // Load user session from shared preferences
+        apiUserSession = ApiUserSession(sharedPreferences, apiService)
 
 
         // Save instance for singleton access
@@ -255,7 +252,7 @@ class BeaconReferenceApplication : Application() {
      * @param data List of SensorData objects to send
      * @return Boolean indicating success or failure
      */
-    fun sendSensorData(data: List<SensorData>): Boolean {
+    /*fun sendSensorData(data: List<SensorData>): Boolean {
         for (sensorData in data) {
             apiService.sendSensorData(
                 PreferenceManager.getDefaultSharedPreferences(this).getString("user_token", "")!!,
@@ -274,7 +271,7 @@ class BeaconReferenceApplication : Application() {
             })
         }
         return true
-    }
+    }*/
 
     /**
      * Toggle the beacon scanning session

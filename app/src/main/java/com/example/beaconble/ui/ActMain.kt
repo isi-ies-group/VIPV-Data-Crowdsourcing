@@ -16,8 +16,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
+import com.example.beaconble.BeaconReferenceApplication
 import com.example.beaconble.R
 import com.google.android.material.navigation.NavigationView
 
@@ -28,6 +31,9 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     lateinit var drawerLayout: DrawerLayout
 
     lateinit var navController : NavController
+    lateinit var navView: NavigationView
+
+    val app = BeaconReferenceApplication.instance
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +41,8 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
         setContentView(R.layout.activity_main)
 
-        configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle, .navController
-        configureNavigationDrawer()
+        configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle, .navController, .navView
+        configureNavigationDrawer()  // setups .navView
 
         checkPermissionsAndTransferToViewIfNeeded()
         checkNeedFirstLogin()
@@ -50,7 +56,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         if (userMayWantToLogin) {
             // Navigate to login fragment
             // userMayWantToLogin may be set to false in the login fragment
-            findNavController(R.id.fragment_main).navigate(R.id.fragLogin)
+            supportFragmentManager.findFragmentById(R.id.fragment_main)?.findNavController()?.navigate(R.id.fragLogin)
         }
     }
 
@@ -93,8 +99,19 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
                 true
             }
             R.id.nav_logout -> {  // Logout
-                // TODO()
-                // findNavController(R.id.homeFragment).navigateUp()
+                // Close the drawer
+                drawerLayout.closeDrawers()
+                // Logout
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(app)
+                app.apiUserSession.clearThisAndSharedPreferences(sharedPreferences)
+                // Update nav view
+                configureLoginLogoutMenu()
+                true
+            }
+            R.id.nav_login -> {  // Login
+                // Close the drawer
+                drawerLayout.closeDrawers()
+                findNavController(R.id.fragment_main).navigate(R.id.fragLogin)
                 true
             }
             R.id.nav_about -> {  // About
@@ -132,9 +149,24 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun configureNavigationDrawer() {
-        drawerLayout = findViewById<DrawerLayout>(R.id.main_drawer_layout)
-        val navView = findViewById<NavigationView>(R.id.nav_view_host)
+        navView = findViewById<NavigationView>(R.id.nav_view_host)
         navView.setNavigationItemSelectedListener(this)
+
+        // Only show login or logout (hides the other one)
+        configureLoginLogoutMenu()
+    }
+
+    private fun configureLoginLogoutMenu() {
+        val isUserLoggedIn = app.apiUserSession.isProbablyValid()
+        //navView.menu.getItem(R.id.nav_logout).isVisible = isUserLoggedIn
+        //navView.menu.getItem(R.id.nav_login).isVisible = !isUserLoggedIn
+        Log.d(TAG, "isUserLoggedIn: $isUserLoggedIn")
+        Log.d(TAG, "navView.menu: ${navView.menu}")
+        Log.d(TAG, "navView.menu.size: ${navView.menu.size()}")
+        for (i in 0 until navView.menu.size()) {
+            val item = navView.menu.getItem(i)
+            Log.d(TAG, "item: $item")
+        }
     }
 
     fun openURL(url: String) {

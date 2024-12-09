@@ -1,9 +1,11 @@
 package com.example.beaconble
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
+import retrofit2.HttpException
 import java.time.Instant
 
 enum class ApiUserSessionState {
@@ -12,6 +14,7 @@ enum class ApiUserSessionState {
     REGISTERED,
     ERROR_BAD_IDENTITY,
     ERROR_BAD_PASSWORD,
+    CONNECTION_ERROR,
 }
 
 class ApiUserSession {
@@ -91,8 +94,12 @@ class ApiUserSession {
         try {
             val saltResponse = apiService.getUserSalt(username)
             this.passSalt = saltResponse.passSalt
-        } catch (e: Exception) {
+        } catch (e: HttpException) {
+            Log.e("ApiUserSession", "Error getting salt: ${e.message}")
             return ApiUserSessionState.ERROR_BAD_IDENTITY
+        } catch (e: Exception) {
+            Log.e("ApiUserSession", "Error getting salt: ${e.message}")
+            return ApiUserSessionState.CONNECTION_ERROR
         }
 
         val passWordByteArray = passWord.toByteArray()
