@@ -61,4 +61,14 @@
     <string name="empty_all_data">¿Eliminar todo?</string>
     <string name="settings_api_address_hint">http:// o https://</string>
     <string name="session_started">Sesión de medida iniciada</string>
+    <string name="bad_email">Este correo no está registrado</string>
+    <string name="bad_password">Contraseña incorrecta</string>
+    <string name="prompt_email">Correo electrónico</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_sign_in_short">Registrase</string>
+    <string name="welcome">¡Bienvenid@!</string>
+    <string name="invalid_username">Nombre de usuario no válido</string>
+    <string name="invalid_password">La contraseña debe tener más de 5 caracteres</string>
+    <string name="login_failed">Inicio de sesión fallido</string>
 </resources>

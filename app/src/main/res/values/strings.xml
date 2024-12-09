@@ -3,6 +3,7 @@
     <string name="app_name">Photovolta</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="login">Log In</string>
     <string name="logout">Log out</string>
     <string name="about">About</string>
     <string name="help">Help</string>
@@ -19,7 +20,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     // Login view
-    <string name="login">Log In</string>
     <string name="login_description">Log In to start sharing your solar resource data!</string>
     <string name="login_no_account_question">Don\'t have an account? Request one <a href="TODO">here.</a></string>
     // TODO: add link
@@ -66,10 +66,12 @@
     <string name="beacon_detail_description_hint">Optional beacon description</string>
     <string name="beacon_detail_tilt">Tilt [degrees]</string>
     <string name="beacon_detail_direction">Direction [degrees]</string>
-    <!-- Strings related to login -->
+    // Login view
+    <string name="bad_email">This email is not registered</string>
+    <string name="bad_password">Incorrect password</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Log in</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
