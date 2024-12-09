@@ -13,7 +13,7 @@ class ApiInterfaceUT {
     companion object {
         const val endpoint = "http://127.0.0.1:5000/"
         lateinit var apiService: APIService
-        val user = ApiUserSession("test", "example@example.example", "whateverHash", "whateverSalt")
+        lateinit var user: ApiUserSession
 
         @BeforeClass
         @JvmStatic
@@ -23,6 +23,7 @@ class ApiInterfaceUT {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             apiService = retrofit.create(APIService::class.java)
+            user = ApiUserSession("test", "example@example.example", "whateverHash", "whateverSalt", apiService)
         }
     }
 
@@ -90,7 +91,7 @@ class ApiInterfaceUT {
 
     @Test
     fun getSalt() {
-        val request = user.username!!
+        val request = user.email!!
 
         runBlocking {
             val response = apiService.getUserSalt(request)

@@ -14,7 +14,7 @@ interface APIService {
     @GET(APIv1_base + "salt")
     @Headers("Content-type: application/json")
     suspend fun getUserSalt(
-        @Header("username") username: String,
+        @Header("email") email: String,
     ): ApiUserSession.SaltResponse
 
     @POST(APIv1_base + "register")
