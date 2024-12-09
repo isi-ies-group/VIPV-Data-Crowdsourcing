@@ -41,7 +41,7 @@ class FragLogin : Fragment() {
         progressBar = view.findViewById<ProgressBar>(R.id.pbLogin)
 
         // observe the login status to show the user any errors or return to the main activity
-        viewModel.loginStatus.observe(viewLifecycleOwner) { status ->
+        viewModel.registerStatus.observe(viewLifecycleOwner) { status ->
             Log.d("FragLogin", "Login status: $status")
             if (status == ApiUserSessionState.LOGGED_IN) {
                 // navigate to the main activity
@@ -63,7 +63,7 @@ class FragLogin : Fragment() {
                     builder.show()
                 }
             }
-            progressBar.visibility = View.GONE
+            progressBar.visibility = View.INVISIBLE
         }
 
         // observe the login button enabled status
@@ -107,6 +107,10 @@ class FragLogin : Fragment() {
             // close the keyboard
             editTextEmail.clearFocus()
             editTextPassword.clearFocus()
+
+            // clear errors on editTexts
+            editTextEmail.error = null
+            editTextPassword.error = null
 
             // show the user the login is in progress
             buttonLogin.isEnabled = false

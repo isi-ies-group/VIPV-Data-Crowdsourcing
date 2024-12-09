@@ -1,6 +1,7 @@
 package com.example.beaconble
 
 import android.content.SharedPreferences
+import android.util.Base64
 import android.util.Log
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
@@ -87,6 +88,19 @@ class ApiUserSession {
         this.passSalt = null
     }
 
+    /**
+     * Log in a user with the server
+     * @param username the username of the user
+     * @param passWord the password of the user
+     * @return the state of the user session after the login
+     *
+     * This function will set the username, passHash, and passSalt fields of the user session object,
+     * then request the salt for the user from the server, then hashes the password with the salt
+     * using Argon2, and sends the login request to the server.
+     *
+     * If the server responds with a successful login, the function will return LOGGED_IN.
+     * If the server responds with an error, the function will return ERROR_BAD_PASSWORD or CONNECTION_ERROR.
+     */
     suspend fun login(username: String, passWord: String): ApiUserSessionState {
         this.username = username
 
@@ -103,7 +117,7 @@ class ApiUserSession {
         }
 
         val passWordByteArray = passWord.toByteArray()
-        val saltByteArray = this.passSalt!!.toByteArray()
+        val saltByteArray = Base64.decode(this.passSalt!!.toByteArray(), Base64.DEFAULT)
 
         // hash password with salt, store in passHash
         val argon2Kt = Argon2Kt()
