@@ -1,5 +1,6 @@
 package com.example.beaconble.ui
 
+import android.content.Context
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.Editable
@@ -11,16 +12,19 @@ import android.widget.EditText
 import android.widget.TextView
 import android.text.TextWatcher
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.R
 
 class FragLogin : Fragment() {
-    lateinit var editTextEmail : EditText
-    lateinit var editTextPassword : EditText
+    lateinit var editTextEmail: EditText
+    lateinit var editTextPassword: EditText
     lateinit var buttonLogin: Button
+    lateinit var buttonGoToRegister: Button
     lateinit var progressBar: ProgressBar
 
     companion object {
@@ -38,14 +42,15 @@ class FragLogin : Fragment() {
         editTextEmail = view.findViewById<EditText>(R.id.etEmail)
         editTextPassword = view.findViewById<EditText>(R.id.etPassword)
         buttonLogin = view.findViewById<Button>(R.id.btnLogin)
+        buttonGoToRegister = view.findViewById<Button>(R.id.btnGoToRegister)
         progressBar = view.findViewById<ProgressBar>(R.id.pbLogin)
 
         // observe the login status to show the user any errors or return to the main activity
-        viewModel.registerStatus.observe(viewLifecycleOwner) { status ->
+        viewModel.loginStatus.observe(viewLifecycleOwner) { status ->
             Log.d("FragLogin", "Login status: $status")
             if (status == ApiUserSessionState.LOGGED_IN) {
                 // navigate to the main activity
-                activity?.supportFragmentManager?.popBackStack()
+                findNavController().navigate(R.id.action_fragLogin_to_homeFragment)
             } else {
                 // show the user the error message
                 if (status == ApiUserSessionState.ERROR_BAD_IDENTITY) {
@@ -80,33 +85,48 @@ class FragLogin : Fragment() {
         editTextEmail.setText(viewModel.email.value, TextView.BufferType.EDITABLE)
         editTextPassword.setText(viewModel.password.value, TextView.BufferType.EDITABLE)
 
-        editTextEmail.addTextChangedListener(
-            object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    viewModel.email.value = s.toString()
-                }
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
+        editTextEmail.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.email.value = s.toString()
             }
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        }
         )
-        editTextPassword.addTextChangedListener(
-            object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    viewModel.password.value = s.toString()
-                }
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
+        editTextPassword.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.password.value = s.toString()
             }
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        }
         )
 
         buttonLogin.setOnClickListener {
             // close the keyboard
-            editTextEmail.clearFocus()
-            editTextPassword.clearFocus()
+            // Only runs if there is a view that is currently focused
+            activity?.currentFocus?.let { view ->
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(view.windowToken, 0)
+            }
 
             // clear errors on editTexts
             editTextEmail.error = null
@@ -119,6 +139,11 @@ class FragLogin : Fragment() {
             viewModel.email.value = editTextEmail.text.toString()
             viewModel.password.value = editTextPassword.text.toString()
             viewModel.doLogin()
+        }
+
+        buttonGoToRegister.setOnClickListener {
+            // navigate to the register fragment
+            findNavController().navigate(R.id.action_fragLogin_to_fragRegister)
         }
     }
 }

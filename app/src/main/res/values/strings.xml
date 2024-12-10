@@ -5,6 +5,7 @@
     <string name="password">Password</string>
     <string name="login">Log In</string>
     <string name="logout">Log out</string>
+    <string name="register">Register</string>
     <string name="about">About</string>
     <string name="help">Help</string>
     <string name="icon_help">Help icon</string>
@@ -21,7 +22,7 @@
     <string name="no">No</string>
     // Login view
     <string name="login_description">Log In to start sharing your solar resource data!</string>
-    <string name="login_no_account_question">Don\'t have an account? Request one <a href="TODO">here.</a></string>
+    <string name="login_no_account_question">Don\'t have an account?</string>
     // TODO: add link
     // Welcome view
     <string name="welcome_continue">Start sharing measurements</string>
@@ -80,4 +81,8 @@
     <string name="connection_error">Connection Error</string>
     <string name="connection_error_message">"Could not connect to the server. Check your Internet connection or try later."</string>
     <string name="ok">OK</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password_again">Repeat password</string>
+    <string name="bad_email_already_registered">This email is already registered</string>
+    <string name="register_here">Register here</string>
 </resources>

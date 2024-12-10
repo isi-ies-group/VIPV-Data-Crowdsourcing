@@ -20,7 +20,7 @@
     <string name="no">No</string>
     <string name="login">Iniciar sesión</string>
     <string name="login_description">Inicia sesión para compartir tus datos de ciencia ciudadana!</string>
-    <string name="login_no_account_question">¿No tienes cuenta? Solicita una <a href="TODO">aquí.</a></string>  // TODO: add link
+    <string name="login_no_account_question">¿No tienes cuenta?</string>
     // Welcome view
     <string name="welcome_continue">Empezar a compartir medidas</string>
     <string name="welcome_message">Bienvenid@ a \nPhotovolta!</string>
@@ -37,6 +37,7 @@
     <string name="settings_api_endpoint">Sección para servidores propios</string>
     <string name="settings_api_address">IP</string>
     <string name="settings_api_port">Puerto</string>
+    <string name="register">Regístrate</string>
     <string name="about">Sobre la app</string>
     <string name="toolbar_open">Abrir menú</string>
     <string name="logo">Logo</string>
@@ -74,4 +75,8 @@
     <string name="connection_error">Problema en la conexión</string>
     <string name="connection_error_message">No se pudo conectar al servidor. Compruebe su conectividad a Internet o pruebe más tarde.</string>
     <string name="ok">OK</string>
+    <string name="prompt_username">Nombre de usuario</string>
+    <string name="prompt_password_again">Repetir la contraseña</string>
+    <string name="bad_email_already_registered">Este correo ya está registrado</string>
+    <string name="register_here">Regístrate aquí</string>
 </resources>

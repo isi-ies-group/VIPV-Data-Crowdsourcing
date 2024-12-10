@@ -28,7 +28,7 @@ class FragHomeViewModel() : ViewModel() {
         }
     }
 
-    fun sendTestData() {
+    /*fun sendTestData() {
         Log.d("FragHomeViewModel", "Sending test data")
         beaconReferenceApplication.sendSensorData(
             listOf(
@@ -54,7 +54,7 @@ class FragHomeViewModel() : ViewModel() {
         val nUniqueBeacons =
             beaconReferenceApplication.beaconManagementCollection.beacons.value?.size
         Log.i("FragHomeViewModel", "Unique beacons: $nUniqueBeacons")
-    }
+    }*/
 
     fun toggleSession() {
         beaconReferenceApplication.toggleSession()

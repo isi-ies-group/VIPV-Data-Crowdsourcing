@@ -8,14 +8,10 @@ import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
 import retrofit2.HttpException
 import java.time.Instant
+import kotlin.random.Random
 
 enum class ApiUserSessionState {
-    LOGGED_IN,
-    NOT_LOGGED_IN,
-    REGISTERED,
-    ERROR_BAD_IDENTITY,
-    ERROR_BAD_PASSWORD,
-    CONNECTION_ERROR,
+    LOGGED_IN, NOT_LOGGED_IN, REGISTERED, ERROR_BAD_IDENTITY, ERROR_BAD_PASSWORD, CONNECTION_ERROR,
 }
 
 class ApiUserSession {
@@ -32,7 +28,9 @@ class ApiUserSession {
 
     // constructors
     // default
-    constructor(username: String, email: String, passHash: String, passSalt: String, apiService: APIService) {
+    constructor(
+        username: String, email: String, passHash: String, passSalt: String, apiService: APIService
+    ) {
         this.username = username
         this.email = email
         this.passHash = passHash
@@ -56,7 +54,8 @@ class ApiUserSession {
         this.passHash = sharedPrefs.getString("passHash", null)
         this.passSalt = sharedPrefs.getString("passSalt", null)
         this.apiService = apiService
-        this.lastKnownState = sharedPrefs.getString("lastKnownState", "NOT_LOGGED_IN")?.let { ApiUserSessionState.valueOf(it) } ?: ApiUserSessionState.NOT_LOGGED_IN
+        this.lastKnownState = sharedPrefs.getString("lastKnownState", "NOT_LOGGED_IN")
+            ?.let { ApiUserSessionState.valueOf(it) } ?: ApiUserSessionState.NOT_LOGGED_IN
     }
 
     // methods
@@ -101,12 +100,12 @@ class ApiUserSession {
      * If the server responds with a successful login, the function will return LOGGED_IN.
      * If the server responds with an error, the function will return ERROR_BAD_PASSWORD or CONNECTION_ERROR.
      */
-    suspend fun login(username: String, passWord: String): ApiUserSessionState {
-        this.username = username
+    suspend fun login(email: String, passWord: String): ApiUserSessionState {
+        this.email = email
 
         // get salt from server
         try {
-            val saltResponse = apiService.getUserSalt(username)
+            val saltResponse = apiService.getUserSalt(email)
             this.passSalt = saltResponse.passSalt
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "Error getting salt: ${e.message}")
@@ -117,7 +116,55 @@ class ApiUserSession {
         }
 
         val passWordByteArray = passWord.toByteArray()
-        val saltByteArray = Base64.decode(this.passSalt!!.toByteArray(), Base64.DEFAULT)
+        val saltByteArray = this.passSalt!!.toByteArray()
+
+        // hash password with salt, store in .passHash as plaintext
+        val argon2Kt = Argon2Kt()
+        val hashResult: Argon2KtResult = argon2Kt.hash(
+            mode = Argon2Mode.ARGON2_I,
+            password = passWordByteArray,
+            salt = saltByteArray,
+            tCostInIterations = 6,
+            mCostInKibibyte = 65536,
+        )
+        this.passHash = hashResult.encodedOutputAsString()
+
+        // send login request to server
+        val loginRequest = LoginRequest(this.email!!, this.passHash!!)
+        try {
+            val loginResponse = apiService.loginUser(loginRequest)
+            access_token = loginResponse.access_token
+            access_token_received = Instant.now()
+        } catch (e: HttpException) {
+            Log.e("ApiUserSession", "HttpException logging in user: ${e.message}")
+            return ApiUserSessionState.ERROR_BAD_PASSWORD
+        } catch (e: Exception) {
+            Log.e("ApiUserSession", "Exception logging in user: ${e.message}")
+            return ApiUserSessionState.CONNECTION_ERROR
+        }
+        return ApiUserSessionState.LOGGED_IN
+    }
+
+    /**
+     * Register a new user with the server
+     * @param username the username of the new user
+     * @param email the email of the new user
+     * @param passWord the password of the new user
+     * @return the state of the user session after the registration
+     *
+     * This function will set the username, email, passHash, and passSalt fields of the user session
+     * object, then send a register request to the server.
+     * If the server responds with a successful registration, the function will return REGISTERED.
+     * If the server responds with an error, the function will return ERROR_BAD_PASSWORD or CONNECTION_ERROR.
+     */
+    suspend fun register(username: String, email: String, passWord: String): ApiUserSessionState {
+        this.username = username
+        this.email = email
+
+        // create a random salt for the user
+        var saltByteArray = ByteArray(16) { Random.nextInt().toByte() }
+
+        val passWordByteArray = passWord.toByteArray()
 
         // hash password with salt, store in passHash
         val argon2Kt = Argon2Kt()
@@ -128,17 +175,25 @@ class ApiUserSession {
             tCostInIterations = 6,
             mCostInKibibyte = 65536,
         )
-        this.passHash = hashResult.rawHashAsHexadecimal()
+        this.passHash = hashResult.encodedOutputAsString()
 
-        // send login request to server
+        // send register request to server
+        val registerRequest = RegisterRequest(
+            this.username!!,
+            this.email!!,
+            this.passHash!!,
+            Base64.encodeToString(saltByteArray, Base64.DEFAULT)
+        )
         try {
-            val loginResponse = apiService.loginUser(this.loginRequest())
-            access_token = loginResponse.access_token
-            access_token_received = Instant.now()
-        } catch (e: Exception) {
+            val registerResponse = apiService.registerUser(registerRequest)
+        } catch (e: HttpException) {
+            Log.e("ApiUserSession", "HttpException registering user: ${e.message}")
             return ApiUserSessionState.ERROR_BAD_PASSWORD
+        } catch (e: Exception) {
+            Log.e("ApiUserSession", "Exception registering user: ${e.message}")
+            return ApiUserSessionState.CONNECTION_ERROR
         }
-        return ApiUserSessionState.LOGGED_IN
+        return ApiUserSessionState.REGISTERED
     }
 
     fun isProbablyValid(): Boolean {
@@ -150,33 +205,18 @@ class ApiUserSession {
         var passSalt: String? = null
     }
 
-    class LoginRequest {
-        var email: String? = null
-        var passHash: String? = null
+    data class LoginRequest(val email: String, val passHash: String)
 
-        constructor(user: ApiUserSession) {
-            this.email = user.email
-            this.passHash = user.passHash
-        }
-    }
-    fun loginRequest() = LoginRequest(this)
+    fun loginRequest() = LoginRequest(this.email!!, this.passHash!!)
 
     class LoginResponse {
         var access_token: String? = null
     }
 
-    class RegisterRequest {
-        var username: String? = null
-        var email: String? = null
-        var passHash: String? = null
-        var passSalt: String? = null
+    data class RegisterRequest(
+        val username: String, val email: String, val passHash: String, val passSalt: String
+    )
 
-        constructor(user: ApiUserSession) {
-            this.username = user.username
-            this.email = user.email
-            this.passHash = user.passHash
-            this.passSalt = user.passSalt
-        }
-    }
-    fun registerRequest() = RegisterRequest(this)
+    fun registerRequest() =
+        RegisterRequest(this.username!!, this.email!!, this.passHash!!, this.passSalt!!)
 }
