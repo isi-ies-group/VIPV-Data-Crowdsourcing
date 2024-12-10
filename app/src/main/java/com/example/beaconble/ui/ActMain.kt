@@ -1,6 +1,5 @@
 package com.example.beaconble.ui
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +18,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
+import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.BeaconReferenceApplication
 import com.example.beaconble.R
 import com.google.android.material.navigation.NavigationView
@@ -46,16 +45,24 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
         checkPermissionsAndTransferToViewIfNeeded()
         checkNeedFirstLogin()
+
+        app.apiUserSession.lastKnownState.observeForever(
+            { state ->
+                Log.d(TAG, "User session state changed to: $state")
+                configureLoginLogoutMenu()
+            }
+        )
     }
 
     /**
      * Check if this is the first time the user opens the app and transfer to login in that case
      */
     private fun checkNeedFirstLogin() {
-        val userMayWantToLogin = getSharedPreferences("main_prefs", MODE_PRIVATE).getBoolean("userMayWantToLogin", true)
+        // loading of the user session from shared preferences may change the state of the user session
+        // NEVER_LOGGED_IN is the default state
+        val userMayWantToLogin = app.apiUserSession.lastKnownState.value == ApiUserSessionState.NEVER_LOGGED_IN
         if (userMayWantToLogin) {
             // Navigate to login fragment
-            // userMayWantToLogin may be set to false in the login fragment
             supportFragmentManager.findFragmentById(R.id.fragment_main)?.findNavController()?.navigate(R.id.fragLogin)
         }
     }
@@ -102,8 +109,9 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
                 // Close the drawer
                 drawerLayout.closeDrawers()
                 // Logout
-                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(app)
-                app.apiUserSession.clearThisAndSharedPreferences(sharedPreferences)
+                app.apiUserSession.clearThisAndSharedPreferences()
+                // Show a toast
+                Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
                 // Update nav view
                 configureLoginLogoutMenu()
                 true
@@ -157,7 +165,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun configureLoginLogoutMenu() {
-        val isUserLoggedIn = app.apiUserSession.isProbablyValid()
+        val isUserLoggedIn = app.apiUserSession.lastKnownState.value == ApiUserSessionState.LOGGED_IN
         //navView.menu.getItem(R.id.nav_logout).isVisible = isUserLoggedIn
         //navView.menu.getItem(R.id.nav_login).isVisible = !isUserLoggedIn
         Log.d(TAG, "isUserLoggedIn: $isUserLoggedIn")

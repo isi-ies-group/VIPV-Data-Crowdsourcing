@@ -85,4 +85,5 @@
     <string name="prompt_password_again">Repeat password</string>
     <string name="bad_email_already_registered">This email is already registered</string>
     <string name="register_here">Register here</string>
+    <string name="logged_out">User logged out</string>
 </resources>

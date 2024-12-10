@@ -14,7 +14,6 @@ import com.example.beaconble.io_files.SessionWriter
 import com.example.beaconble.ui.ActMain
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import okhttp3.ResponseBody
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Region

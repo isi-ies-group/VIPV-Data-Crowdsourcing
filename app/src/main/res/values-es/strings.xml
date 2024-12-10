@@ -79,4 +79,5 @@
     <string name="prompt_password_again">Repetir la contraseña</string>
     <string name="bad_email_already_registered">Este correo ya está registrado</string>
     <string name="register_here">Regístrate aquí</string>
+    <string name="logged_out">Cuenta de usuario cerrada</string>
 </resources>

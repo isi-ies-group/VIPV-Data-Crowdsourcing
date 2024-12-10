@@ -45,7 +45,7 @@ class FragRegister : Fragment() {
         // observe the register status to show the user any errors or return to the main activity
         viewModel.registerStatus.observe(viewLifecycleOwner) { status ->
             Log.d("FragLogin", "Login status: $status")
-            if (status == ApiUserSessionState.REGISTERED) {
+            if (status == ApiUserSessionState.LOGGED_IN) {
                 // navigate to the main activity
                 findNavController().navigate(R.id.action_fragRegister_to_homeFragment)
             } else {

@@ -3,6 +3,7 @@ package com.example.beaconble
 import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
@@ -11,7 +12,13 @@ import java.time.Instant
 import kotlin.random.Random
 
 enum class ApiUserSessionState {
-    LOGGED_IN, NOT_LOGGED_IN, REGISTERED, ERROR_BAD_IDENTITY, ERROR_BAD_PASSWORD, CONNECTION_ERROR,
+    LOGGED_IN,  // user has logged in successfully
+    NOT_LOGGED_IN,  // user logged out
+    NEVER_LOGGED_IN,  // user has never logged in
+    // errors
+    ERROR_BAD_IDENTITY,
+    ERROR_BAD_PASSWORD,
+    CONNECTION_ERROR,
 }
 
 class ApiUserSession {
@@ -20,8 +27,9 @@ class ApiUserSession {
     var email: String? = null
     var passHash: String? = null
     var passSalt: String? = null
-    var lastKnownState: ApiUserSessionState = ApiUserSessionState.NOT_LOGGED_IN
+    var lastKnownState = MutableLiveData<ApiUserSessionState>(ApiUserSessionState.NOT_LOGGED_IN)
     var apiService: APIService
+    lateinit var sharedPrefs: SharedPreferences
 
     var access_token: String? = null
     var access_token_received: Instant? = null
@@ -29,13 +37,14 @@ class ApiUserSession {
     // constructors
     // default
     constructor(
-        username: String, email: String, passHash: String, passSalt: String, apiService: APIService
+        username: String, email: String, passHash: String, passSalt: String, apiService: APIService, sharedPrefs: SharedPreferences
     ) {
         this.username = username
         this.email = email
         this.passHash = passHash
         this.passSalt = passSalt
         this.apiService = apiService
+        this.sharedPrefs = sharedPrefs
     }
 
     // copy
@@ -52,29 +61,27 @@ class ApiUserSession {
         this.username = sharedPrefs.getString("username", null)
         this.email = sharedPrefs.getString("email", null)
         this.passHash = sharedPrefs.getString("passHash", null)
-        this.passSalt = sharedPrefs.getString("passSalt", null)
         this.apiService = apiService
-        this.lastKnownState = sharedPrefs.getString("lastKnownState", "NOT_LOGGED_IN")
-            ?.let { ApiUserSessionState.valueOf(it) } ?: ApiUserSessionState.NOT_LOGGED_IN
+        this.lastKnownState.value = sharedPrefs.getString("lastKnownState", "NOT_LOGGED_IN")
+            ?.let { ApiUserSessionState.valueOf(it) } ?: ApiUserSessionState.NEVER_LOGGED_IN
+        this.sharedPrefs = sharedPrefs
     }
 
     // methods
-    fun saveToSharedPreferences(sharedPrefs: SharedPreferences) {
-        with(sharedPrefs.edit()) {
+    fun saveToSharedPreferences() {
+        with(this.sharedPrefs.edit()) {
             putString("username", username)
             putString("email", email)
             putString("passHash", passHash)
-            putString("passSalt", passSalt)
             apply()
         }
     }
 
-    fun clearThisAndSharedPreferences(sharedPrefs: SharedPreferences) {
-        with(sharedPrefs.edit()) {
+    fun clearThisAndSharedPreferences() {
+        with(this.sharedPrefs.edit()) {
             remove("username")
             remove("email")
             remove("passHash")
-            remove("passSalt")
             apply()
         }
         clear()
@@ -193,7 +200,7 @@ class ApiUserSession {
             Log.e("ApiUserSession", "Exception registering user: ${e.message}")
             return ApiUserSessionState.CONNECTION_ERROR
         }
-        return ApiUserSessionState.REGISTERED
+        return ApiUserSessionState.LOGGED_IN
     }
 
     fun isProbablyValid(): Boolean {
