@@ -62,7 +62,7 @@ class ApiUserSession {
         this.email = sharedPrefs.getString("email", null)
         this.passHash = sharedPrefs.getString("passHash", null)
         this.apiService = apiService
-        this.lastKnownState.value = sharedPrefs.getString("lastKnownState", "NOT_LOGGED_IN")
+        this.lastKnownState.value = sharedPrefs.getString("lastKnownState", "NEVER_LOGGED_IN")
             ?.let { ApiUserSessionState.valueOf(it) } ?: ApiUserSessionState.NEVER_LOGGED_IN
         this.sharedPrefs = sharedPrefs
     }
@@ -77,7 +77,7 @@ class ApiUserSession {
         }
     }
 
-    fun clearThisAndSharedPreferences() {
+    fun logout() {
         with(this.sharedPrefs.edit()) {
             remove("username")
             remove("email")
@@ -85,6 +85,7 @@ class ApiUserSession {
             apply()
         }
         clear()
+        lastKnownState.value = ApiUserSessionState.NOT_LOGGED_IN
     }
 
     fun clear() {
@@ -142,14 +143,15 @@ class ApiUserSession {
             val loginResponse = apiService.loginUser(loginRequest)
             access_token = loginResponse.access_token
             access_token_received = Instant.now()
+            lastKnownState.value = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException logging in user: ${e.message}")
-            return ApiUserSessionState.ERROR_BAD_PASSWORD
+            lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception logging in user: ${e.message}")
-            return ApiUserSessionState.CONNECTION_ERROR
+            lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
         }
-        return ApiUserSessionState.LOGGED_IN
+        return lastKnownState.value!!
     }
 
     /**
@@ -193,14 +195,15 @@ class ApiUserSession {
         )
         try {
             val registerResponse = apiService.registerUser(registerRequest)
+            lastKnownState.value = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException registering user: ${e.message}")
-            return ApiUserSessionState.ERROR_BAD_PASSWORD
+            lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception registering user: ${e.message}")
-            return ApiUserSessionState.CONNECTION_ERROR
+            lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
         }
-        return ApiUserSessionState.LOGGED_IN
+        return lastKnownState.value!!
     }
 
     fun isProbablyValid(): Boolean {

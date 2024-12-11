@@ -32,6 +32,9 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     lateinit var navController : NavController
     lateinit var navView: NavigationView
 
+    lateinit var menuBtnLogin: MenuItem
+    lateinit var menuBtnLogout: MenuItem
+
     val app = BeaconReferenceApplication.instance
 
 
@@ -41,17 +44,17 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         setContentView(R.layout.activity_main)
 
         configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle, .navController, .navView
-        configureNavigationDrawer()  // setups .navView
+        configureNavigationDrawer()  // setups .navView, .menuBtnLogin, .menuBtnLogout
 
         checkPermissionsAndTransferToViewIfNeeded()
         checkNeedFirstLogin()
 
         app.apiUserSession.lastKnownState.observeForever(
             { state ->
-                Log.d(TAG, "User session state changed to: $state")
-                configureLoginLogoutMenu()
+                updateDrawerOptionsMenu()
             }
         )
+        updateDrawerOptionsMenu()
     }
 
     /**
@@ -88,32 +91,28 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         /** Handle navigation view item clicks here. */
-        Log.d(TAG, "onNavigationItemSelected")
-        Log.d(TAG, supportActionBar.toString())
         return when (item.itemId) {
             R.id.homeFragment -> {
                 // Close the drawer
                 drawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.homeFragment)
-                Log.d(TAG, "Home from drawer")
                 true
             }
             R.id.nav_settings -> {  // Settings
                 // Close the drawer
                 drawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.settingsFragment)
-                Log.d(TAG, "Settings from drawer")
                 true
             }
             R.id.nav_logout -> {  // Logout
                 // Close the drawer
                 drawerLayout.closeDrawers()
                 // Logout
-                app.apiUserSession.clearThisAndSharedPreferences()
+                app.apiUserSession.logout()
                 // Show a toast
                 Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
                 // Update nav view
-                configureLoginLogoutMenu()
+                updateDrawerOptionsMenu()
                 true
             }
             R.id.nav_login -> {  // Login
@@ -159,22 +158,18 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     private fun configureNavigationDrawer() {
         navView = findViewById<NavigationView>(R.id.nav_view_host)
         navView.setNavigationItemSelectedListener(this)
+        // Login and logout buttons in the drawer
+        menuBtnLogin = navView.menu.findItem(R.id.nav_login)
+        menuBtnLogout = navView.menu.findItem(R.id.nav_logout)
 
         // Only show login or logout (hides the other one)
-        configureLoginLogoutMenu()
+        updateDrawerOptionsMenu()
     }
 
-    private fun configureLoginLogoutMenu() {
+    private fun updateDrawerOptionsMenu() {
         val isUserLoggedIn = app.apiUserSession.lastKnownState.value == ApiUserSessionState.LOGGED_IN
-        //navView.menu.getItem(R.id.nav_logout).isVisible = isUserLoggedIn
-        //navView.menu.getItem(R.id.nav_login).isVisible = !isUserLoggedIn
-        Log.d(TAG, "isUserLoggedIn: $isUserLoggedIn")
-        Log.d(TAG, "navView.menu: ${navView.menu}")
-        Log.d(TAG, "navView.menu.size: ${navView.menu.size()}")
-        for (i in 0 until navView.menu.size()) {
-            val item = navView.menu.getItem(i)
-            Log.d(TAG, "item: $item")
-        }
+        menuBtnLogin.isVisible = !isUserLoggedIn
+        menuBtnLogout.isVisible = isUserLoggedIn
     }
 
     fun openURL(url: String) {
