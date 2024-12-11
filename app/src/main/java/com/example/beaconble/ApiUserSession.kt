@@ -54,6 +54,7 @@ class ApiUserSession {
         this.passHash = user.passHash
         this.passSalt = user.passSalt
         this.apiService = user.apiService
+        this.sharedPrefs = user.sharedPrefs
     }
 
     // constructor from shared preferences
@@ -86,6 +87,7 @@ class ApiUserSession {
         }
         clear()
         lastKnownState.value = ApiUserSessionState.NOT_LOGGED_IN
+        saveToSharedPreferences()
     }
 
     fun clear() {
@@ -151,6 +153,7 @@ class ApiUserSession {
             Log.e("ApiUserSession", "Exception logging in user: ${e.message}")
             lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
         }
+        saveToSharedPreferences()
         return lastKnownState.value!!
     }
 
@@ -203,6 +206,7 @@ class ApiUserSession {
             Log.e("ApiUserSession", "Exception registering user: ${e.message}")
             lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
         }
+        saveToSharedPreferences()
         return lastKnownState.value!!
     }
 
