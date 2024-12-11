@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 
 
-class BeaconReferenceApplication : Application() {
+class AppMain : Application() {
     // API & user services
     private lateinit var apiService: APIService
     lateinit var apiUserSession: ApiUserSession
@@ -182,10 +182,21 @@ class BeaconReferenceApplication : Application() {
 
     //envia notificacion cuando se detecta un beacon en la region
     private fun sendNotification() {
-        val builder = NotificationCompat.Builder(this, "beacon-nearby-notifications-id")
-            .setContentTitle("Beacon Reference Application")
-            .setContentText("A beacon is nearby.")
+        val builder = NotificationCompat.Builder(this, "vipv-app-session-ongoing")
+            .setContentTitle("VIPV APP - Acquisition Session")
+            .setContentText("Beacon monitoring is active.")
             .setSmallIcon(R.mipmap.logo_ies_foreground)
+            .setOngoing(true)
+            .addAction(
+                R.mipmap.logo_ies_foreground,
+                "Stop",
+                PendingIntent.getBroadcast(
+                    this,
+                    0,
+                    Intent(this, ActMain::class.java),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
         // TODO: UPDATE i18n strings, double check icon (make one that is a silhouette of a beacon)
 
         // Explicit intent to open the app when notification is clicked
@@ -197,11 +208,11 @@ class BeaconReferenceApplication : Application() {
         )
         builder.setContentIntent(resultPendingIntent)
         val channel = NotificationChannel(
-            "beacon-nearby-notifications-id",
-            "Beacons Nearby",
-            NotificationManager.IMPORTANCE_DEFAULT
+            "vipv-app-session-ongoing",
+            "VIPV APP - Acquisition Session",
+            NotificationManager.IMPORTANCE_HIGH,
         )
-        channel.description = "Notifies when a beacon is nearby"
+        channel.description = "Notifies when a measurement session is active."
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
         builder.setChannelId(channel.id)
@@ -247,32 +258,6 @@ class BeaconReferenceApplication : Application() {
     }
 
     /**
-     * Iterate over SensorData objects and send them to the server asynchronously
-     * @param data List of SensorData objects to send
-     * @return Boolean indicating success or failure
-     */
-    /*fun sendSensorData(data: List<SensorData>): Boolean {
-        for (sensorData in data) {
-            apiService.sendSensorData(
-                PreferenceManager.getDefaultSharedPreferences(this).getString("user_token", "")!!,
-                sensorData,
-            ).enqueue(object : retrofit2.Callback<ResponseBody> {
-                override fun onResponse(
-                    call: retrofit2.Call<ResponseBody>,
-                    response: retrofit2.Response<ResponseBody>
-                ) {
-                    //Log.d(TAG, "Data sent to server")
-                }
-
-                override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {
-                    Log.e(TAG, "Failed to send data to server")
-                }
-            })
-        }
-        return true
-    }*/
-
-    /**
      * Toggle the beacon scanning session
      * @return void
      *
@@ -291,7 +276,7 @@ class BeaconReferenceApplication : Application() {
     }
 
     fun exportAll(outFile: Uri) {
-        // Create the output file, with filename VIPV_${TIMESTAMP}.vipv_session
+        // Create the output file, with filename VIPV_${TIMESTAMP}.txt
         val outStream = contentResolver.openOutputStream(outFile)
         if (outFile.path.isNullOrBlank()) {
             Log.e(TAG, "Output directory is null or blank")
@@ -301,12 +286,8 @@ class BeaconReferenceApplication : Application() {
         outStream.close()
     }
 
-    fun login(username: String, password: String) {
-        // TODO()
-    }
-
     companion object {
-        lateinit var instance: BeaconReferenceApplication
+        lateinit var instance: AppMain
             private set  // This is a singleton, setter is private but access is public
         const val TAG = "BeaconReferenceApplication"
     }  // companion object

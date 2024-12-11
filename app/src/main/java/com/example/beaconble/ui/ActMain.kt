@@ -19,7 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.beaconble.ApiUserSessionState
-import com.example.beaconble.BeaconReferenceApplication
+import com.example.beaconble.AppMain
 import com.example.beaconble.R
 import com.google.android.material.navigation.NavigationView
 
@@ -35,7 +35,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     lateinit var menuBtnLogin: MenuItem
     lateinit var menuBtnLogout: MenuItem
 
-    val app = BeaconReferenceApplication.instance
+    val app = AppMain.instance
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

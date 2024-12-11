@@ -4,11 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.beaconble.ApiUserSessionState
-import com.example.beaconble.BeaconReferenceApplication
+import com.example.beaconble.AppMain
 import kotlinx.coroutines.launch
 
 class FragRegisterViewModel : ViewModel() {
-    private val beaconReferenceApplication = BeaconReferenceApplication.instance
+    private val appMain = AppMain.instance
 
     // variables for the login form persistence between destroy and create
     var username: MutableLiveData<String> = MutableLiveData("")
@@ -42,7 +42,7 @@ class FragRegisterViewModel : ViewModel() {
         // call login method from the application and return the result
         // if successful, the user will be redirected to the main activity
         // else, update the loginStatus variable with the error message
-        val result = beaconReferenceApplication.apiUserSession.register(
+        val result = appMain.apiUserSession.register(
             username.value!!,
             email.value!!,
             password.value!!

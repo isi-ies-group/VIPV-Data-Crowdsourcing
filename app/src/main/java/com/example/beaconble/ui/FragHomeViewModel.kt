@@ -1,29 +1,25 @@
 package com.example.beaconble.ui
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.beaconble.BeaconReferenceApplication  // This is a singleton class, access it with BeaconReferenceApplication.instance
+import com.example.beaconble.AppMain  // This is a singleton class, access it with BeaconReferenceApplication.instance
 import com.example.beaconble.BeaconSimplified
-import com.example.beaconble.SensorData
-import org.altbeacon.beacon.Identifier
-import java.time.Instant
 
 @OptIn(ExperimentalStdlibApi::class)
 class FragHomeViewModel() : ViewModel() {
-    private val beaconReferenceApplication = BeaconReferenceApplication.instance
+    private val appMain = AppMain.instance
 
     private val _nRangedBeacons = MutableLiveData<Int>()
     val nRangedBeacons: LiveData<Int> get() = _nRangedBeacons
     val rangedBeacons: LiveData<ArrayList<BeaconSimplified>> =
-        beaconReferenceApplication.beaconManagementCollection.beacons
-    val isSessionActive: LiveData<Boolean> = beaconReferenceApplication.isSessionActive
+        appMain.beaconManagementCollection.beacons
+    val isSessionActive: LiveData<Boolean> = appMain.isSessionActive
 
     init {
         // update the number of beacons detected
-        beaconReferenceApplication.nRangedBeacons.observeForever { n ->
+        appMain.nRangedBeacons.observeForever { n ->
             _nRangedBeacons.value = n?.toInt()
         }
     }
@@ -57,14 +53,14 @@ class FragHomeViewModel() : ViewModel() {
     }*/
 
     fun toggleSession() {
-        beaconReferenceApplication.toggleSession()
+        appMain.toggleSession()
     }
 
     fun emptyAll() {
-        beaconReferenceApplication.emptyAll()
+        appMain.emptyAll()
     }
 
     fun exportAll(file: Uri) {
-        beaconReferenceApplication.exportAll(file)
+        appMain.exportAll(file)
     }
 }

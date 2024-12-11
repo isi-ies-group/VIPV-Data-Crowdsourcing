@@ -1,8 +1,6 @@
 package com.example.beaconble.ui
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,7 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.beaconble.BeaconReferenceApplication
+import com.example.beaconble.AppMain
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,7 +35,7 @@ class FragHome : Fragment() {
     lateinit var adapter: ListAdapterBeacons
 
     // Application instance
-    lateinit var beaconReferenceApplication: BeaconReferenceApplication
+    lateinit var appMain: AppMain
 
     // Activity result contract for the file picker
     private val activityResultContract = registerForActivityResult(ActivityResultContracts.CreateDocument(mimeType = "text/plain")) { result ->
@@ -58,7 +56,7 @@ class FragHome : Fragment() {
         viewModel = viewModels<FragHomeViewModel>()
 
         // Get the application instance
-        beaconReferenceApplication = BeaconReferenceApplication.Companion.instance
+        appMain = AppMain.Companion.instance
 
         // Inflate the layout for this fragment and find the IDs of the UI elements.
         val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -73,7 +71,7 @@ class FragHome : Fragment() {
         beaconListView.adapter = adapter
 
         // Set the start stop button text and icon according to the session state
-        updateStartStopButton(beaconReferenceApplication.isSessionActive.value!!)
+        updateStartStopButton(appMain.isSessionActive.value!!)
 
         // Assign observers and callbacks to the ViewModel's LiveData objects.
         viewModel.value.rangedBeacons.observe(viewLifecycleOwner) { beacons ->
@@ -92,7 +90,7 @@ class FragHome : Fragment() {
             }
 
         viewModel.value.nRangedBeacons.observe(viewLifecycleOwner) { n ->
-            updateBeaconCountTextView(n, beaconReferenceApplication.isSessionActive.value!!)
+            updateBeaconCountTextView(n, appMain.isSessionActive.value!!)
         }
 
         viewModel.value.isSessionActive.observe(viewLifecycleOwner) { isSessionActive ->
