@@ -1,6 +1,8 @@
 package com.example.beaconble
 
 import android.app.*
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
@@ -52,6 +54,16 @@ class AppMain : Application() {
 
     // BeaconManager instance
     private lateinit var beaconManager: BeaconManager
+
+    /**
+     * Class receiver to stop the beacon scanning session
+     */
+    class BeaconStopReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.i(TAG, "Received stop signal on broadcast receiver")
+            instance.concludeSession()
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -180,17 +192,25 @@ class AppMain : Application() {
         )
     }
 
-    //envia notificacion cuando se detecta un beacon en la region
     private fun sendNotification() {
         val builder = NotificationCompat.Builder(this, "vipv-app-session-ongoing")
             .setContentTitle("VIPV APP - Acquisition Session")
             .setContentText("Beacon monitoring is active.")
             .setSmallIcon(R.mipmap.logo_ies_foreground)
             .setOngoing(true)
-            .addAction(
-                R.mipmap.logo_ies_foreground,
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .addAction(  // Stop action
+                0,
                 "Stop",
                 PendingIntent.getBroadcast(
+                    this,
+                    0,
+                    Intent(this, BeaconStopReceiver::class.java),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            .setContentIntent(  // Explicit intent to open the app when notification is clicked
+                PendingIntent.getActivity(
                     this,
                     0,
                     Intent(this, ActMain::class.java),
@@ -242,9 +262,15 @@ class AppMain : Application() {
      * @return void
      */
     fun stopBeaconScanning() {
+        Log.i(TAG, "Stopping beacon scanning")
+        loggingSession.stopInstant = Instant.now()
         beaconManager.stopMonitoring(region)
         beaconManager.stopRangingBeacons(region)
         sessionRunning.value = false
+
+        // Remove notification
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(1)
     }
 
     /**
@@ -256,6 +282,9 @@ class AppMain : Application() {
         beaconManager.startMonitoring(region)
         beaconManager.startRangingBeacons(region)
         sessionRunning.value = true
+
+        // Send notification
+        sendNotification()
     }
 
     /**
@@ -285,6 +314,11 @@ class AppMain : Application() {
         }
         SessionWriter.dump2file(outStream!!, loggingSession = loggingSession)
         outStream.close()
+    }
+
+    fun concludeSession() {
+        stopBeaconScanning()
+        emptyAll()
     }
 
     companion object {
