@@ -1,5 +1,6 @@
 package com.example.beaconble
 
+import android.content.SharedPreferences
 import com.example.beaconble.APIService
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -14,6 +15,7 @@ class ApiInterfaceUT {
         const val endpoint = "http://127.0.0.1:5000/"
         lateinit var apiService: APIService
         lateinit var user: ApiUserSession
+        lateinit var sharedPreferences: SharedPreferences
 
         @BeforeClass
         @JvmStatic
@@ -23,7 +25,7 @@ class ApiInterfaceUT {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             apiService = retrofit.create(APIService::class.java)
-            user = ApiUserSession("test", "example@example.example", "whateverHash", "whateverSalt", apiService)
+            user = ApiUserSession("test", "example@example.example", "whateverHash", "whateverSalt", apiService, sharedPreferences)
         }
     }
 

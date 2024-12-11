@@ -31,7 +31,7 @@ class FragBeaconDetailsViewModel : ViewModel() {
     fun setBeaconId(id: Identifier) {
         if (id != beaconId) {
             beaconId = id
-            _beacon.value = appMain.beaconManagementCollection.getBeacon(id)
+            _beacon.value = appMain.loggingSession.getBeacon(id)
             sensorEntries = _beacon.value?.sensorData!!
         }
     }
@@ -61,7 +61,7 @@ class FragBeaconDetailsViewModel : ViewModel() {
      */
     fun deleteBeacon() {
         if (_beacon.value != null) {
-            appMain.beaconManagementCollection.removeBeacon(_beacon.value!!.id)
+            appMain.loggingSession.removeBeacon(_beacon.value!!.id)
             _beacon.value = null
         }
     }

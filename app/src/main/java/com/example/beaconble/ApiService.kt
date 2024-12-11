@@ -1,11 +1,15 @@
 package com.example.beaconble
 
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
+import okhttp3.internal.http2.Http2Stream
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 
 
 const val APIv1_base = "api/v1/"
@@ -28,6 +32,11 @@ interface APIService {
     suspend fun loginUser(
         @Body request: ApiUserSession.LoginRequest,
     ): ApiUserSession.LoginResponse
+
+    @Multipart
+    @POST(APIv1_base + "upload")
+    suspend fun uploadBeacons(
+        @Header("Authorization") token: String,
+        @Part file: MultipartBody.Part,
+    ): ResponseBody
 }
-
-

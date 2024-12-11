@@ -39,7 +39,7 @@ class AppMain : Application() {
     )  // representa el criterio que se usa para busacar las balizas, como no se quiere buscar una UUID especifica los 3 útlimos campos son null
 
     // Beacons abstractions
-    var beaconManagementCollection = BeaconsCollection()
+    var loggingSession = LoggingSession
 
     // LiveData observers for monitoring and ranging
     lateinit var regionState: MutableLiveData<Int>
@@ -171,7 +171,7 @@ class AppMain : Application() {
         longitude: Float,
         timestamp: Instant
     ) {
-        beaconManagementCollection.addSensorEntry(
+        loggingSession.addSensorEntry(
             id,
             data,
             latitude,
@@ -252,6 +252,7 @@ class AppMain : Application() {
      * @return void
      */
     fun startBeaconScanning() {
+        loggingSession.startInstant = Instant.now()
         beaconManager.startMonitoring(region)
         beaconManager.startRangingBeacons(region)
         sessionRunning.value = true
@@ -272,7 +273,7 @@ class AppMain : Application() {
     }
 
     fun emptyAll() {
-        beaconManagementCollection.emptyAll()
+        loggingSession.emptyAll()
     }
 
     fun exportAll(outFile: Uri) {
@@ -282,13 +283,13 @@ class AppMain : Application() {
             Log.e(TAG, "Output directory is null or blank")
             return
         }
-        SessionWriter.dump2file(outStream!!, beaconManagementCollection.getBeacons())
+        SessionWriter.dump2file(outStream!!, loggingSession = loggingSession)
         outStream.close()
     }
 
     companion object {
         lateinit var instance: AppMain
             private set  // This is a singleton, setter is private but access is public
-        const val TAG = "BeaconReferenceApplication"
+        const val TAG = "AppMain"
     }  // companion object
 }

@@ -6,20 +6,20 @@ import java.time.Instant
  * Singleton object to hold the logging session and some other metadata.
  */
 object LoggingSession: BeaconsCollection() {
-    private var _startInstant: Instant? = null
-    private var _endInstant: Instant? = null
+    var startInstant: Instant? = null
+    var stopInstant: Instant? = null
 
     fun start() {
-        _startInstant = Instant.now()
+        startInstant = Instant.now()
     }
 
     fun end() {
-        _endInstant = Instant.now()
+        stopInstant = Instant.now()
     }
 
     fun clear() {
-        _beacons.value?.clear()
-        _startInstant = null
-        _endInstant = null
+        beacons.value?.clear()
+        startInstant = null
+        stopInstant = null
     }
 }

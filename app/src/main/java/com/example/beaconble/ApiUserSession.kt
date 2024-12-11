@@ -29,7 +29,7 @@ class ApiUserSession {
     var passSalt: String? = null
     var lastKnownState = MutableLiveData<ApiUserSessionState>(ApiUserSessionState.NOT_LOGGED_IN)
     var apiService: APIService
-    lateinit var sharedPrefs: SharedPreferences
+    var sharedPrefs: SharedPreferences
 
     var access_token: String? = null
     var access_token_received: Instant? = null
