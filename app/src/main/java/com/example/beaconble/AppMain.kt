@@ -312,7 +312,7 @@ class AppMain : Application() {
             Log.e(TAG, "Output directory is null or blank")
             return
         }
-        SessionWriter.dump2file(outStream!!, loggingSession = loggingSession)
+        SessionWriter.V1.dump2file(outStream!!, loggingSession = loggingSession)
         outStream.close()
     }
 
