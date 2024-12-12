@@ -33,10 +33,10 @@ class SessionWriterV1UT {
 
         val expected = """
         {
-          "version": 1,
+          "version_scheme": 1,
           "start_instant": "2021-10-01T12:00:00Z",
-          "end_instant": "2021-10-01T12:30:00Z",
-          "beacons": [{
+          "finish_instant": "2021-10-01T12:30:00Z",
+          "beacons": {
             "0": {
               "id": "0x010203040506",
               "tilt": 0.0,
@@ -49,7 +49,7 @@ class SessionWriterV1UT {
               "orientation": 180.0,
               "description": "U295IGxhIGNvc2l0YSBtw6FzIGxpbmRhIHkgbW9uYSBkZSBlc3RlIG11bmRvLg=="
             }
-           }]
+          }
         }
         """.replace("\n", "").replace(" ", "")
 

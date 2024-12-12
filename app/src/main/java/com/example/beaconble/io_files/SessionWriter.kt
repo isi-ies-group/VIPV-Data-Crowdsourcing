@@ -51,10 +51,10 @@ object SessionWriter {
          *
          * Output example, formatted for readability:
          * {
-         *  "version": 1,
+         *  "version_scheme": 1,
          *  "start_instant": "2021-10-01T12:00:00Z",
          *  "finish_instant": "2021-10-01T12:30:00Z",
-         *  "beacons": [{
+         *  "beacons": {
          *    "0": {
          *      "id": "id_of_beacon1",
          *      "tilt": 0.0,
@@ -67,14 +67,16 @@ object SessionWriter {
          *      "orientation": 0.0,
          *      "description": "U295IGxhIGNvc2l0YSBtw6FzIGxpbmRhIHkgbW9uYSBkZSBlc3RlIG11bmRvLg=="
          *    }
-         *   }]
+         *   }
          *  }
          */
         fun createJSONHeader(beacons: Collection<BeaconSimplified>): String {
             val result = StringBuilder()
             result.append("{")
-            result.append("\"version\": 1,")  // Version of the file format (this is the first version).
-            result.append("\"beacons\": [{")  // Open "beacons"
+            result.append("\"version_scheme\": 1,")  // Version of the file format (this is the first version).
+            result.append("\"start_instant\": \"${LoggingSession.startInstant}\",")
+            result.append("\"finish_instant\": \"${LoggingSession.stopInstant}\",")
+            result.append("\"beacons\": {")  // Open "beacons"
             for ((index, beacon) in beacons.withIndex()) {
                 // Add a comma before the next element, as JSON does not allow trailing commas.
                 // https://stackoverflow.com/questions/201782/can-you-use-a-trailing-comma-in-a-json-object
@@ -95,7 +97,7 @@ object SessionWriter {
 
                 result.append("}")
             }
-            result.append("}]")  // Close "beacons"
+            result.append("}")  // Close "beacons"
             result.append("}")  // Close the JSON object.
             return result.toString()
         }
