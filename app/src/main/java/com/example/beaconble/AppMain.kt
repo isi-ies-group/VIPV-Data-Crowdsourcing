@@ -4,18 +4,25 @@ import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import com.example.beaconble.io_files.SessionWriter
+import com.example.beaconble.service.StopBroadcastReceiver
 import com.example.beaconble.ui.ActMain
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Region
@@ -24,7 +31,12 @@ import org.altbeacon.beacon.Identifier
 import org.altbeacon.beacon.MonitorNotifier
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.time.Instant
+import kotlin.concurrent.thread
+import kotlin.coroutines.coroutineContext
+import kotlin.io.path.createTempFile
+import kotlin.io.path.outputStream
 
 
 class AppMain : Application() {
@@ -55,15 +67,7 @@ class AppMain : Application() {
     // BeaconManager instance
     private lateinit var beaconManager: BeaconManager
 
-    /**
-     * Class receiver to stop the beacon scanning session
-     */
-    class BeaconStopReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.i(TAG, "Received stop signal on broadcast receiver")
-            instance.concludeSession()
-        }
-    }
+    val stopBroadcastReceiver = StopBroadcastReceiver()
 
     override fun onCreate() {
         super.onCreate()
@@ -156,7 +160,7 @@ class AppMain : Application() {
             }
 
             // iterate over beacons and log their data
-            val currentInstant = java.time.Instant.now()
+            val currentInstant = Instant.now()
             for (beacon: Beacon in beacons) {
                 val id = beacon.id1
                 Log.i(TAG, "ID: $id")
@@ -193,6 +197,18 @@ class AppMain : Application() {
     }
 
     private fun sendNotification() {
+        // intents for stopping the session
+        val stopIntent = Intent(this, StopBroadcastReceiver::class.java).apply {
+            action = ACTION_STOP_SESSION
+        }
+        val stopPendingIntent = PendingIntent.getBroadcast(
+            this,
+            1,
+            stopIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // configure notification
         val builder = NotificationCompat.Builder(this, "vipv-app-session-ongoing")
             .setContentTitle("VIPV APP - Acquisition Session")
             .setContentText("Beacon monitoring is active.")
@@ -200,33 +216,20 @@ class AppMain : Application() {
             .setOngoing(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(  // Stop action
-                0,
-                "Stop",
-                PendingIntent.getBroadcast(
-                    this,
-                    0,
-                    Intent(this, BeaconStopReceiver::class.java),
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
+                R.drawable.square_stop,
+                getString(R.string.stop_notification_button),
+                stopPendingIntent
             )
             .setContentIntent(  // Explicit intent to open the app when notification is clicked
                 PendingIntent.getActivity(
                     this,
                     0,
                     Intent(this, ActMain::class.java),
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
         // TODO: UPDATE i18n strings, double check icon (make one that is a silhouette of a beacon)
 
-        // Explicit intent to open the app when notification is clicked
-        val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addNextIntent(Intent(this, ActMain::class.java))
-        val resultPendingIntent = stackBuilder.getPendingIntent(
-            0,
-            PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE
-        )
-        builder.setContentIntent(resultPendingIntent)
         val channel = NotificationChannel(
             "vipv-app-session-ongoing",
             "VIPV APP - Acquisition Session",
@@ -235,8 +238,7 @@ class AppMain : Application() {
         channel.description = "Notifies when a measurement session is active."
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
-        builder.setChannelId(channel.id)
-        notificationManager.notify(1, builder.build())
+        notificationManager.notify(NOTIFICATION_ONGOING_SESSION_ID, builder.build())
     }
 
     /**
@@ -270,7 +272,20 @@ class AppMain : Application() {
 
         // Remove notification
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(1)
+        notificationManager.cancel(NOTIFICATION_ONGOING_SESSION_ID)
+
+        // Create a coroutine to write the session data to a file
+        thread {
+            val outFile = File(applicationContext.cacheDir, "VIPV_${Instant.now()}.txt")
+            SessionWriter.V1.dump2file(outFile.outputStream(), loggingSession = loggingSession)
+            Log.i(TAG, "Session data written to file: $outFile")
+            // upload the file to the server from a coroutine
+            runBlocking {
+                val response = apiUserSession.upload(outFile)
+                Log.i(TAG, "Upload response: $response")
+            }
+            outFile.delete()
+        }
     }
 
     /**
@@ -283,7 +298,7 @@ class AppMain : Application() {
         beaconManager.startRangingBeacons(region)
         sessionRunning.value = true
 
-        // Send notification
+        // Configure the notification channel and send the notification
         sendNotification()
     }
 
@@ -325,5 +340,7 @@ class AppMain : Application() {
         lateinit var instance: AppMain
             private set  // This is a singleton, setter is private but access is public
         const val TAG = "AppMain"
+        const val NOTIFICATION_ONGOING_SESSION_ID = 1
+        const val ACTION_STOP_SESSION = "com.example.beaconble.STOP_SESSION"
     }  // companion object
 }

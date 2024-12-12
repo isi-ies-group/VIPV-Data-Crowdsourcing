@@ -2,7 +2,6 @@ package com.example.beaconble
 
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import okhttp3.internal.http2.Http2Stream
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -34,7 +33,7 @@ interface APIService {
     ): ApiUserSession.LoginResponse
 
     @Multipart
-    @POST(APIv1_base + "upload")
+    @POST(APIv1_base + "session/upload")
     suspend fun uploadBeacons(
         @Header("Authorization") token: String,
         @Part file: MultipartBody.Part,

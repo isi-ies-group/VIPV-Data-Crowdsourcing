@@ -21,6 +21,7 @@ enum class ApiUserSessionState {
     LOGGED_IN,  // user has logged in successfully
     NOT_LOGGED_IN,  // user logged out
     NEVER_LOGGED_IN,  // user has never logged in
+
     // errors
     ERROR_BAD_IDENTITY,
     ERROR_BAD_PASSWORD,
@@ -45,7 +46,12 @@ class ApiUserSession {
     // constructors
     // default
     constructor(
-        username: String, email: String, passHash: String, passSalt: String, apiService: APIService, sharedPrefs: SharedPreferences
+        username: String,
+        email: String,
+        passHash: String,
+        passSalt: String,
+        apiService: APIService,
+        sharedPrefs: SharedPreferences
     ) {
         this.username = username
         this.email = email
@@ -82,6 +88,7 @@ class ApiUserSession {
             putString("username", username)
             putString("email", email)
             putString("passHash", passHash)
+            putString("lastKnownState", lastKnownState.value.toString())
             apply()
         }
     }
@@ -91,6 +98,7 @@ class ApiUserSession {
             remove("username")
             remove("email")
             remove("passHash")
+            remove("lastKnownState")
             apply()
         }
         clear()
@@ -103,6 +111,10 @@ class ApiUserSession {
         this.email = null
         this.passHash = null
         this.passSalt = null
+        this.accessToken = null
+        this.accessTokenRx = null
+        this.accessTokenValidity = null
+        this.lastKnownState.value = ApiUserSessionState.NOT_LOGGED_IN
     }
 
     /**
@@ -231,19 +243,40 @@ class ApiUserSession {
      * If the access token is expired, the function will return ERROR_BAD_TOKEN.
      */
     suspend fun upload(file: File): ApiUserSessionState {
-        if (accessToken == null || accessTokenRx == null || accessTokenValidity == null) {
-            return ApiUserSessionState.ERROR_BAD_TOKEN
-        }
-        if (accessTokenRx!!.plusSeconds(accessTokenValidity!!.toLong()).isBefore(Instant.now())) {
-            return ApiUserSessionState.ERROR_BAD_TOKEN
+        if (accessToken == null
+            || accessTokenRx == null
+            || accessTokenValidity == null
+            || accessTokenRx!!.plusSeconds(accessTokenValidity!!.toLong()) < Instant.now()
+        ) {
+            // access token is expired, log in again
+            // send login request to server
+            val loginRequest = LoginRequest(this.email!!, this.passHash!!)
+            try {
+                val loginResponse = apiService.loginUser(loginRequest)
+                this.username = loginResponse.username
+                this.accessToken = "Bearer ${loginResponse.access_token}"
+                this.accessTokenRx = Instant.now()
+                this.accessTokenValidity = loginResponse.validity
+                this.lastKnownState.postValue(ApiUserSessionState.LOGGED_IN)
+            } catch (e: HttpException) {
+                Log.e("ApiUserSession", "HttpException logging in user: ${e.message}")
+                this.lastKnownState.postValue(ApiUserSessionState.ERROR_BAD_PASSWORD)
+            } catch (e: Exception) {
+                Log.e("ApiUserSession", "Exception logging in user: ${e.message}")
+                this.lastKnownState.postValue(ApiUserSessionState.CONNECTION_ERROR)
+            }
         }
 
-        val filePart = MultipartBody.Part.createFormData("file", null, file.asRequestBody("plain/text".toMediaTypeOrNull()))
-        RequestBody.create(null, file)
+        val filePart = MultipartBody.Part.createFormData(
+            name = "file",
+            filename = file.name,
+            body = file.asRequestBody("plain/text".toMediaTypeOrNull())
+        )
         try {
             apiService.uploadBeacons(this.accessToken!!, filePart)
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException uploading file: ${e.message}")
+            Log.e("ApiUserSession", "Response content: ${e.response()?.errorBody()?.string()}")
             return ApiUserSessionState.CONNECTION_ERROR
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception uploading file: ${e.message}")

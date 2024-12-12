@@ -80,4 +80,5 @@
     <string name="bad_email_already_registered">Este correo ya está registrado</string>
     <string name="register_here">Regístrate aquí</string>
     <string name="logged_out">Cuenta de usuario cerrada</string>
+    <string name="stop_notification_button">Detener</string>
 </resources>

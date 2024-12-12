@@ -43,6 +43,12 @@
             android:foregroundServiceType="location"
             android:permission="android.permission.FOREGROUND_SERVICE">
         </service>
+        <receiver android:name=".service.StopBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.beaconble.STOP_SESSION" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
