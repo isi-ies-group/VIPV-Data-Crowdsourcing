@@ -7,7 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.HttpException
+import java.io.File
+import java.io.FileInputStream
 import java.time.Instant
 import kotlin.random.Random
 
@@ -18,6 +24,7 @@ enum class ApiUserSessionState {
     // errors
     ERROR_BAD_IDENTITY,
     ERROR_BAD_PASSWORD,
+    ERROR_BAD_TOKEN,
     CONNECTION_ERROR,
 }
 
@@ -31,8 +38,9 @@ class ApiUserSession {
     var apiService: APIService
     var sharedPrefs: SharedPreferences
 
-    var access_token: String? = null
-    var access_token_received: Instant? = null
+    var accessToken: String? = null
+    var accessTokenRx: Instant? = null
+    var accessTokenValidity: Int? = null
 
     // constructors
     // default
@@ -143,18 +151,20 @@ class ApiUserSession {
         val loginRequest = LoginRequest(this.email!!, this.passHash!!)
         try {
             val loginResponse = apiService.loginUser(loginRequest)
-            access_token = loginResponse.access_token
-            access_token_received = Instant.now()
-            lastKnownState.value = ApiUserSessionState.LOGGED_IN
+            this.username = loginResponse.username
+            this.accessToken = "Bearer ${loginResponse.access_token}"
+            this.accessTokenRx = Instant.now()
+            this.accessTokenValidity = loginResponse.validity
+            this.lastKnownState.value = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException logging in user: ${e.message}")
-            lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
+            this.lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception logging in user: ${e.message}")
-            lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
+            this.lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
         }
         saveToSharedPreferences()
-        return lastKnownState.value!!
+        return this.lastKnownState.value!!
     }
 
     /**
@@ -198,16 +208,48 @@ class ApiUserSession {
         )
         try {
             val registerResponse = apiService.registerUser(registerRequest)
-            lastKnownState.value = ApiUserSessionState.LOGGED_IN
+            this.lastKnownState.value = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException registering user: ${e.message}")
-            lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
+            this.lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception registering user: ${e.message}")
-            lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
+            this.lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
         }
         saveToSharedPreferences()
-        return lastKnownState.value!!
+        return this.lastKnownState.value!!
+    }
+
+    /**
+     * Upload the session file to the server.
+     * Checks the access token and if it is expired, logs in again.
+     * The uploaded file is an stream of bytes, so it is not necessary to store it in the device.
+     * @param file The file to upload.
+     * @return The state of the user session after the upload.
+     * If the server responds with a successful upload, the function will return LOGGED_IN.
+     * If the server responds with an error, the function will return CONNECTION_ERROR.
+     * If the access token is expired, the function will return ERROR_BAD_TOKEN.
+     */
+    suspend fun upload(file: File): ApiUserSessionState {
+        if (accessToken == null || accessTokenRx == null || accessTokenValidity == null) {
+            return ApiUserSessionState.ERROR_BAD_TOKEN
+        }
+        if (accessTokenRx!!.plusSeconds(accessTokenValidity!!.toLong()).isBefore(Instant.now())) {
+            return ApiUserSessionState.ERROR_BAD_TOKEN
+        }
+
+        val filePart = MultipartBody.Part.createFormData("file", null, file.asRequestBody("plain/text".toMediaTypeOrNull()))
+        RequestBody.create(null, file)
+        try {
+            apiService.uploadBeacons(this.accessToken!!, filePart)
+        } catch (e: HttpException) {
+            Log.e("ApiUserSession", "HttpException uploading file: ${e.message}")
+            return ApiUserSessionState.CONNECTION_ERROR
+        } catch (e: Exception) {
+            Log.e("ApiUserSession", "Exception uploading file: ${e.message}")
+            return ApiUserSessionState.CONNECTION_ERROR
+        }
+        return ApiUserSessionState.LOGGED_IN
     }
 
     fun isProbablyValid(): Boolean {
@@ -224,7 +266,9 @@ class ApiUserSession {
     fun loginRequest() = LoginRequest(this.email!!, this.passHash!!)
 
     class LoginResponse {
+        var username: String? = null
         var access_token: String? = null
+        var validity: Int? = null
     }
 
     data class RegisterRequest(
