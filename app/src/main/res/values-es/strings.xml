@@ -81,4 +81,7 @@
     <string name="register_here">Regístrate aquí</string>
     <string name="logged_out">Cuenta de usuario cerrada</string>
     <string name="stop_notification_button">Detener</string>
+    <string name="notification_ongoing_title">Sessión de adquisición en curso</string>
+    <string name="notification_ongoing_text">Monitoreo de balizas activo.</string>
+    <string name="notification_ongoing_channel_name">Sesiones de adquisición de datos en curso</string>
 </resources>

@@ -210,8 +210,8 @@ class AppMain : Application() {
 
         // configure notification
         val builder = NotificationCompat.Builder(this, "vipv-app-session-ongoing")
-            .setContentTitle("VIPV APP - Acquisition Session")
-            .setContentText("Beacon monitoring is active.")
+            .setContentTitle(getString(R.string.notification_ongoing_title))
+            .setContentText(getString(R.string.notification_ongoing_text))
             .setSmallIcon(R.mipmap.logo_ies_foreground)
             .setOngoing(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -228,12 +228,11 @@ class AppMain : Application() {
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
-        // TODO: UPDATE i18n strings, double check icon (make one that is a silhouette of a beacon)
 
         val channel = NotificationChannel(
-            "vipv-app-session-ongoing",
-            "VIPV APP - Acquisition Session",
-            NotificationManager.IMPORTANCE_HIGH,
+            "vipv-app-session-ongoing",  // id
+            getString(R.string.notification_ongoing_channel_name),  // name
+            NotificationManager.IMPORTANCE_HIGH,  // importance
         )
         channel.description = "Notifies when a measurement session is active."
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
