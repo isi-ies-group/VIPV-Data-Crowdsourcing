@@ -27,10 +27,6 @@ class FragLogin : Fragment() {
     lateinit var buttonGoToRegister: Button
     lateinit var progressBar: ProgressBar
 
-    companion object {
-        fun newInstance() = FragLogin()
-    }
-
     private val viewModel: FragLoginViewModel by viewModels()
 
     override fun onCreateView(
@@ -74,6 +70,23 @@ class FragLogin : Fragment() {
         // observe the login button enabled status
         viewModel.loginButtonEnabled.observe(viewLifecycleOwner) { enabled ->
             buttonLogin.isEnabled = enabled
+        }
+
+        // observe the email and password invalid flags and set the error messages accordingly
+        viewModel.emailInvalid.observe(viewLifecycleOwner) { invalid ->
+            if (invalid) {
+                editTextEmail.error = getString(R.string.invalid_email)
+            } else {
+                editTextEmail.error = null
+            }
+        }
+
+        viewModel.passwordInvalid.observe(viewLifecycleOwner) { invalid ->
+            if (invalid) {
+                editTextPassword.error = getString(R.string.invalid_password)
+            } else {
+                editTextPassword.error = null
+            }
         }
 
         return view

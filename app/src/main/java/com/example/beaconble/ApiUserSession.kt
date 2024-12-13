@@ -112,7 +112,6 @@ class ApiUserSession {
         this.accessToken = null
         this.accessTokenRx = null
         this.accessTokenValidity = null
-        this.lastKnownState.value = ApiUserSessionState.NOT_LOGGED_IN
     }
 
     /**
@@ -130,6 +129,9 @@ class ApiUserSession {
      */
     suspend fun login(email: String, passWord: String): ApiUserSessionState {
         this.email = email
+        this.passSalt = null
+
+        var knownState = ApiUserSessionState.CONNECTION_ERROR
 
         // get salt from server
         try {
@@ -137,10 +139,15 @@ class ApiUserSession {
             this.passSalt = saltResponse.passSalt
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "Error getting salt: ${e.message}")
-            return ApiUserSessionState.ERROR_BAD_IDENTITY
+            knownState = ApiUserSessionState.ERROR_BAD_IDENTITY
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Error getting salt: ${e.message}")
-            return ApiUserSessionState.CONNECTION_ERROR
+            knownState = ApiUserSessionState.CONNECTION_ERROR
+        }
+
+        if (this.passSalt == null) {
+            this.lastKnownState.postValue(knownState)
+            return knownState
         }
 
         val passWordByteArray = passWord.toByteArray()
@@ -165,16 +172,17 @@ class ApiUserSession {
             this.accessToken = "Bearer ${loginResponse.access_token}"
             this.accessTokenRx = Instant.now()
             this.accessTokenValidity = loginResponse.validity
-            this.lastKnownState.value = ApiUserSessionState.LOGGED_IN
+            knownState = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException logging in user: ${e.message}")
-            this.lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
+            knownState = ApiUserSessionState.ERROR_BAD_PASSWORD
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception logging in user: ${e.message}")
-            this.lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
+            knownState = ApiUserSessionState.CONNECTION_ERROR
         }
         saveToSharedPreferences()
-        return this.lastKnownState.value!!
+        this.lastKnownState.postValue(knownState)
+        return knownState
     }
 
     /**
@@ -192,6 +200,8 @@ class ApiUserSession {
     suspend fun register(username: String, email: String, passWord: String): ApiUserSessionState {
         this.username = username
         this.email = email
+
+        var knownState = ApiUserSessionState.CONNECTION_ERROR
 
         // create a random salt for the user
         var saltByteArray = ByteArray(16) { Random.nextInt().toByte() }
@@ -218,16 +228,17 @@ class ApiUserSession {
         )
         try {
             val registerResponse = apiService.registerUser(registerRequest)
-            this.lastKnownState.value = ApiUserSessionState.LOGGED_IN
+            knownState = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException registering user: ${e.message}")
-            this.lastKnownState.value = ApiUserSessionState.ERROR_BAD_PASSWORD
+            knownState = ApiUserSessionState.ERROR_BAD_IDENTITY
         } catch (e: Exception) {
             Log.e("ApiUserSession", "Exception registering user: ${e.message}")
-            this.lastKnownState.value = ApiUserSessionState.CONNECTION_ERROR
+            knownState = ApiUserSessionState.CONNECTION_ERROR
         }
         saveToSharedPreferences()
-        return this.lastKnownState.value!!
+        this.lastKnownState.postValue(knownState)
+        return knownState
     }
 
     /**
@@ -308,4 +319,22 @@ class ApiUserSession {
 
     fun registerRequest() =
         RegisterRequest(this.username!!, this.email!!, this.passHash!!, this.passSalt!!)
+
+    object CredentialsValidator {
+        // regex validators
+        val emailValidator = Regex("(?:[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")
+        val usernameValidator = Regex("^[a-zA-Z0-9_]{5,20}$")
+
+        fun isEmailValid(email: String): Boolean {
+            return emailValidator.matches(email)
+        }
+
+        fun isUsernameValid(username: String): Boolean {
+            return usernameValidator.matches(username)
+        }
+
+        fun isPasswordValid(password: String): Boolean {
+            return password.length >= 8
+        }
+    }
 }

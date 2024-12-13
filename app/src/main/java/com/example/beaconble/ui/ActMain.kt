@@ -22,6 +22,7 @@ import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.AppMain
 import com.example.beaconble.R
 import com.google.android.material.navigation.NavigationView
+import java.lang.Thread.sleep
 
 
 class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -31,9 +32,6 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
     lateinit var navController : NavController
     lateinit var navView: NavigationView
-
-    lateinit var menuBtnLogin: MenuItem
-    lateinit var menuBtnLogout: MenuItem
 
     val app = AppMain.instance
 
@@ -51,10 +49,10 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
         app.apiUserSession.lastKnownState.observeForever(
             { state ->
+                Log.d(TAG, "User session state changed to $state")
                 updateDrawerOptionsMenu()
             }
         )
-        updateDrawerOptionsMenu()
     }
 
     /**
@@ -111,8 +109,6 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
                 app.apiUserSession.logout()
                 // Show a toast
                 Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
-                // Update nav view
-                updateDrawerOptionsMenu()
                 true
             }
             R.id.nav_login -> {  // Login
@@ -158,18 +154,21 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     private fun configureNavigationDrawer() {
         navView = findViewById<NavigationView>(R.id.nav_view_host)
         navView.setNavigationItemSelectedListener(this)
-        // Login and logout buttons in the drawer
-        menuBtnLogin = navView.menu.findItem(R.id.nav_login)
-        menuBtnLogout = navView.menu.findItem(R.id.nav_logout)
 
         // Only show login or logout (hides the other one)
         updateDrawerOptionsMenu()
     }
 
     private fun updateDrawerOptionsMenu() {
+        // Login and logout buttons in the drawer
+        val menuBtnLogin = navView.menu.findItem(R.id.nav_login)
+        val menuBtnLogout = navView.menu.findItem(R.id.nav_logout)
         val isUserLoggedIn = app.apiUserSession.lastKnownState.value == ApiUserSessionState.LOGGED_IN
-        menuBtnLogin.isVisible = !isUserLoggedIn
-        menuBtnLogout.isVisible = isUserLoggedIn
+        Log.i(TAG, "User is logged in: $isUserLoggedIn")
+        menuBtnLogin.setVisible(isUserLoggedIn != true)
+        sleep(100)
+        menuBtnLogout.setVisible(isUserLoggedIn == true)
+        Log.i(TAG, "Menu items updated to: login=${menuBtnLogin.isVisible}, logout=${menuBtnLogout.isVisible}")
     }
 
     fun openURL(url: String) {
@@ -183,6 +182,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     companion object {
-        const val TAG = "MainActivity"
+        var bool4toggle = false
+        const val TAG = "ActMain"
     }  // companion object
 }

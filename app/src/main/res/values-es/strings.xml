@@ -69,8 +69,9 @@
     <string name="action_sign_in">Iniciar sesión</string>
     <string name="action_sign_in_short">Registrase</string>
     <string name="welcome">¡Bienvenid@!</string>
-    <string name="invalid_username">Nombre de usuario no válido</string>
-    <string name="invalid_password">La contraseña debe tener más de 5 caracteres</string>
+    <string name="invalid_username">Solo se admiten caracteres alfanuméricos y barra baja</string>
+    <string name="invalid_password">Al menos debe tener 8 caracteres</string>
+    <string name="invalid_email">Correo electrónico inválido</string>
     <string name="login_failed">Inicio de sesión fallido</string>
     <string name="connection_error">Problema en la conexión</string>
     <string name="connection_error_message">No se pudo conectar al servidor. Compruebe su conectividad a Internet o pruebe más tarde.</string>
@@ -84,4 +85,5 @@
     <string name="notification_ongoing_title">Sessión de adquisición en curso</string>
     <string name="notification_ongoing_text">Monitoreo de balizas activo.</string>
     <string name="notification_ongoing_channel_name">Sesiones de adquisición de datos en curso</string>
+    <string name="invalid_password_equals">Las contraseñas no coinciden</string>
 </resources>

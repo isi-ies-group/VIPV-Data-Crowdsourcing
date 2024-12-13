@@ -160,7 +160,7 @@ class FragHome : Fragment() {
                 return@setOnClickListener
             }
             // Open the file picker intention for document files
-            val filename = "VIPV_${Instant.now()}.vipv_session"
+            val filename = "VIPV_${Instant.now()}.txt"
             activityResultContract.launch(filename)
         }
 

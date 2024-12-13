@@ -3,6 +3,7 @@ package com.example.beaconble.ui
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.beaconble.ApiUserSession
 import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.AppMain
 import kotlinx.coroutines.launch
@@ -14,8 +15,13 @@ class FragLoginViewModel : ViewModel() {
     var email: MutableLiveData<String> = MutableLiveData("")
     var password: MutableLiveData<String> = MutableLiveData("")
 
+    // mutable flags for the error messages
+    val emailInvalid = MutableLiveData<Boolean>()
+    val passwordInvalid = MutableLiveData<Boolean>()
+
     // mutable status for the login process, to report errors to the user
     val loginStatus = MutableLiveData<ApiUserSessionState>()
+
     // mutable status for whether login button should be enabled
     val loginButtonEnabled = MutableLiveData<Boolean>()
 
@@ -27,9 +33,15 @@ class FragLoginViewModel : ViewModel() {
 
     fun onCredentialsChanged() {
         // enable the login button if both email and password are not empty
-        val validEmail = email.value!!.isNotEmpty()
-        val validPassword = password.value!!.isNotEmpty()
+        val validEmail =
+            email.value!!.isNotEmpty() and ApiUserSession.CredentialsValidator.isEmailValid(email.value!!)
+        val validPassword =
+            password.value!!.isNotEmpty() and ApiUserSession.CredentialsValidator.isPasswordValid(
+                password.value!!
+            )
         loginButtonEnabled.postValue(validEmail && validPassword)
+        emailInvalid.postValue(!validEmail)
+        passwordInvalid.postValue(!validPassword)
     }
 
     fun doLogin() = viewModelScope.launch {

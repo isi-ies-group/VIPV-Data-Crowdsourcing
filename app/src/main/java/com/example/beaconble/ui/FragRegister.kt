@@ -71,6 +71,40 @@ class FragRegister : Fragment() {
             buttonRegister.isEnabled = enabled
         }
 
+        // observe the username, email, password, and password2 invalid flags
+        // and set the error messages accordingly
+        viewModel.usernameInvalid.observe(viewLifecycleOwner) { invalid ->
+            if (invalid) {
+                editTextUsername.error = getString(R.string.invalid_username)
+            } else {
+                editTextUsername.error = null
+            }
+        }
+
+        viewModel.emailInvalid.observe(viewLifecycleOwner) { invalid ->
+            if (invalid) {
+                editTextEmail.error = getString(R.string.invalid_email)
+            } else {
+                editTextEmail.error = null
+            }
+        }
+
+        viewModel.passwordInvalid.observe(viewLifecycleOwner) { invalid ->
+            if (invalid) {
+                editTextPassword.error = getString(R.string.invalid_password)
+            } else {
+                editTextPassword.error = null
+            }
+        }
+
+        viewModel.password2Invalid.observe(viewLifecycleOwner) { invalid ->
+            if (invalid) {
+                editTextPassword2.error = getString(R.string.invalid_password_equals)
+            } else {
+                editTextPassword2.error = null
+            }
+        }
+
         return view
     }
 
