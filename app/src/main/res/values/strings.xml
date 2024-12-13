@@ -1,6 +1,6 @@
 <resources>
     // Generic
-    <string name="app_name">Photovolta</string>
+    <string name="app_name">VIPV Acquisition Program</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Log In</string>
@@ -25,7 +25,7 @@
     <string name="login_no_account_question">Don\'t have an account?</string>
     // Welcome view
     <string name="welcome_continue">Start sharing measurements</string>
-    <string name="welcome_message">Welcome to \nPhotovolta!</string>
+    <string name="welcome_message">Welcome to \nVIPV Acquisition Program!</string>
     // Permissions view
     <string name="permissions_title">Required permissions</string>
     <string name="permissions_needed">The following permissions are required to use Photovolta. You will have access to the app once all permissions are granted:</string>

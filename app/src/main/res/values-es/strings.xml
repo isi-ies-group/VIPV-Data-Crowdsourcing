@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     // Generic
-    <string name="app_name">Photovolta</string>
+    <string name="app_name">Programa adquisición VIPV</string>
     <string name="help">Ayuda</string>
     <string name="icon_help">Icono de ayuda</string>
     <string name="username">Usuario</string>
@@ -23,7 +23,7 @@
     <string name="login_no_account_question">¿No tienes cuenta?</string>
     // Welcome view
     <string name="welcome_continue">Empezar a compartir medidas</string>
-    <string name="welcome_message">Bienvenid@ a \nPhotovolta!</string>
+    <string name="welcome_message">Bienvenid@ al  Programa de Adquisición VIPV!</string>
     // Permissions view
     <string name="permissions_needed">Photovolta requiere utilizar los siguientes permisos. Podrás acceder a la app cuando se hayan otorgado los permisos necesarios:</string>
     <string name="permissions_show_in_settings">Ver permisos en la configuración del sistema</string>
