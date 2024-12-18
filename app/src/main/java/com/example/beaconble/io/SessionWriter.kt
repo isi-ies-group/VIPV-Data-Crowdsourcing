@@ -51,7 +51,7 @@ object SessionWriter {
                 // Header
                 it.write("beacon_index,timestamp,data,latitude,longitude\n")
                 // Body
-                writeCsvData(it, beacons)
+                appendCsvBody(it, beacons)
             }
         }
 
@@ -124,7 +124,7 @@ object SessionWriter {
          * @param outputStreamWriter The output stream to write to.
          * @param beacons The collection of beacons.
          */
-        fun writeCsvData(
+        fun appendCsvBody(
             outputStreamWriter: OutputStreamWriter,
             beacons: Collection<BeaconSimplified>
         ) {
@@ -180,7 +180,7 @@ object SessionWriter {
                     // From the previous file
                     reader.lines().forEach { writer.write(it + "\n") }
                     // From the current session
-                    writeCsvData(writer, beacons)
+                    appendCsvBody(writer, beacons)
                     // Close, flush, whatever
                     writer.close()
                 }
