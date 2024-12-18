@@ -65,8 +65,8 @@ class FragHome : Fragment() {
         beaconCountTextView = view.findViewById<TextView>(R.id.beaconCountTextView)
         startStopSessionButton =
             view.findViewById<FloatingActionButton>(R.id.startStopSessionButton)
-        emptyAllButton = view.findViewById<ImageButton>(R.id.imageButtonActionEmptyAll)
-        exportAllButton = view.findViewById<ImageButton>(R.id.imageButtonActionExportAll)
+        emptyAllButton = view.findViewById<ImageButton>(R.id.imBtnActionEmptyAll)
+        exportAllButton = view.findViewById<ImageButton>(R.id.imBtnActionSaveAll)
 
         // Create the adapter for the list view and assign it to the list view.
         adapter = ListAdapterBeacons(requireContext(), ArrayList())

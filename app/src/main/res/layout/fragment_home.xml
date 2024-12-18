@@ -46,7 +46,7 @@
         android:layout_gravity="bottom">
 
         <ImageButton
-            android:id="@+id/imageButtonActionEmptyAll"
+            android:id="@+id/imBtnActionEmptyAll"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
@@ -55,20 +55,33 @@
             android:contentDescription="@string/delete_all"
             android:padding="14sp"
             android:scaleType="centerInside"
-            android:src="@drawable/round_delete_forever_24"
+            android:src="@drawable/delete_forever_bin"
             app:tint="?attr/colorOnPrimary"/>
 
         <ImageButton
-            android:id="@+id/imageButtonActionExportAll"
+            android:id="@+id/imBtnActionUploadAll"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_marginHorizontal="20sp"
+            android:layout_marginHorizontal="16sp"
             android:background="@null"
-            android:contentDescription="@string/upload"
+            android:contentDescription="@string/save"
             android:padding="14sp"
             android:scaleType="centerInside"
-            android:src="@drawable/save_as_24"
+            android:src="@drawable/save_file"
+            app:tint="?attr/colorOnPrimary"/>
+
+        <ImageButton
+            android:id="@+id/imBtnActionSaveAll"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="0sp"
+            android:background="@null"
+            android:contentDescription="@string/save"
+            android:padding="14sp"
+            android:scaleType="centerInside"
+            android:src="@drawable/save_file"
             app:tint="?attr/colorOnPrimary"/>
 
     </com.google.android.material.bottomappbar.BottomAppBar>
