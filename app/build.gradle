@@ -23,6 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // BuildConfigField for production server URL
             buildConfigField "String", "SERVER_URL", "\"https://vps247.cesvima.upm.es/\""
+            signingConfig signingConfigs.debug
         }
         debug {
             // BuildConfigField for debug server URL
