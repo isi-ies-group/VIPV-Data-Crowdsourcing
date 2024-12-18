@@ -86,4 +86,7 @@
     <string name="notification_ongoing_text">Monitoreo de balizas activo.</string>
     <string name="notification_ongoing_channel_name">Sesiones de adquisición de datos en curso</string>
     <string name="invalid_password_equals">Las contraseñas no coinciden</string>
+    <string name="settings_api_test">Comprobar conexión al servidor</string>
+    <string name="settings_api_valid">"Servicio configurado correctamente "</string>
+    <string name="settings_api_invalid">Servicio no disponible en la dirección especificada</string>
 </resources>

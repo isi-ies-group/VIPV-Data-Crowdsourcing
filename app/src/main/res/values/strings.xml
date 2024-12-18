@@ -91,4 +91,7 @@
     <string name="notification_ongoing_title">Acquisition session underway</string>
     <string name="notification_ongoing_text">Beacon monitoring is active.</string>
     <string name="invalid_password_equals">Passwords don\'t match</string>
+    <string name="settings_api_test">Test API endpoint</string>
+    <string name="settings_api_valid">Endpoint is reachable</string>
+    <string name="settings_api_invalid">Could not reach endpoint</string>
 </resources>
