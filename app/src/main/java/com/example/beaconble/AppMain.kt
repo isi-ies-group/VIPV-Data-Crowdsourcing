@@ -1,27 +1,20 @@
 package com.example.beaconble
 
 import android.app.*
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.location.Location
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
-import com.example.beaconble.io_files.SessionWriter
-import com.example.beaconble.service.StopBroadcastReceiver
+import com.example.beaconble.io.SessionWriter
+import com.example.beaconble.broadcastReceivers.StopBroadcastReceiver
 import com.example.beaconble.ui.ActMain
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
@@ -34,9 +27,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.time.Instant
 import kotlin.concurrent.thread
-import kotlin.coroutines.coroutineContext
-import kotlin.io.path.createTempFile
-import kotlin.io.path.outputStream
 
 
 class AppMain : Application() {

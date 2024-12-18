@@ -1,6 +1,6 @@
 package com.example.beaconble
 
-import com.example.beaconble.io_files.SessionWriter
+import com.example.beaconble.io.SessionWriter
 import org.altbeacon.beacon.Identifier
 import org.junit.Test
 import java.time.Instant
