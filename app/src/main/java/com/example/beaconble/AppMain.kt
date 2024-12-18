@@ -310,8 +310,8 @@ class AppMain : Application() {
         loggingSession.emptyAll()
     }
 
-    fun exportAll(outFile: Uri) {
-        // Create the output file, with filename VIPV_${TIMESTAMP}.txt
+    fun exportTo(outFile: Uri) {
+        // Create the output file
         val outStream = contentResolver.openOutputStream(outFile)
         if (outFile.path.isNullOrBlank()) {
             Log.e(TAG, "Output directory is null or blank")

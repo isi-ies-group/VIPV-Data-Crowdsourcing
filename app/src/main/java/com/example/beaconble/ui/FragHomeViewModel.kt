@@ -61,6 +61,6 @@ class FragHomeViewModel() : ViewModel() {
     }
 
     fun exportAll(file: Uri) {
-        appMain.exportAll(file)
+        appMain.exportTo(file)
     }
 }
