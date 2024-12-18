@@ -97,8 +97,6 @@ class AppMain : Application() {
 
         // Establecen dos observadores Live Data para cambios en el estado de la región y la lista de beacons detectado
         val regionViewModel = beaconManager.getRegionViewModel(region)
-        // Se llamara al observador cuando la region cambie de estado dentro/fuera
-        regionViewModel.regionState.observeForever(centralMonitoringObserver)
         // Se llamara al observador cuando se actualice la lista de de beacons (normalmente se actualiza cada 1 seg)
         regionViewModel.rangedBeacons.observeForever(centralRangingObserver)
 
@@ -106,17 +104,6 @@ class AppMain : Application() {
         this.regionState = regionViewModel.regionState
         this.rangedBeacons = regionViewModel.rangedBeacons
         this.nRangedBeacons = MutableLiveData(0)
-    }
-
-    //registra los cambios de si estas dentro o fuera de la region con la interfaz MonitorNotifier de la biblioteca
-    // si estas dentro te envia una notificacion
-    val centralMonitoringObserver = Observer<Int> { state ->
-        if (state == MonitorNotifier.OUTSIDE) {
-            //Log.d(TAG, "Outside beacon region: $region")
-        } else {
-            //Log.d(TAG, "Inside beacon region: $region")
-            // sendNotification()
-        }
     }
 
     //recibe actualizaciones de la lista de beacon detectados y su info
