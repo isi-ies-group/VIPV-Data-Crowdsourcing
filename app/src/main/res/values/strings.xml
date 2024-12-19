@@ -61,6 +61,7 @@
     <string name="no_data_to_export">There isn\'t any data to export!</string>
     <string name="session_started">Measurement session has started</string>
     <string name="session_stopped">Measurement session has ended</string>
+    <string name="share">Share session</string>
     // Beacon details view
     <string name="beacon_details">Beacon details</string>
     <string name="beacon_detail_description_hint">Optional beacon description</string>

@@ -68,7 +68,7 @@
             android:contentDescription="@string/save"
             android:padding="14sp"
             android:scaleType="centerInside"
-            android:src="@drawable/save_file"
+            android:src="@drawable/upload_cloud"
             app:tint="?attr/colorOnPrimary"/>
 
         <ImageButton
@@ -78,10 +78,10 @@
             android:layout_gravity="end"
             android:layout_marginHorizontal="0sp"
             android:background="@null"
-            android:contentDescription="@string/save"
+            android:contentDescription="@string/share"
             android:padding="14sp"
             android:scaleType="centerInside"
-            android:src="@drawable/save_file"
+            android:src="@drawable/share"
             app:tint="?attr/colorOnPrimary"/>
 
     </com.google.android.material.bottomappbar.BottomAppBar>

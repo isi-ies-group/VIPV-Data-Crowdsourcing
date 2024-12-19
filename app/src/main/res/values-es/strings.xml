@@ -54,7 +54,7 @@
     <string name="no_data_to_empty">¡No hay balizas que eliminar!</string>
     <string name="no_data_to_export">¡No hay información para exportar!</string>
     <string name="session_stopped">Sesión de medida finalizada</string>
-    <string name="save">Guardar</string>
+    <string name="share">Compartir sesión</string>
     <string name="beacon_details">Detalles de la baliza</string>
     <string name="beacon_detail_description_hint">Descripción opcional de la baliza</string>
     <string name="beacon_detail_tilt">Inclinación [grados]</string>
