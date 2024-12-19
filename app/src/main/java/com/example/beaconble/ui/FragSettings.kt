@@ -58,6 +58,12 @@ class FragSettings : PreferenceFragmentCompat() {
             }
             // set the flag to true
             testingApiEndpoint = true
+            // show a toast that the test is running
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.settings_api_testing),
+                Toast.LENGTH_SHORT
+            ).show()
             lifecycleScope.launch {
                 val isUp = AppMain.instance.testApiEndpoint()
                 // set the flag to false

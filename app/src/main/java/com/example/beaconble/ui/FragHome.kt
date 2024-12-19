@@ -29,7 +29,8 @@ class FragHome : Fragment() {
     lateinit var beaconCountTextView: TextView
     lateinit var startStopSessionButton: FloatingActionButton
     lateinit var emptyAllButton: ImageButton
-    lateinit var exportAllButton: ImageButton
+    lateinit var shareSessionButton: ImageButton
+    lateinit var uploadSessionButton: ImageButton
 
     // Adapter for the list view
     lateinit var adapter: ListAdapterBeacons
@@ -66,7 +67,8 @@ class FragHome : Fragment() {
         startStopSessionButton =
             view.findViewById<FloatingActionButton>(R.id.startStopSessionButton)
         emptyAllButton = view.findViewById<ImageButton>(R.id.imBtnActionEmptyAll)
-        exportAllButton = view.findViewById<ImageButton>(R.id.imBtnActionSaveAll)
+        shareSessionButton = view.findViewById<ImageButton>(R.id.imBtnActionShareSession)
+        uploadSessionButton = view.findViewById<ImageButton>(R.id.imBtnActionUploadSession)
 
         // Create the adapter for the list view and assign it to the list view.
         adapter = ListAdapterBeacons(requireContext(), ArrayList())
@@ -148,13 +150,13 @@ class FragHome : Fragment() {
             alertDialog.show()
         }
 
-        exportAllButton.setOnClickListener {
+        shareSessionButton.setOnClickListener {
             // Check if there is data to export
             if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
                 // If there are no beacons, show a toast message and return
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.no_data_to_export),
+                    getString(R.string.no_data_to_share),
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
@@ -162,6 +164,20 @@ class FragHome : Fragment() {
             // Open the file picker intention for document files
             val filename = "VIPV_${Instant.now()}.txt"
             activityResultContract.launch(filename)
+        }
+
+        uploadSessionButton.setOnClickListener {
+            // Check if there is data to upload
+            if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
+                // If there are no beacons, show a toast message and return
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.no_data_to_upload),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+            // Upload the session data
         }
 
         beaconCountTextView.text = getString(R.string.beacons_detected_zero)

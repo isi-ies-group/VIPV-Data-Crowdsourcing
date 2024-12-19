@@ -58,7 +58,8 @@
     <string name="empty_all_data">Delete all data?</string>
     <string name="empty_all_data_confirmation">This action can\'t be undone.</string>
     <string name="empty_session_nothing_to_do">Session cleared</string>
-    <string name="no_data_to_export">Cannot export an empty session.</string>
+    <string name="no_data_to_share">Cannot export an empty session</string>
+    <string name="no_data_to_upload">Cannot upload an empty session</string>
     <string name="session_started">Measurement session has started</string>
     <string name="session_stopped">Measurement session has ended</string>
     <string name="share">Share session</string>
@@ -95,4 +96,5 @@
     <string name="settings_api_test">Test API endpoint</string>
     <string name="settings_api_valid">Endpoint is reachable</string>
     <string name="settings_api_invalid">Could not reach endpoint</string>
+    <string name="settings_api_testing">Probing connection with server…</string>
 </resources>

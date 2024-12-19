@@ -59,20 +59,20 @@
             app:tint="?attr/colorOnPrimary"/>
 
         <ImageButton
-            android:id="@+id/imBtnActionUploadAll"
+            android:id="@+id/imBtnActionUploadSession"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginHorizontal="16sp"
             android:background="@null"
-            android:contentDescription="@string/share"
+            android:contentDescription="@string/upload"
             android:padding="14sp"
             android:scaleType="centerInside"
             android:src="@drawable/upload_cloud"
             app:tint="?attr/colorOnPrimary"/>
 
         <ImageButton
-            android:id="@+id/imBtnActionSaveAll"
+            android:id="@+id/imBtnActionShareSession"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
