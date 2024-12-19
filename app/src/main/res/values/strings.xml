@@ -40,7 +40,7 @@
     <string name="settings_app_behaviour">Behaviour</string>
     <string name="settings_only_wifi_upload">Upload only on WiFi</string>
     <string name="settings_api_endpoint">Self-hosting zone</string>
-    <string name="settings_api_address">IP</string>
+    <string name="settings_api_address">Address</string>
     <string name="settings_api_address_hint">http:// or https://</string>
     <string name="settings_api_port">Port</string>
     <string name="settings_user_token">User access token</string>

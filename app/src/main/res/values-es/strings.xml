@@ -35,7 +35,7 @@
     <string name="settings_app_behaviour">Comportamiento de la app</string>
     <string name="settings_only_wifi_upload">Subir datos solo con WiFi</string>
     <string name="settings_api_endpoint">Sección para servidores propios</string>
-    <string name="settings_api_address">IP</string>
+    <string name="settings_api_address">Dirección IP</string>
     <string name="settings_api_port">Puerto</string>
     <string name="register">Regístrate</string>
     <string name="about">Sobre la app</string>
