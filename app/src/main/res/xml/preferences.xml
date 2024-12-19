@@ -14,7 +14,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:icon="@drawable/baseline_open_in_browser_24"
+        android:icon="@drawable/upload_cloud"
         android:title="@string/settings_api_endpoint">
 
         <EditTextPreference
@@ -23,7 +23,6 @@
             android:title="@string/settings_api_address" />
 
         <Preference
-            android:icon="@drawable/upload_cloud"
             android:key="api_test"
             android:title="@string/settings_api_test" />
 

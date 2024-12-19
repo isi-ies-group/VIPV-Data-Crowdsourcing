@@ -3,28 +3,29 @@ package com.example.beaconble.ui
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.preference.SwitchPreferenceCompat
 import com.example.beaconble.AppMain
 import com.example.beaconble.BuildConfig
 import com.example.beaconble.R
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class FragSettings : PreferenceFragmentCompat() {
+    // lock for the test api endpoint button, so multiple requests are not sent before the first one finishes
+    private var testingApiEndpoint = false
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         // Ge the upload only on wifi setting
-        val switchPreference = findPreference<SwitchPreference>("upload_only_wifi")
+        val switchPreference = findPreference<SwitchPreferenceCompat>("only_wifi_upload")
         // set callback to update the application service when the value changes
         switchPreference?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
+                Log.d("FragSettings", "Setting upload only on wifi to $newValue")
                 // TODO AppMain.instance.setUploadOnlyOnWifi(newValue as Boolean)
                 true
             }
@@ -38,13 +39,8 @@ class FragSettings : PreferenceFragmentCompat() {
         editTextPreference?.setOnBindEditTextListener { editText ->
             editText.setOnEditorActionListener { _, _, _ ->
                 // Update the endpoint in the API service
-                var newUri = editText.text.toString()
-                if (!newUri.endsWith("/")) {
-                    newUri += "/"
-                }
-                if (!newUri.startsWith("http://") && !newUri.startsWith("https://")) {
-                    newUri = "http://$newUri"
-                }
+                val newUri = editText.text.toString()
+                Log.d("FragSettings", "Setting API URI to $newUri")
                 AppMain.Companion.instance.setService(newUri)
                 true
             }
@@ -52,12 +48,22 @@ class FragSettings : PreferenceFragmentCompat() {
         editTextPreference?.setDefaultValue(BuildConfig.SERVER_URL)
 
         // Get test api endpoint button preference
-        val testApiEndpoint = findPreference<Preference>("test_api_endpoint")
+        val testApiEndpoint = findPreference<Preference>("api_test")
         // set callback to update the application API service when the value changes
         testApiEndpoint?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            Log.d("FragSettings", "Testing API endpoint")
+            // if the button is already pressed, do nothing
+            if (testingApiEndpoint) {
+                return@OnPreferenceClickListener true
+            }
+            // set the flag to true
+            testingApiEndpoint = true
             lifecycleScope.launch {
                 val isUp = AppMain.instance.testApiEndpoint()
+                // set the flag to false
+                testingApiEndpoint = false
                 // show a toast with the result
+                Log.d("FragSettings", "API endpoint is ${if (isUp) "up" else "down"}")
                 Toast.makeText(
                     requireContext(),
                     if (isUp) getString(R.string.settings_api_valid) else getString(R.string.settings_api_invalid),

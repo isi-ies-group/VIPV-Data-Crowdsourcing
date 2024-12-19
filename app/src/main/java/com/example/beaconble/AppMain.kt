@@ -225,9 +225,17 @@ class AppMain : Application() {
      */
     fun setService(baseURL: String?) {
         var endpoint = baseURL
+        Log.i(TAG, "Setting API endpoint to $endpoint")
         if (endpoint.isNullOrBlank()) {
             endpoint = BuildConfig.SERVER_URL
         }
+        if (!endpoint.endsWith("/")) {
+            endpoint += "/"
+        }
+        if (!endpoint.startsWith("http://") && !endpoint.startsWith("https://")) {
+            endpoint = "http://${endpoint}"
+        }
+        Log.i(TAG, "Setting API endpoint to sanitized $endpoint")
         val retrofit = Retrofit.Builder()
             .baseUrl(endpoint)
             .addConverterFactory(GsonConverterFactory.create())
