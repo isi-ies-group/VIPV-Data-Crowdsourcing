@@ -131,7 +131,7 @@ class FragHome : Fragment() {
                 // If there are no beacons, show a toast message and return
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.no_data_to_empty),
+                    getString(R.string.empty_session_nothing_to_do),
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
