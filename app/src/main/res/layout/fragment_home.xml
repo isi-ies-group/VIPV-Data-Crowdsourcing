@@ -94,6 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/start_button"
+        android:tooltipText="@string/start_button"
         android:tint="@color/design_default_color_on_secondary"
         app:layout_anchor="@id/bottomAppBar"
         app:srcCompat="@drawable/triangle_start" />

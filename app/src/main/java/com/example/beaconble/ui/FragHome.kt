@@ -180,9 +180,11 @@ class FragHome : Fragment() {
     private fun updateStartStopButton(isSessionActive: Boolean) {
         if (isSessionActive) {
             startStopSessionButton.setImageResource(R.drawable.square_stop)
+            startStopSessionButton.tooltipText = getString(R.string.stop_button)
             startStopSessionButton.contentDescription = getString(R.string.stop_button)
         } else {
             startStopSessionButton.setImageResource(R.drawable.triangle_start)
+            startStopSessionButton.tooltipText = getString(R.string.start_button)
             startStopSessionButton.contentDescription = getString(R.string.start_button)
         }
     }
