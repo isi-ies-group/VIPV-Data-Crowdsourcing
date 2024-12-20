@@ -2,6 +2,7 @@ package com.example.beaconble
 
 import android.app.*
 import android.content.Intent
+import android.content.ComponentCallbacks2
 import android.location.Location
 import android.net.Uri
 import android.util.Log
@@ -25,7 +26,7 @@ import java.time.Instant
 import kotlin.concurrent.thread
 
 
-class AppMain : Application() {
+class AppMain : Application(), ComponentCallbacks2 {
     // API & user services
     private lateinit var apiService: APIService
     lateinit var apiUserSession: ApiUserSession
@@ -90,6 +91,13 @@ class AppMain : Application() {
         instance = this
     }
 
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level == TRIM_MEMORY_BACKGROUND) {
+            Log.d(TAG, "Trimming memory in background")
+            loggingSession.freeDataTemporarily()
+        }
+    }
 
     fun setupBeaconScanning() {
         startBeaconScanning()
