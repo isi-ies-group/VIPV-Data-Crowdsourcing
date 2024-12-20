@@ -10,21 +10,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
-import com.example.beaconble.io.SessionWriter
 import com.example.beaconble.broadcastReceivers.StopBroadcastReceiver
 import com.example.beaconble.ui.ActMain
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.runBlocking
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.Identifier
-import org.altbeacon.beacon.MonitorNotifier
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
 import java.time.Instant
 import kotlin.concurrent.thread
 
@@ -74,6 +70,9 @@ class AppMain : Application() {
 
         // Activate debug mode only if build variant is debug
         BeaconManager.setDebug(BuildConfig.DEBUG)
+
+        // Session initialization
+        loggingSession.init(cacheDir)
 
         //configurar escaneo
         setupBeaconScanning()
@@ -274,15 +273,7 @@ class AppMain : Application() {
 
         // Create a coroutine to write the session data to a file
         thread {
-            val outFile = File(applicationContext.cacheDir, "VIPV_${Instant.now()}.txt")
-            SessionWriter.V1.dump2file(outFile.outputStream(), loggingSession = loggingSession)
-            Log.i(TAG, "Session data written to file: $outFile")
-            // upload the file to the server from a coroutine
-            runBlocking {
-                val response = apiUserSession.upload(outFile)
-                Log.i(TAG, "Upload response: $response")
-            }
-            outFile.delete()
+            val file = loggingSession.concludeSession()
         }
     }
 
@@ -325,8 +316,24 @@ class AppMain : Application() {
             Log.e(TAG, "Output directory is null or blank")
             return
         }
-        SessionWriter.V1.dump2file(outStream!!, loggingSession = loggingSession)
-        outStream.close()
+        val outputtedFile = loggingSession.concludeSession()
+        outStream?.close()
+        // rename outputtedFile to outFile, so it gets desired filename from the user
+        //outputtedFile.renameTo(outFile.toFile())
+    }
+
+    /**
+     * Outputs a snapshot of the current session data to a file and returns it.
+     * A view is expected to handle the file and share (send) it.
+     */
+    fun shareCurrentSessionAsIs() {
+        val outputtedFile = loggingSession.concludeSession()
+        val uri = Uri.fromFile(outputtedFile)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(Intent.createChooser(intent, "Share session data"))
     }
 
     fun concludeSession() {

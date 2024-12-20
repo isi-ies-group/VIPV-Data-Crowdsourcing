@@ -6,7 +6,6 @@ import com.example.beaconble.io.SessionWriter
 import org.altbeacon.beacon.Identifier
 import java.io.File
 import java.time.Instant
-import kotlin.text.clear
 
 /**
  * Singleton object to hold the logging session and some other metadata.
@@ -158,7 +157,10 @@ object LoggingSession {
      */
     fun saveSession(): File {
         stopInstant = Instant.now()
-        var outFile = File(cacheDir, "${SESSION_FILE_PREFIX}${startInstant}-${stopInstant}.${SESSION_FILE_EXTENSION}")
+        var outFile = File(
+            cacheDir,
+            "${SESSION_FILE_PREFIX}${startInstant}-${stopInstant}.${SESSION_FILE_EXTENSION}"
+        )
 
         outFile.outputStream().writer(Charsets.UTF_8).use {
             // write the header
@@ -173,6 +175,7 @@ object LoggingSession {
                     reader.lines().forEach { line -> it.write(line + "\n") }
                     reader.close()
                 }
+                bodyFile!!.delete()
             }
             // append the latest data to the file
             SessionWriter.V1.appendCsvBody(it, beacons.value!!)
@@ -185,9 +188,11 @@ object LoggingSession {
 
     /**
      * Ends the current session by saving it to the cache dir and clearing the beacons data.
+     * @return The file with the session data.
      */
-    fun concludeSession() {
-        saveSession()
+    fun concludeSession(): File {
+        val file = saveSession()
         clearBeaconsData()
+        return file
     }
 }

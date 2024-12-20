@@ -38,17 +38,6 @@ class FragHome : Fragment() {
     // Application instance
     lateinit var appMain: AppMain
 
-    // Activity result contract for the file picker
-    private val activityResultContract =
-        registerForActivityResult(ActivityResultContracts.CreateDocument(mimeType = "text/plain")) { result ->
-            if (result != null) {
-                // Then call the exportAll method from the ViewModel with the file as parameter
-                Log.d("FragHome", "Exporting all data to $result")
-                val sanitizedUri = result.toString().replace("content://", "")
-                viewModel.value.exportAll(result)
-            }
-        }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -161,9 +150,8 @@ class FragHome : Fragment() {
                 ).show()
                 return@setOnClickListener
             }
-            // Open the file picker intention for document files
-            val filename = "VIPV_${Instant.now()}.txt"
-            activityResultContract.launch(filename)
+            // Call activity's share method
+            (requireActivity() as ActMain).shareSession()
         }
 
         uploadSessionButton.setOnClickListener {
@@ -178,6 +166,7 @@ class FragHome : Fragment() {
                 return@setOnClickListener
             }
             // Upload the session data
+            viewModel.value.uploadSession()
         }
 
         beaconCountTextView.text = getString(R.string.beacons_detected_zero)

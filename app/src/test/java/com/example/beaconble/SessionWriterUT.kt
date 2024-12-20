@@ -1,5 +1,6 @@
 package com.example.beaconble
 
+import com.example.beaconble.LoggingSession
 import com.example.beaconble.io.SessionWriter
 import org.altbeacon.beacon.Identifier
 import org.junit.Test
