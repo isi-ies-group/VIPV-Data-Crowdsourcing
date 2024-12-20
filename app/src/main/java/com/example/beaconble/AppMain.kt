@@ -3,6 +3,7 @@ package com.example.beaconble
 import android.app.*
 import android.content.Intent
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.location.Location
 import android.net.Uri
 import android.util.Log
@@ -11,8 +12,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.beaconble.broadcastReceivers.StopBroadcastReceiver
 import com.example.beaconble.ui.ActMain
+import com.example.beaconble.works.SessionFilesUploadWorker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import org.altbeacon.beacon.BeaconManager
@@ -79,12 +85,10 @@ class AppMain : Application(), ComponentCallbacks2 {
         setupBeaconScanning()
 
         // Set API service
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val apiEndpoint = sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL)!!
-        setService(apiEndpoint)
+        setupApiService()
 
         // Load user session from shared preferences
-        apiUserSession = ApiUserSession(sharedPreferences, apiService)
+        apiUserSession = ApiUserSession(PreferenceManager.getDefaultSharedPreferences(this), apiService)
 
 
         // Save instance for singleton access
@@ -225,17 +229,15 @@ class AppMain : Application(), ComponentCallbacks2 {
     }
 
     /**
-     * Update the API service endpoint (callback for configuration changes)
-     * If the endpoint is not provided or blank, the default value is used (from BuildConfig)
-     * @param baseURL New API endpoint
+     * Setup the API service endpoint (callback for configuration changes)
+     * If the endpoint is not set in PreferenceManager.getDefaultSharedPreferences,
+     * the default value is used (from BuildConfig)
      * @return void
      */
-    fun setService(baseURL: String?) {
-        var endpoint = baseURL
+    fun setupApiService() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        var endpoint = sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL) ?: BuildConfig.SERVER_URL
         Log.i(TAG, "Setting API endpoint to $endpoint")
-        if (endpoint.isNullOrBlank()) {
-            endpoint = BuildConfig.SERVER_URL
-        }
         if (!endpoint.endsWith("/")) {
             endpoint += "/"
         }
@@ -317,36 +319,39 @@ class AppMain : Application(), ComponentCallbacks2 {
         loggingSession.emptyAll()
     }
 
-    fun exportTo(outFile: Uri) {
-        // Create the output file
-        val outStream = contentResolver.openOutputStream(outFile)
-        if (outFile.path.isNullOrBlank()) {
-            Log.e(TAG, "Output directory is null or blank")
-            return
-        }
-        val outputtedFile = loggingSession.concludeSession()
-        outStream?.close()
-        // rename outputtedFile to outFile, so it gets desired filename from the user
-        //outputtedFile.renameTo(outFile.toFile())
-    }
-
-    /**
-     * Outputs a snapshot of the current session data to a file and returns it.
-     * A view is expected to handle the file and share (send) it.
-     */
-    fun shareCurrentSessionAsIs() {
-        val outputtedFile = loggingSession.concludeSession()
-        val uri = Uri.fromFile(outputtedFile)
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(Intent.createChooser(intent, "Share session data"))
-    }
-
     fun concludeSession() {
         stopBeaconScanning()
-        emptyAll()
+        loggingSession.concludeSession()
+        // if the sharedPreference is set to upload files on metered network, schedule the upload
+        if (PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("auto_upload_on_metered", true)
+        ) {
+            scheduleFileUpload()
+        }
+    }
+
+    fun scheduleFileUpload() {
+        Log.i(TAG, "Scheduling file upload")
+        // Define constraints for unmetered network
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+
+        // Create a OneTimeWorkRequest
+        val fileUploadWorkRequest = OneTimeWorkRequestBuilder<SessionFilesUploadWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        // Enqueue the work
+        WorkManager.getInstance(this).enqueue(fileUploadWorkRequest)
+    }
+
+    fun uploadAll() {
+        // Create a OneTimeWorkRequest
+        val fileUploadWorkRequest = OneTimeWorkRequestBuilder<SessionFilesUploadWorker>()
+            .build()
+        // Enqueue the work
+        WorkManager.getInstance(this).enqueue(fileUploadWorkRequest)
     }
 
     companion object {

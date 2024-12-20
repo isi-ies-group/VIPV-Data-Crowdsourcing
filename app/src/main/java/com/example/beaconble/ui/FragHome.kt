@@ -156,8 +156,8 @@ class FragHome : Fragment() {
 
         uploadSessionButton.setOnClickListener {
             // Check if there is data to upload
-            if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
-                // If there are no beacons, show a toast message and return
+            if (AppMain.instance.loggingSession.getSessionFiles().isEmpty()) {
+                // If there are no files, show a toast message and return
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.no_data_to_upload),
@@ -166,7 +166,7 @@ class FragHome : Fragment() {
                 return@setOnClickListener
             }
             // Upload the session data
-            viewModel.value.uploadSession()
+            viewModel.value.uploadAllSessions()
         }
 
         beaconCountTextView.text = getString(R.string.beacons_detected_zero)

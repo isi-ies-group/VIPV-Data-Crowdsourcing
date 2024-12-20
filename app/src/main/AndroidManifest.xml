@@ -35,13 +35,12 @@
         </activity>
         <activity
             android:name="com.example.beaconble.ui.ActPermissions"
-            android:exported="false"></activity>
-
+            android:exported="false"/>
         <service
             android:name=".service.ForegroundBeaconScanService"
             android:exported="false"
             android:foregroundServiceType="location"
-            android:permission="android.permission.FOREGROUND_SERVICE"></service>
+            android:permission="android.permission.FOREGROUND_SERVICE"/>
         <receiver
             android:name=".broadcastReceivers.StopBroadcastReceiver"
             android:exported="false">

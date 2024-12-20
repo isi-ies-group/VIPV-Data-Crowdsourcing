@@ -167,7 +167,7 @@ object LoggingSession {
             SessionWriter.V1.createJSONHeader(it, beacons.value!!, startInstant!!, stopInstant!!)
             it.write("\n\n")  // separate the header from the body
             // write the header
-            it.write("beacon_index,timestamp,data,latitude,longitude\n")
+            it.write("beacon_id,timestamp,data,latitude,longitude\n")
             // write the body
             if (bodyFile != null) {
                 // concat body file if it was saved previously
@@ -194,5 +194,17 @@ object LoggingSession {
         val file = saveSession()
         clearBeaconsData()
         return file
+    }
+
+    /**
+     * Return a list of Files with the session data in the cache folder, that can be uploaded.
+     * Unfinished sessions (i.e., the current one) are not included.
+     */
+    fun getSessionFiles(): List<File> {
+        val files = cacheDir!!.listFiles { _, name ->
+            name.startsWith(SESSION_FILE_PREFIX) && name.endsWith(SESSION_FILE_EXTENSION)
+        }
+        // filter out the cached body file
+        return files?.filter { it != bodyFile } ?: emptyList()
     }
 }

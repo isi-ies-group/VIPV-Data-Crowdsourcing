@@ -6,9 +6,10 @@
         android:title="@string/settings_app_behaviour">
 
         <SwitchPreferenceCompat
-            android:key="only_wifi_upload"
+            android:key="auto_upload_on_metered"
             android:summaryOff="@string/settings_only_wifi_upload_off"
             android:summaryOn="@string/settings_only_wifi_upload_on"
+            android:defaultValue="true"
             android:title="@string/settings_only_wifi_upload" />
 
     </PreferenceCategory>

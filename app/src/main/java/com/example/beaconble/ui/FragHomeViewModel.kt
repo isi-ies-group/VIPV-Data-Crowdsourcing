@@ -32,11 +32,7 @@ class FragHomeViewModel() : ViewModel() {
         appMain.emptyAll()
     }
 
-    fun shareSession(file: Uri) {
-        appMain.exportTo(file)
-    }
-
-    fun uploadSession() {
-        //appMain.uploadAll()
+    fun uploadAllSessions() {
+        appMain.uploadAll()
     }
 }

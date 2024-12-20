@@ -49,7 +49,7 @@ object SessionWriter {
                 it.write("\n\n")
                 // Write the CSV part.
                 // Header
-                it.write("beacon_index,timestamp,data,latitude,longitude\n")
+                appendCsvHeader(it)
                 // Body
                 appendCsvBody(it, beacons)
             }
@@ -94,7 +94,7 @@ object SessionWriter {
             outputStreamWriter.append("\"version_scheme\": 1,")  // Version of the file format (this is the first version).
             outputStreamWriter.append("\"start_instant\": \"${startInstant}\",")
             outputStreamWriter.append("\"finish_instant\": \"${finishInstant}\",")
-            outputStreamWriter.append("\"beacons\": {")  // Open "beacons"
+            outputStreamWriter.append("\"beacons\": [")  // Open "beacons"
             for ((index, beacon) in beacons.withIndex()) {
                 // Add a comma before the next element, as JSON does not allow trailing commas.
                 // https://stackoverflow.com/questions/201782/can-you-use-a-trailing-comma-in-a-json-object
@@ -102,7 +102,7 @@ object SessionWriter {
                     outputStreamWriter.append(",")
                 }
                 // ID identifier as beacon index in the list.
-                outputStreamWriter.append("\"${index}\": {")
+                outputStreamWriter.append("{")  // Open the unique beacon object.
 
                 // Encode the description in Base64 to avoid issues with special characters (especially quotes and newlines).
                 val base64encodedDescription =
@@ -113,14 +113,22 @@ object SessionWriter {
                 outputStreamWriter.append("\"orientation\": ${beacon.direction},")
                 outputStreamWriter.append("\"description\": \"$base64encodedDescription\"")
 
-                outputStreamWriter.append("}")
+                outputStreamWriter.append("}")  // Close the unique beacon object.
             }
-            outputStreamWriter.append("}")  // Close "beacons"
+            outputStreamWriter.append("]")  // Close "beacons"
             outputStreamWriter.append("}")  // Close the JSON object.
         }
 
         /**
-         * Create the CSV header and body of the file.
+         * Create the CSV header of the file.
+         * @param outputStreamWriter The output stream to write to.
+         */
+        fun appendCsvHeader(outputStreamWriter: OutputStreamWriter) {
+            outputStreamWriter.write("beacon_id,timestamp,data,latitude,longitude\n")
+        }
+
+        /**
+         * Create the CSV body of the file.
          * @param outputStreamWriter The output stream to write to.
          * @param beacons The collection of beacons.
          */
@@ -128,10 +136,10 @@ object SessionWriter {
             outputStreamWriter: OutputStreamWriter,
             beacons: Collection<BeaconSimplified>
         ) {
-            for ((index, beacon) in beacons.withIndex()) {
+            for (beacon in beacons) {
                 for (entry in beacon.sensorData.value!!) {
                     val result = StringBuilder()
-                    result.append(index.toString())
+                    result.append(beacon.id.toString())
                     result.append(",")
                     result.append(entry.timestamp.toString())
                     result.append(",")
@@ -175,7 +183,7 @@ object SessionWriter {
                     writer.write("\n\n")
                     // Write the CSV part.
                     // Header
-                    writer.write("beacon_index,timestamp,data,latitude,longitude\n")
+                    appendCsvHeader(writer)
                     // Body
                     // From the previous file
                     reader.lines().forEach { writer.write(it + "\n") }

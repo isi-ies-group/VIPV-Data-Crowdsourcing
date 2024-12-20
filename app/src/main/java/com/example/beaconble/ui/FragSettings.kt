@@ -21,14 +21,14 @@ class FragSettings : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         // Ge the upload only on wifi setting
-        val switchPreference = findPreference<SwitchPreferenceCompat>("only_wifi_upload")
+        val switchPreference = findPreference<SwitchPreferenceCompat>("auto_upload_on_metered")
         // set callback to update the application service when the value changes
-        switchPreference?.onPreferenceChangeListener =
+        /*switchPreference?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
                 Log.d("FragSettings", "Setting upload only on wifi to $newValue")
                 // TODO AppMain.instance.setUploadOnlyOnWifi(newValue as Boolean)
                 true
-            }
+            }*/
 
         // Get the API URI setting
         val editTextPreference = findPreference<EditTextPreference>("api_uri")
@@ -41,7 +41,7 @@ class FragSettings : PreferenceFragmentCompat() {
                 // Update the endpoint in the API service
                 val newUri = editText.text.toString()
                 Log.d("FragSettings", "Setting API URI to $newUri")
-                AppMain.Companion.instance.setService(newUri)
+                AppMain.Companion.instance.setupApiService()
                 true
             }
         }
