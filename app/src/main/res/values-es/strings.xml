@@ -92,4 +92,9 @@
     <string name="settings_api_valid">"Servicio configurado correctamente "</string>
     <string name="settings_api_invalid">Servicio no disponible en la dirección especificada</string>
     <string name="settings_api_testing">Probando la conexión con el servidor…</string>
+    <string name="notification_no_location_bluetooth_channel_name">Bluetooth o Ubicación desactivadas.</string>
+    <string name="notification_no_location_bluetooth_title">Se requiere atención</string>
+    <string name="notification_no_location_bluetooth_text">Bluetooth y Ubicación desactivados, actívelos por favor</string>
+    <string name="notification_no_location_text">Ubicación desactivada, actívala por favor</string>
+    <string name="notification_no_bluetooth_text">Bluetooth desactivado, actívelo por favor</string>
 </resources>
