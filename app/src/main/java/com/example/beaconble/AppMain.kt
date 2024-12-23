@@ -1,9 +1,11 @@
 package com.example.beaconble
 
 import android.app.*
+import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.content.ComponentCallbacks2
 import android.location.Location
+import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData
@@ -18,12 +20,15 @@ import com.example.beaconble.broadcastReceivers.StopBroadcastReceiver
 import com.example.beaconble.ui.ActMain
 import com.example.beaconble.works.SessionFilesUploadWorker
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.Identifier
+import org.altbeacon.beacon.RegionViewModel
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
@@ -36,37 +41,54 @@ class AppMain : Application(), ComponentCallbacks2 {
     lateinit var apiUserSession: ApiUserSession
 
     // Bluetooth scanning
-    var region = Region(
+    // BeaconManager instance
+    private val beaconManager: BeaconManager by lazy { BeaconManager.getInstanceForApplication(this) }
+    val region = Region(
         "all-beacons",
         null,
         null,
         null
     )  // representa el criterio que se usa para busacar las balizas, como no se quiere buscar una UUID especifica los 3 útlimos campos son null
+    private lateinit var regionViewModel: RegionViewModel
 
     // Beacons abstractions
     var loggingSession = LoggingSession
 
     // LiveData observers for monitoring and ranging
+    // for public use by UI
     lateinit var regionState: MutableLiveData<Int>
     lateinit var rangedBeacons: MutableLiveData<Collection<Beacon>>
-    lateinit var nRangedBeacons: MutableLiveData<Int>
+    val nRangedBeacons: MutableLiveData<Int> = MutableLiveData(0)
 
     // Data for the beacon session
     var sessionRunning = MutableLiveData<Boolean>(false)
     val isSessionActive: LiveData<Boolean> get() = sessionRunning
 
-    // BeaconManager instance
-    private lateinit var beaconManager: BeaconManager
+    // Location items
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationRequest: LocationRequest
 
-    val stopBroadcastReceiver = StopBroadcastReceiver()
+    // run checkAndNotifyLocationAndBluetoothProviders every second
+    // to check if the location and bluetooth providers are enabled
+    // and show a notification if they are not
+    val checkAndNotifyLocationAndBluetoothProvidersThread = thread(start = false) {
+        while (!Thread.interrupted()) {
+            if (isSessionActive.value == true) {
+                checkAndNotifyLocationAndBluetoothProviders()
+                Thread.sleep(1000)
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
 
-        beaconManager = BeaconManager.getInstanceForApplication(this)
-        // Beacon Manager configura la interaccion con las beacons y el start/stop de ranging/monitoring
+        regionViewModel = beaconManager.getRegionViewModel(region)
+        regionState = regionViewModel.regionState
+        rangedBeacons = regionViewModel.rangedBeacons
 
-        // Por defecto la biblioteca solo detecta AltBeacon si se quiere otro tipo de protocolo hay que añadir el layout
+        // By default, the library will detect AltBeacon protocol beacons
+        beaconManager.beaconParsers.removeAll(beaconManager.beaconParsers)
         // m:0-1=0505 stands for InPlay's Company Identifier Code (0x0505), see https://www.bluetooth.com/specifications/assigned-numbers/
         // i:2-7 stands for the identifier, UUID (MAC) [little endian]
         // d:8-9 stands for the data, CH1 analog value [little endian]
@@ -79,6 +101,18 @@ class AppMain : Application(), ComponentCallbacks2 {
         // Session initialization
         loggingSession.init(cacheDir)
 
+        // Configure location service and auxiliary items
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // Configure location request
+        locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            GPS_LOCATION_PERIOD_MILLIS
+        ) // Update every second
+            .setMinUpdateIntervalMillis(GPS_LOCATION_PERIOD_MILLIS) // Minimum 1 second
+            .setWaitForAccurateLocation(true)
+            .build()
+
         //configurar escaneo
         setupBeaconScanning()
 
@@ -86,7 +120,8 @@ class AppMain : Application(), ComponentCallbacks2 {
         setupApiService()
 
         // Load user session from shared preferences
-        apiUserSession = ApiUserSession(PreferenceManager.getDefaultSharedPreferences(this), apiService)
+        apiUserSession =
+            ApiUserSession(PreferenceManager.getDefaultSharedPreferences(this), apiService)
 
 
         // Save instance for singleton access
@@ -104,15 +139,8 @@ class AppMain : Application(), ComponentCallbacks2 {
     fun setupBeaconScanning() {
         startBeaconScanning()
 
-        // Establecen dos observadores Live Data para cambios en el estado de la región y la lista de beacons detectado
-        val regionViewModel = beaconManager.getRegionViewModel(region)
         // Se llamara al observador cuando se actualice la lista de de beacons (normalmente se actualiza cada 1 seg)
         regionViewModel.rangedBeacons.observeForever(centralRangingObserver)
-
-        // Save observers for public use in ViewModel(s)
-        this.regionState = regionViewModel.regionState
-        this.rangedBeacons = regionViewModel.rangedBeacons
-        this.nRangedBeacons = MutableLiveData(0)
     }
 
     //recibe actualizaciones de la lista de beacon detectados y su info
@@ -133,14 +161,13 @@ class AppMain : Application(), ComponentCallbacks2 {
                         location = loc
                     }
             } catch (e: SecurityException) {
-                Log.e(TAG, "Location permission denied")
+                Log.e(TAG, "Location permission denied: $e")
                 // TODO handle location permission denied
             }
             // if location is null, set latitude and longitude to NaN
             var latitude = location?.latitude
             var longitude = location?.longitude
             if (location == null) {
-                Log.e(TAG, "Location is null")
                 latitude = Double.NaN
                 longitude = Double.NaN
             }
@@ -149,12 +176,9 @@ class AppMain : Application(), ComponentCallbacks2 {
             val currentInstant = Instant.now()
             for (beacon: Beacon in beacons) {
                 val id = beacon.id1
-                Log.i(TAG, "ID: $id")
                 val data = beacon.dataFields
                 // analogReading is the CH1 analog value, as two bytes in little endian
                 val analogReading = data[0].toShort()
-                val hexString = analogReading.toString(16)
-                Log.i(TAG, "Data: $analogReading (0x$hexString)")
                 addSensorDataEntry(
                     id,
                     analogReading,
@@ -182,7 +206,75 @@ class AppMain : Application(), ComponentCallbacks2 {
         )
     }
 
-    private fun sendNotification() {
+    /**
+     * Show a notification with the given title and text
+     */
+    private fun checkAndNotifyLocationAndBluetoothProviders() {
+        val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+        val bluetoothManager = this.getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val isBluetoothEnabled = bluetoothManager.adapter.isEnabled
+
+        Log.i(TAG, "GPS enabled: $isGpsEnabled, Bluetooth enabled: $isBluetoothEnabled")
+        if (!(isGpsEnabled && isBluetoothEnabled)) {
+            showLocationBluetoothNotification(isGpsEnabled, isBluetoothEnabled)
+        } else {
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(NOTIFICATION_NO_LOCATION_OR_BLUETOOTH_ID)
+        }
+    }
+
+    /**
+     * Show a extremely important notification for when the GPS or Bluetooth is disabled
+     * @param isGpsEnabled: Boolean, true if GPS is enabled
+     * @param isBluetoothEnabled: Boolean, true if Bluetooth is enabled
+     * @return void
+     */
+    private fun showLocationBluetoothNotification(
+        isGpsEnabled: Boolean,
+        isBluetoothEnabled: Boolean
+    ) {
+        var notificationMessageText = ""
+        if (!isGpsEnabled && !isBluetoothEnabled) {
+            notificationMessageText = getString(R.string.notification_no_location_bluetooth_text)
+        } else if (!isGpsEnabled) {
+            notificationMessageText = getString(R.string.notification_no_location_text)
+        } else if (!isBluetoothEnabled) {
+            notificationMessageText = getString(R.string.notification_no_bluetooth_text)
+        }
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val builder = NotificationCompat.Builder(this, "vipv-app-location-bluetooth")
+            .setContentTitle(getString(R.string.notification_no_location_bluetooth_title))
+            .setContentText(notificationMessageText)
+            .setSmallIcon(R.mipmap.logo_ies_foreground)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOngoing(true)
+            .setContentIntent(  // Explicit intent to open the app when notification is clicked
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    Intent(this, ActMain::class.java),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+
+        val channel = NotificationChannel(
+            "vipv-app-location-bluetooth",  // id
+            getString(R.string.notification_no_location_bluetooth_channel_name),  // name
+            NotificationManager.IMPORTANCE_HIGH,  // importance
+        )
+        channel.description = "Notifies when location or Bluetooth are disabled."
+        notificationManager.createNotificationChannel(channel)
+        notificationManager.notify(NOTIFICATION_NO_LOCATION_OR_BLUETOOTH_ID, builder.build())
+    }
+
+    /**
+     * Show a notification when a session is ongoing
+     */
+    private fun showSessionOngoingNotification() {
         // intents for stopping the session
         val stopIntent = Intent(this, StopBroadcastReceiver::class.java).apply {
             action = ACTION_STOP_SESSION
@@ -234,15 +326,14 @@ class AppMain : Application(), ComponentCallbacks2 {
      */
     fun setupApiService() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        var endpoint = sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL) ?: BuildConfig.SERVER_URL
-        Log.i(TAG, "Setting API endpoint to $endpoint")
+        var endpoint =
+            sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL) ?: BuildConfig.SERVER_URL
         if (!endpoint.endsWith("/")) {
             endpoint += "/"
         }
         if (!endpoint.startsWith("http://") && !endpoint.startsWith("https://")) {
             endpoint = "http://${endpoint}"
         }
-        Log.i(TAG, "Setting API endpoint to sanitized $endpoint")
         val retrofit = Retrofit.Builder()
             .baseUrl(endpoint)
             .addConverterFactory(GsonConverterFactory.create())
@@ -269,19 +360,19 @@ class AppMain : Application(), ComponentCallbacks2 {
      * @return void
      */
     fun stopBeaconScanning() {
-        Log.i(TAG, "Stopping beacon scanning")
         loggingSession.stopInstant = Instant.now()
         beaconManager.stopMonitoring(region)
         beaconManager.stopRangingBeacons(region)
         sessionRunning.value = false
 
-        // Remove notification
+        // Remove notification(s)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(NOTIFICATION_ONGOING_SESSION_ID)
+        notificationManager.cancel(NOTIFICATION_NO_LOCATION_OR_BLUETOOTH_ID)
 
         // Create a coroutine to write the session data to a file
         thread {
-            val file = loggingSession.concludeSession()
+            loggingSession.concludeSession()
         }
     }
 
@@ -295,8 +386,28 @@ class AppMain : Application(), ComponentCallbacks2 {
         beaconManager.startRangingBeacons(region)
         sessionRunning.value = true
 
+        // Start the thread to check and notify location and bluetooth providers
+        if (!checkAndNotifyLocationAndBluetoothProvidersThread.isAlive) {
+            checkAndNotifyLocationAndBluetoothProvidersThread.start()
+        }
+
+        // Start location updates
+        try {
+            checkAndNotifyLocationAndBluetoothProviders()
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                {
+                    // Do nothing, just request location updates
+                },
+                null
+            )
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Location permission denied: $e")
+            // TODO handle location permission denied
+        }
+
         // Configure the notification channel and send the notification
-        sendNotification()
+        showSessionOngoingNotification()
     }
 
     /**
@@ -352,11 +463,18 @@ class AppMain : Application(), ComponentCallbacks2 {
         WorkManager.getInstance(this).enqueue(fileUploadWorkRequest)
     }
 
+    override fun onTerminate() {
+        stopBeaconScanning()
+        super.onTerminate()
+    }
+
     companion object {
         lateinit var instance: AppMain
             private set  // This is a singleton, setter is private but access is public
         const val TAG = "AppMain"
         const val NOTIFICATION_ONGOING_SESSION_ID = 1
+        const val NOTIFICATION_NO_LOCATION_OR_BLUETOOTH_ID = 2
         const val ACTION_STOP_SESSION = "com.example.beaconble.STOP_SESSION"
+        const val GPS_LOCATION_PERIOD_MILLIS = 1000L
     }  // companion object
 }
