@@ -227,7 +227,7 @@ class ApiUserSession {
             Base64.encodeToString(saltByteArray, Base64.DEFAULT)
         )
         try {
-            val registerResponse = apiService.registerUser(registerRequest)
+            apiService.registerUser(registerRequest)
             knownState = ApiUserSessionState.LOGGED_IN
         } catch (e: HttpException) {
             Log.e("ApiUserSession", "HttpException registering user: ${e.message}")
@@ -294,10 +294,6 @@ class ApiUserSession {
         return ApiUserSessionState.LOGGED_IN
     }
 
-    fun isProbablyValid(): Boolean {
-        return username != null && email != null && passHash != null && passSalt != null
-    }
-
     // sub classes and factories from root class
     class SaltResponse {
         var passSalt: String? = null
@@ -307,9 +303,10 @@ class ApiUserSession {
 
     fun loginRequest() = LoginRequest(this.email!!, this.passHash!!)
 
+    @Suppress("PropertyName")
     class LoginResponse {
         var username: String? = null
-        var access_token: String? = null
+        var access_token: String? = null  // Linter does not like snake_case
         var validity: Int? = null
     }
 

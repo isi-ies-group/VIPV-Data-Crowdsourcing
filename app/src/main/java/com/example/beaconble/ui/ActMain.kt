@@ -50,12 +50,9 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         checkPermissionsAndTransferToViewIfNeeded()
         checkNeedFirstLogin()
 
-        app.apiUserSession.lastKnownState.observeForever(
-            { state ->
-                Log.d(TAG, "User session state changed to $state")
-                updateDrawerOptionsMenu()
-            }
-        )
+        app.apiUserSession.lastKnownState.observeForever { state ->
+            updateDrawerOptionsMenu()
+        }
     }
 
     /**
@@ -186,14 +183,9 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         val menuBtnLogout = navView.menu.findItem(R.id.nav_logout)
         val isUserLoggedIn =
             app.apiUserSession.lastKnownState.value == ApiUserSessionState.LOGGED_IN
-        Log.i(TAG, "User is logged in: $isUserLoggedIn")
-        menuBtnLogin.setVisible(isUserLoggedIn != true)
+        menuBtnLogin.isVisible = isUserLoggedIn != true
         sleep(100)
-        menuBtnLogout.setVisible(isUserLoggedIn == true)
-        Log.i(
-            TAG,
-            "Menu items updated to: login=${menuBtnLogin.isVisible}, logout=${menuBtnLogout.isVisible}"
-        )
+        menuBtnLogout.isVisible = isUserLoggedIn == true
     }
 
     fun openURL(url: String) {
@@ -225,7 +217,6 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     companion object {
-        var bool4toggle = false
         const val TAG = "ActMain"
     }  // companion object
 }

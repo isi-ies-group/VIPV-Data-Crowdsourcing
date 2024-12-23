@@ -1,6 +1,5 @@
 package com.example.beaconble
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import org.altbeacon.beacon.Identifier
 import java.time.Instant

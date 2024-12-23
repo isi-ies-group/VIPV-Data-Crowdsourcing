@@ -117,11 +117,6 @@ object LoggingSession {
         beaconsInternal.notifyObservers()
     }
 
-    fun startFreshSession() {
-        clear()
-        startInstant = Instant.now()
-    }
-
     fun clear() {
         beacons.value?.clear()
         startInstant = null

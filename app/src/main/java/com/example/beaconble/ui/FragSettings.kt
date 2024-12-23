@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
+//import androidx.preference.SwitchPreferenceCompat
 import com.example.beaconble.AppMain
 import com.example.beaconble.BuildConfig
 import com.example.beaconble.R
@@ -20,10 +20,10 @@ class FragSettings : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        // Ge the upload only on wifi setting
+        /*// Ge the upload only on wifi setting
         val switchPreference = findPreference<SwitchPreferenceCompat>("auto_upload_on_metered")
         // set callback to update the application service when the value changes
-        /*switchPreference?.onPreferenceChangeListener =
+        switchPreference?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
                 Log.d("FragSettings", "Setting upload only on wifi to $newValue")
                 // TODO AppMain.instance.setUploadOnlyOnWifi(newValue as Boolean)

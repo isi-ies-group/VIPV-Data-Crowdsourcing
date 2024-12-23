@@ -3,9 +3,7 @@ package com.example.beaconble
 import android.app.*
 import android.content.Intent
 import android.content.ComponentCallbacks2
-import android.content.Context
 import android.location.Location
-import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData

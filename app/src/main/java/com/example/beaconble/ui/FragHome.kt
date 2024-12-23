@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,7 +18,6 @@ import com.example.beaconble.AppMain
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.time.Instant
 
 class FragHome : Fragment() {
     lateinit var viewModel: Lazy<FragHomeViewModel>
