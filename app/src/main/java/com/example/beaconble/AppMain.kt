@@ -322,12 +322,19 @@ class AppMain : Application(), ComponentCallbacks2 {
      * Setup the API service endpoint (callback for configuration changes)
      * If the endpoint is not set in PreferenceManager.getDefaultSharedPreferences,
      * the default value is used (from BuildConfig)
+     * @param newUri: String, new URI to set for the API service if known, else it is read from shared preferences
      * @return void
      */
-    fun setupApiService() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        var endpoint =
-            sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL) ?: BuildConfig.SERVER_URL
+    fun setupApiService(newUri: String? = null) {
+        if (newUri == null) {
+            // Get the API URI setting
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            var endpoint =
+                sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL) ?: BuildConfig.SERVER_URL
+            setupApiService(endpoint)
+            return
+        }
+        var endpoint = newUri
         if (!endpoint.endsWith("/")) {
             endpoint += "/"
         }
