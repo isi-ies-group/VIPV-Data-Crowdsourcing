@@ -151,8 +151,6 @@ class AppMain : Application(), ComponentCallbacks2 {
         if (rangeAgeMillis < 10000) {
             nRangedBeacons.value = beacons.count()
             // get location latitude and longitude, common for all beacons detected here
-            val fusedLocationClient: FusedLocationProviderClient =
-                LocationServices.getFusedLocationProviderClient(applicationContext)
             var location: Location? = null
             try {
                 fusedLocationClient.lastLocation
@@ -400,6 +398,7 @@ class AppMain : Application(), ComponentCallbacks2 {
 
         // Start location updates
         try {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             checkAndNotifyLocationAndBluetoothProviders()
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
