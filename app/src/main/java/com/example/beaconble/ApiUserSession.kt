@@ -151,12 +151,13 @@ class ApiUserSession {
         }
 
         val passWordByteArray = passWord.toByteArray()
-        val saltByteArray = this.passSalt!!.toByteArray()
+        // decode salt from base64 and convert to byte array
+        val saltByteArray = Base64.decode(this.passSalt, Base64.DEFAULT)
 
         // hash password with salt, store in .passHash as plaintext
         val argon2Kt = Argon2Kt()
         val hashResult: Argon2KtResult = argon2Kt.hash(
-            mode = Argon2Mode.ARGON2_I,
+            mode = Argon2Mode.ARGON2_ID,
             password = passWordByteArray,
             salt = saltByteArray,
             tCostInIterations = 6,
@@ -211,7 +212,7 @@ class ApiUserSession {
         // hash password with salt, store in passHash
         val argon2Kt = Argon2Kt()
         val hashResult: Argon2KtResult = argon2Kt.hash(
-            mode = Argon2Mode.ARGON2_I,
+            mode = Argon2Mode.ARGON2_ID,
             password = passWordByteArray,
             salt = saltByteArray,
             tCostInIterations = 6,
