@@ -119,11 +119,6 @@ class AppMain : Application(), ComponentCallbacks2 {
         // Set API service
         setupApiService()
 
-        // Load user session from shared preferences
-        apiUserSession =
-            ApiUserSession(PreferenceManager.getDefaultSharedPreferences(this), apiService)
-
-
         // Save instance for singleton access
         instance = this
     }
@@ -324,7 +319,7 @@ class AppMain : Application(), ComponentCallbacks2 {
      * @return void
      */
     fun setupApiService(newUri: String? = null) {
-        if (newUri == null) {
+        if (newUri.isNullOrBlank()) {
             // Get the API URI setting
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             var endpoint =
@@ -344,6 +339,8 @@ class AppMain : Application(), ComponentCallbacks2 {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         this.apiService = retrofit.create(APIService::class.java)
+        // Load user session from shared preferences
+        apiUserSession = ApiUserSession(PreferenceManager.getDefaultSharedPreferences(this), apiService)
     }
 
     /**
