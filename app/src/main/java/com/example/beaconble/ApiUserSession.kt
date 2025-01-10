@@ -151,7 +151,7 @@ class ApiUserSession {
         }
 
         val passWordByteArray = passWord.toByteArray()
-        // decode salt from base64 and convert to byte array
+        // passSalt is encoded in base64, decode it
         val saltByteArray = Base64.decode(this.passSalt, Base64.DEFAULT)
 
         // hash password with salt, store in .passHash as plaintext
@@ -217,6 +217,7 @@ class ApiUserSession {
             salt = saltByteArray,
             tCostInIterations = 6,
             mCostInKibibyte = 65536,
+            parallelism = 2,
         )
         this.passHash = hashResult.encodedOutputAsString()
 
