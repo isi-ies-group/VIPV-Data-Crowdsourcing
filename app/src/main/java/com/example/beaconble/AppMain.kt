@@ -324,6 +324,9 @@ class AppMain : Application(), ComponentCallbacks2 {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
             var endpoint =
                 sharedPreferences.getString("api_uri", BuildConfig.SERVER_URL) ?: BuildConfig.SERVER_URL
+            if (endpoint.isBlank()) {
+                endpoint = BuildConfig.SERVER_URL
+            }
             setupApiService(endpoint)
             return
         }
