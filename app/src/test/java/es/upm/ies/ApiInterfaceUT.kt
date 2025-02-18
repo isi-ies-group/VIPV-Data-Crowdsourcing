@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiInterfaceUT {
     companion object {
-        const val endpoint = "http://127.0.0.1:5000/"
+        const val ENDPOINT = "http://127.0.0.1:5000/"
         lateinit var apiService: APIService
         lateinit var user: ApiUserSession
         lateinit var sharedPreferences: SharedPreferences
@@ -21,7 +21,7 @@ class ApiInterfaceUT {
         @JvmStatic
         fun setup() {
             val retrofit = Retrofit.Builder()
-                .baseUrl(endpoint)
+                .baseUrl(ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             apiService = retrofit.create(APIService::class.java)
