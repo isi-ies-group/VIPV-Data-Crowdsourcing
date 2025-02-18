@@ -28,7 +28,7 @@
     <string name="welcome_message">Welcome to \nVIPV Acquisition Program!</string>
     // Permissions view
     <string name="permissions_title">Required permissions</string>
-    <string name="permissions_needed">The following permissions are required to use Photovolta. You will have access to the app once all permissions are granted:</string>
+    <string name="permissions_needed">The following permissions are required to use this app. You will have access to the app once all permissions are granted:</string>
     <string name="permissions_show_in_settings">View permissions in system settings</string>
     <string name="permission_localization">Location</string>
     <string name="permission_localization_background">Location in background</string>

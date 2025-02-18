@@ -22,7 +22,7 @@
     <string name="welcome_continue">Empezar a compartir medidas</string>
     <string name="welcome_message">Bienvenid@ al  Programa de Adquisición VIPV!</string>
     // Permissions view
-    <string name="permissions_needed">Photovolta requiere utilizar los siguientes permisos. Podrás acceder a la app cuando se hayan otorgado los permisos necesarios:</string>
+    <string name="permissions_needed">Esta aplicación necesita los siguientes permisos. Podrás acceder a la app cuando se hayan otorgado los permisos necesarios:</string>
     <string name="permissions_show_in_settings">Ver permisos en la configuración del sistema</string>
     <string name="permission_localization">Ubicación</string>
     <string name="permission_localization_background">Ubicación en segundo plano</string>
