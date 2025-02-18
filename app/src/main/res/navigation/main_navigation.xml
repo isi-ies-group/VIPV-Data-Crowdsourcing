@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/fragSettings" />
         <action
             android:id="@+id/action_homeFragment_to_aboutFragment"
-            app:destination="@id/aboutFragment" />
+            app:destination="@id/fragAbout" />
         <action
             android:id="@+id/action_homeFragment_to_fragBeaconDetails"
             app:destination="@id/fragBeaconDetails" />
@@ -27,7 +27,7 @@
             app:destination="@id/fragManageSessions" />
     </fragment>
     <fragment
-        android:id="@+id/settingsFragment"
+        android:id="@+id/fragSettings"
         android:name="com.example.beaconble.ui.FragSettings"
         android:label="@string/settings">
         <action
@@ -38,7 +38,7 @@
             app:destination="@id/fragManageSessions" />
     </fragment>
     <fragment
-        android:id="@+id/aboutFragment"
+        android:id="@+id/fragAbout"
         android:name="com.example.beaconble.ui.AboutFragment"
         android:label="@string/about">
         <action
