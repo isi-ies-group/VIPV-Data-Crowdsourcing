@@ -10,18 +10,18 @@
         android:title="@string/settings_app_behaviour">
 
         <ListPreference
-            android:key="auto_upload_behaviour"
-            android:title="@string/settings_upload_behaviour_title"
+            android:defaultValue="auto_un_metered"
             android:entries="@array/settings_upload_options"
             android:entryValues="@array/settings_upload_values"
-            android:defaultValue="auto_un_metered" />
+            android:key="auto_upload_behaviour"
+            android:title="@string/settings_upload_behaviour_title" />
 
         <ListPreference
-            android:key="color_theme"
-            android:title="@string/settings_color_theme"
+            android:defaultValue="system-default"
             android:entries="@array/settings_color_theme_entries"
             android:entryValues="@array/settings_color_theme_keys"
-            android:defaultValue="system-default" />
+            android:key="color_theme"
+            android:title="@string/settings_color_theme" />
 
     </PreferenceCategory>
 
