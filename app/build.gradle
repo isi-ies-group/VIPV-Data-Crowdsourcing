@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.beaconble'
+    namespace 'es.upm.ies.vipvble'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.beaconble"
+        applicationId 'es.upm.ies.vipvble'
         minSdk 26
         targetSdk 35
         versionCode 2
