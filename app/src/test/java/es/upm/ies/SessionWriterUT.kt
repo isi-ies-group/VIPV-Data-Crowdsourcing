@@ -2,6 +2,7 @@ package es.upm.ies
 
 import es.upm.ies.vipvble.io.SessionWriter
 import es.upm.ies.vipvble.BeaconSimplified
+import es.upm.ies.vipvble.LoggingSession
 import es.upm.ies.vipvble.SensorEntry
 import org.altbeacon.beacon.Identifier
 import org.junit.Test
