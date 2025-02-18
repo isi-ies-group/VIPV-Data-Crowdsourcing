@@ -147,9 +147,10 @@ object LoggingSession {
      */
     fun saveSession(): File? {
         // exit if there is no data to save
+        @Suppress("UsePropertyAccessSyntax")
         if ((beacons.value == null)  // no beacons
-            || (beacons.value?.isEmpty == true)  // no beacons
-            || (beacons.value?.all { beacon -> beacon.sensorData.value?.isEmpty != false } == true)  // all beacons are empty
+            || (beacons.value?.isEmpty() == true)  // no beacons
+            || (beacons.value?.all { beacon -> beacon.sensorData.value?.isEmpty() != false } == true)  // all beacons are empty
             || (beacons.value?.any { beacon -> beacon.statusValue.value != BeaconSimplifiedStatus.INFO_MISSING } == false)  // not a single beacon has complete info
         ) {
             return null
