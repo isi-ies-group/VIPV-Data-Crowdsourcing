@@ -85,7 +85,10 @@ class AppMain : Application(), ComponentCallbacks2 {
         beaconManager.beaconParsers.add(customParser)
 
         // Activate debug mode only if build variant is debug
-        BeaconManager.setDebug(BuildConfig.DEBUG)
+        @Suppress("SENSELESS_COMPARISON")
+        if (BuildConfig.DEBUG) {
+            BeaconManager.setDebug(true)
+        }
 
         // Set API service
         setupApiService()
