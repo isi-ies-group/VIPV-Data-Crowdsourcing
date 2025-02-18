@@ -3,8 +3,8 @@ package com.example.beaconble
 import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
@@ -34,7 +34,8 @@ class ApiUserSession {
     var email: String? = null
     var passHash: String? = null
     var passSalt: String? = null
-    private val _knownState = MutableLiveData<ApiUserSessionState>(ApiUserSessionState.NEVER_LOGGED_IN)
+    private val _knownState =
+        MutableLiveData<ApiUserSessionState>(ApiUserSessionState.NEVER_LOGGED_IN)
     val lastKnownState: LiveData<ApiUserSessionState> get() = _knownState
     var apiService: APIService
     var sharedPrefs: SharedPreferences

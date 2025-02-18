@@ -65,7 +65,8 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
         app.wasUploadedSuccessfully.observeForever { wasUploadedSuccessfully ->
             if (wasUploadedSuccessfully) {  // If the data was uploaded successfully, show a message
-                Toast.makeText(this, getString(R.string.upload_successful), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.upload_successful), Toast.LENGTH_SHORT)
+                    .show()
             } // do nothing on else
         }
 
@@ -113,31 +114,37 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
                 findNavController(R.id.fragment_main).navigate(R.id.homeFragment)
                 true
             }
+
             R.id.nav_settings -> {
                 binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.fragSettings)
                 true
             }
+
             R.id.nav_logout -> {
                 binding.mainDrawerLayout.closeDrawers()
                 app.apiUserSession.logout()
                 Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
                 true
             }
+
             R.id.nav_login -> {
                 binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.fragLogin)
                 true
             }
+
             R.id.nav_about -> {
                 binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.fragAbout)
                 true
             }
+
             R.id.nav_help -> {
                 openURL("${BuildConfig.SERVER_URL}/contact")
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -145,7 +152,11 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
     private fun configureToolbar() {
         setSupportActionBar(binding.toolbar)
         actionBarDrawerToggle = ActionBarDrawerToggle(
-            this, binding.mainDrawerLayout, binding.toolbar, R.string.toolbar_open, R.string.toolbar_close
+            this,
+            binding.mainDrawerLayout,
+            binding.toolbar,
+            R.string.toolbar_open,
+            R.string.toolbar_close
         )
         binding.mainDrawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.isDrawerIndicatorEnabled = true

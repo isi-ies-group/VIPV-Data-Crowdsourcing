@@ -26,12 +26,15 @@ class AboutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Get the version name from the manifest
-        val versionInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
+        val versionInfo =
+            requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
         // Set the version name and version code in the text view as: "Version: 1.0-1"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {  // versionInfo.versionCode was deprecated in API level 28. Use versionCodeLong instead.
-            binding.versionTextview.text = getString(R.string.version, versionInfo.versionName, versionInfo.longVersionCode)
+            binding.versionTextview.text =
+                getString(R.string.version, versionInfo.versionName, versionInfo.longVersionCode)
         } else {
-            binding.versionTextview.text = getString(R.string.version, versionInfo.versionName, versionInfo.versionCode)
+            binding.versionTextview.text =
+                getString(R.string.version, versionInfo.versionName, versionInfo.versionCode)
         }
     }
 

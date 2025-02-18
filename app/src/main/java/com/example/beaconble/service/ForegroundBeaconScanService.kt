@@ -275,6 +275,7 @@ class ForegroundBeaconScanService : BeaconService() {
     }
 
     private var lastNotificationState: Pair<Boolean, Boolean> = Pair(false, false)
+
     /**
      * Show a notification to the user if GPS or Bluetooth are disabled.
      * @param isGpsEnabled True if GPS is enabled, false otherwise.
@@ -299,11 +300,12 @@ class ForegroundBeaconScanService : BeaconService() {
             else -> ""
         }
 
-        val notification = NotificationCompat.Builder(this, "location-and-bluetooth-watchdog").apply {
-            setContentTitle(getString(R.string.notification_no_location_bluetooth_title))
-            setContentText(notificationText).setSmallIcon(R.mipmap.logo_ies_foreground)
-            setOngoing(true)
-        }.build()
+        val notification =
+            NotificationCompat.Builder(this, "location-and-bluetooth-watchdog").apply {
+                setContentTitle(getString(R.string.notification_no_location_bluetooth_title))
+                setContentText(notificationText).setSmallIcon(R.mipmap.logo_ies_foreground)
+                setOngoing(true)
+            }.build()
 
         notificationManager.notify(AppMain.NOTIFICATION_NO_LOCATION_OR_BLUETOOTH_ID, notification)
 

@@ -45,7 +45,7 @@ class FragSettings : PreferenceFragmentCompat() {
             Log.w("FragSettings", "API URI setting not found")
         }
         // set the hint to the current value
-        editTextPreference?.setOnBindEditTextListener{
+        editTextPreference?.setOnBindEditTextListener {
             it.hint = BuildConfig.SERVER_URL
         }
         // set callback to update the application API service when the value changes

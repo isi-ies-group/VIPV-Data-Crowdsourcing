@@ -1,8 +1,8 @@
 package com.example.beaconble
 
 import android.app.*
-import android.content.Intent
 import android.content.ComponentCallbacks2
+import android.content.Intent
 import android.location.Location
 import android.os.Handler
 import android.os.Looper
@@ -23,11 +23,11 @@ import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Identifier
+import org.apache.commons.collections4.queue.CircularFifoQueue
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import kotlin.concurrent.thread
-import org.apache.commons.collections4.queue.CircularFifoQueue
 
 
 class AppMain : Application(), ComponentCallbacks2 {

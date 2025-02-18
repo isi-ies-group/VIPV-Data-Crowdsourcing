@@ -26,27 +26,39 @@ class FragBeaconDetails : Fragment() {
     private val descriptionTextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        override fun afterTextChanged(s: android.text.Editable?) { viewModel.beacon.value?.setDescription(s.toString()) }
+        override fun afterTextChanged(s: android.text.Editable?) {
+            viewModel.beacon.value?.setDescription(s.toString())
+        }
     }
     private val tiltTextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        override fun afterTextChanged(s: android.text.Editable?) { viewModel.beacon.value?.setTilt(s.toString().toFloatOrNull()) }
+        override fun afterTextChanged(s: android.text.Editable?) {
+            viewModel.beacon.value?.setTilt(s.toString().toFloatOrNull())
+        }
     }
     private val directionTextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        override fun afterTextChanged(s: android.text.Editable?) { viewModel.beacon.value?.setDirection(s.toString().toFloatOrNull()) }
-    }
-    private val positionSpinnerOnItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-            val localizedItemText = parent.getItemAtPosition(position).toString()
-            val unlocalizedItemValue = positionMap[localizedItemText]
-            viewModel.beacon.value?.setPosition(unlocalizedItemValue ?: "")
+        override fun afterTextChanged(s: android.text.Editable?) {
+            viewModel.beacon.value?.setDirection(s.toString().toFloatOrNull())
         }
-
-        override fun onNothingSelected(parent: AdapterView<*>) {}
     }
+    private val positionSpinnerOnItemSelectedListener =
+        object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                val localizedItemText = parent.getItemAtPosition(position).toString()
+                val unlocalizedItemValue = positionMap[localizedItemText]
+                viewModel.beacon.value?.setPosition(unlocalizedItemValue ?: "")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

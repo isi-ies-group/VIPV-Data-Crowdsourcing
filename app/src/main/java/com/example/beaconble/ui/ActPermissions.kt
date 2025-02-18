@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View.OnClickListener
+import android.widget.TableRow
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +18,6 @@ import androidx.core.content.ContextCompat
 import com.example.beaconble.R
 import com.example.beaconble.databinding.ActivityPermissionsBinding
 import com.google.android.material.button.MaterialButton
-import android.widget.TableRow
 
 class PermissionsRowAtomicHandler(
     val show: Boolean,

@@ -148,15 +148,17 @@ object LoggingSession {
     fun saveSession(): File? {
         // exit if there is no data to save
         if ((beacons.value == null)  // no beacons
-            || (beacons.value?.isEmpty() == true)  // no beacons
-            || (beacons.value?.all { beacon -> beacon.sensorData.value?.isEmpty() != false } == true)  // all beacons are empty
+            || (beacons.value?.isEmpty == true)  // no beacons
+            || (beacons.value?.all { beacon -> beacon.sensorData.value?.isEmpty != false } == true)  // all beacons are empty
             || (beacons.value?.any { beacon -> beacon.statusValue.value != BeaconSimplifiedStatus.INFO_MISSING } == false)  // not a single beacon has complete info
         ) {
             return null
         }
 
         // deep copy all beacons and their data to a temporary variable, and empty them
-        val temporaryBeacons = beacons.value!!.filter { it.statusValue.value != BeaconSimplifiedStatus.INFO_MISSING }.map { it.copy() }
+        val temporaryBeacons =
+            beacons.value!!.filter { it.statusValue.value != BeaconSimplifiedStatus.INFO_MISSING }
+                .map { it.copy() }
         beacons.value!!.map { it.clear() }
 
         var outFile = File(

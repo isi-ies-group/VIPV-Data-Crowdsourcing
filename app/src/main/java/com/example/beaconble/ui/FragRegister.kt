@@ -1,7 +1,6 @@
 package com.example.beaconble.ui
 
 import android.content.Context
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.R
@@ -106,6 +106,7 @@ class FragRegister : Fragment() {
             override fun afterTextChanged(s: android.text.Editable?) {
                 viewModel.username.value = s.toString()
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -113,6 +114,7 @@ class FragRegister : Fragment() {
             override fun afterTextChanged(s: android.text.Editable?) {
                 viewModel.email.value = s.toString()
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -120,6 +122,7 @@ class FragRegister : Fragment() {
             override fun afterTextChanged(s: android.text.Editable?) {
                 viewModel.password.value = s.toString()
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -127,6 +130,7 @@ class FragRegister : Fragment() {
             override fun afterTextChanged(s: android.text.Editable?) {
                 viewModel.password2.value = s.toString()
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -135,7 +139,8 @@ class FragRegister : Fragment() {
             // close the keyboard
             // Only runs if there is a view that is currently focused
             activity?.currentFocus?.let { view ->
-                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
                 imm?.hideSoftInputFromWindow(view.windowToken, 0)
             }
 

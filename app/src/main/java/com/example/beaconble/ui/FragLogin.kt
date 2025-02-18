@@ -1,7 +1,6 @@
 package com.example.beaconble.ui
 
 import android.content.Context
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.R
@@ -124,7 +124,8 @@ class FragLogin : Fragment() {
             // close the keyboard
             // Only runs if there is a view that is currently focused
             activity?.currentFocus?.let { view ->
-                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
                 imm?.hideSoftInputFromWindow(view.windowToken, 0)
             }
 

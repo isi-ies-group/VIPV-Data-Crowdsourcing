@@ -2,9 +2,9 @@ package com.example.beaconble.ui
 
 import android.content.Context
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import com.example.beaconble.R
 import com.example.beaconble.SensorEntry

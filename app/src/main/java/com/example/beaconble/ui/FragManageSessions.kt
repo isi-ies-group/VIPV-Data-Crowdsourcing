@@ -45,7 +45,11 @@ class FragManageSessions : Fragment() {
         private val selectedFiles = mutableSetOf<File>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = RowItemSessionFileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding = RowItemSessionFileBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
             return ViewHolder(binding)
         }
 
@@ -70,13 +74,22 @@ class FragManageSessions : Fragment() {
                 binding.fileName.text = file.name
 
                 binding.btnShare.setOnClickListener {
-                    val uri = FileProvider.getUriForFile(binding.root.context, BuildConfig.APPLICATION_ID + ".fileProvider", file)
+                    val uri = FileProvider.getUriForFile(
+                        binding.root.context,
+                        BuildConfig.APPLICATION_ID + ".fileProvider",
+                        file
+                    )
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "application/csv"
                         putExtra(Intent.EXTRA_STREAM, uri)
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
-                    binding.root.context.startActivity(Intent.createChooser(intent, "Share session file"))
+                    binding.root.context.startActivity(
+                        Intent.createChooser(
+                            intent,
+                            "Share session file"
+                        )
+                    )
                 }
                 binding.btnDelete.setOnClickListener {
                     file.delete()
