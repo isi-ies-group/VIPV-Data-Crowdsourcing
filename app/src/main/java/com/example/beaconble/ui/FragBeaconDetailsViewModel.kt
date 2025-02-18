@@ -7,7 +7,6 @@ import com.example.beaconble.AppMain
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.BeaconSimplifiedStatus
 import com.example.beaconble.SensorEntry
-import com.example.beaconble.createPositionMap
 import org.altbeacon.beacon.Identifier
 import java.util.ArrayList
 
@@ -18,7 +17,7 @@ class FragBeaconDetailsViewModel : ViewModel() {
 
     private var _beacon = MutableLiveData<BeaconSimplified?>()
     val beacon: LiveData<BeaconSimplified?> get() = _beacon
-    val status: LiveData<BeaconSimplifiedStatus?> get() = _beacon.value?.statusValue as LiveData<BeaconSimplifiedStatus?>
+    val status: LiveData<BeaconSimplifiedStatus>? get() = _beacon.value?.statusValue
 
     var sensorEntries: MutableLiveData<ArrayList<SensorEntry>> =
         MutableLiveData<ArrayList<SensorEntry>>()

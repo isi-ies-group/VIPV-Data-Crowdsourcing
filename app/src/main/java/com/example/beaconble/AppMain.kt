@@ -209,6 +209,29 @@ class AppMain : Application(), ComponentCallbacks2 {
         }
     }
 
+    fun isForegroundBeaconScanServiceRunning() =
+        isServiceRunning(ForegroundBeaconScanService::class.java)
+
+    /**
+     * Start monitoring and ranging for beacons
+     * @return void
+     */
+    private fun startBeaconScanning() {
+        if (isForegroundBeaconScanServiceRunning()) {
+            Log.i(TAG, "Beacon scan service is already running")
+            return
+        } else {
+            Log.i(TAG, "Starting beacon scan service")
+            loggingSession.clear()
+            loggingSession.startInstant = Instant.now()
+            sessionRunning.value = true
+
+            val serviceIntent = Intent(this, ForegroundBeaconScanService::class.java)
+            startService(serviceIntent)
+            handler.post(statusUpdateRunnable) // Start periodic status updates of the beacon statuses
+        }
+    }
+
     /**
      * Stop monitoring and ranging for beacons
      * @return void
@@ -223,28 +246,6 @@ class AppMain : Application(), ComponentCallbacks2 {
         }
         sessionRunning.postValue(false)
         handler.removeCallbacks(statusUpdateRunnable) // Stop periodic status updates
-    }
-
-    /**
-     * Start monitoring and ranging for beacons
-     * @return void
-     */
-    private fun startBeaconScanning() {
-        val isForegroundBeaconScanServiceRunning =
-            isServiceRunning(ForegroundBeaconScanService::class.java)
-        if (isForegroundBeaconScanServiceRunning) {
-            Log.i(TAG, "Beacon scan service is already running")
-            return
-        } else {
-            Log.i(TAG, "Starting beacon scan service")
-            loggingSession.clear()
-            loggingSession.startInstant = Instant.now()
-            sessionRunning.value = true
-
-            val serviceIntent = Intent(this, ForegroundBeaconScanService::class.java)
-            startService(serviceIntent)
-            handler.post(statusUpdateRunnable) // Start periodic status updates of the beacon statuses
-        }
     }
 
     /**

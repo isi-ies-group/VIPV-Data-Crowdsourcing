@@ -86,7 +86,7 @@ class FragBeaconDetails : Fragment() {
             )
         }
 
-        viewModel.status.observe(viewLifecycleOwner) { status ->
+        viewModel.status?.observe(viewLifecycleOwner) { status ->
             val (drawableResource, tintColor, contentDescription) = when (status) {
                 BeaconSimplifiedStatus.OFFLINE -> Triple(
                     R.drawable.bluetooth_off,

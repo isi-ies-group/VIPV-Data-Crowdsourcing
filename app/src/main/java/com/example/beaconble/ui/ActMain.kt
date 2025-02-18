@@ -115,7 +115,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
             }
             R.id.nav_settings -> {
                 binding.mainDrawerLayout.closeDrawers()
-                findNavController(R.id.fragment_main).navigate(R.id.settingsFragment)
+                findNavController(R.id.fragment_main).navigate(R.id.fragSettings)
                 true
             }
             R.id.nav_logout -> {
@@ -131,7 +131,7 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
             }
             R.id.nav_about -> {
                 binding.mainDrawerLayout.closeDrawers()
-                findNavController(R.id.fragment_main).navigate(R.id.aboutFragment)
+                findNavController(R.id.fragment_main).navigate(R.id.fragAbout)
                 true
             }
             R.id.nav_help -> {
