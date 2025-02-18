@@ -115,12 +115,11 @@ object LoggingSession {
 
     fun clear() {
         beacons.value?.clear()
+        if (bodyFile != null) {
+            bodyFile!!.delete()
+        }
         startInstant = null
         stopInstant = null
-    }
-
-    fun clearBeaconsData() {
-        beacons.value?.forEach { it.sensorData.value?.clear() }
     }
 
     /**
