@@ -126,5 +126,5 @@
     </array>
     <string name="uploading_session_data">Subiendo sesiones guardadas…</string>
     <string name="upload_successful">Sesiones subidas</string>
-    <string name="manage_sessions">Gestión sesiones guardadas</string>
+    <string name="manage_sessions">Gestión sesiones almacenadas</string>
 </resources>

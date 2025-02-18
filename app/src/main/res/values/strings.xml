@@ -135,5 +135,5 @@
     <string name="want_to_use_offline_question">Prefer to take measurements for yourself?</string>
     <string name="use_offline">Use offline</string>
     // Manage Sessions
-    <string name="manage_sessions">Manage saved sessions</string>
+    <string name="manage_sessions">Manage cached sessions</string>
 </resources>
