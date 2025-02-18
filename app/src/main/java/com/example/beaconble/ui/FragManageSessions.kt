@@ -1,7 +1,6 @@
 package com.example.beaconble.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,34 +37,6 @@ class FragManageSessions : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = sessionFilesAdapter
         }
-
-        binding.btnDelete.setOnClickListener {
-            val selectedFiles = sessionFilesAdapter.getSelectedFiles()
-            selectedFiles.forEach { it.delete() }
-            sessionFilesAdapter.updateFiles(app.loggingSession.getSessionFiles())
-            Toast.makeText(context, "Selected files deleted", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnShare.setOnClickListener {
-            val selectedFiles = sessionFilesAdapter.getSelectedFiles()
-            if (selectedFiles.isNotEmpty()) {
-                shareFiles(selectedFiles)
-            } else {
-                Toast.makeText(context, "No files selected to share", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun shareFiles(files: List<File>) {
-        val uris = files.map {
-            FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".fileProvider", it)
-        }
-        val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-            type = "application/csv"
-            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList<Uri>(uris))
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        startActivity(Intent.createChooser(intent, "Share session files"))
     }
 
     class SessionFilesAdapter(private var files: List<File>) :
@@ -85,7 +56,6 @@ class FragManageSessions : Fragment() {
 
         override fun getItemCount(): Int = files.size
 
-        fun getSelectedFiles(): List<File> = selectedFiles.toList()
 
         fun updateFiles(newFiles: List<File>) {
             files = newFiles
