@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_homeFragment_to_fragLogin"
             app:destination="@id/fragLogin" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragManageSessions"
+            app:destination="@id/fragManageSessions" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"

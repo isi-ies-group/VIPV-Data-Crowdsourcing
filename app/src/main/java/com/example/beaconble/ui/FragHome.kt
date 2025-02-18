@@ -2,7 +2,6 @@ package com.example.beaconble.ui
 
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE
 import android.bluetooth.BluetoothManager
@@ -108,41 +107,6 @@ class FragHome : Fragment() {
             viewModel.value.toggleSession()
         }
 
-        binding.imBtnActionEmptyAll.setOnClickListener {
-            if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
-                // If there are no beacons, show a toast message and return
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.empty_session_nothing_to_do),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                // Create alertDialog to confirm the action
-                val alertDialog = AlertDialog.Builder(requireContext())
-                alertDialog.setTitle(getString(R.string.empty_all_data))
-                alertDialog.setMessage(getString(R.string.empty_all_data_confirmation))
-                alertDialog.setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    viewModel.value.emptyAll()
-                }
-                alertDialog.setNegativeButton(getString(R.string.no)) { dialog, which ->
-                }
-                alertDialog.show()
-            }
-        }
-
-        binding.imBtnActionShareSession.setOnClickListener {
-            // Check if there is data to export
-            if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
-                // If there are no beacons, show a toast message and return
-                Toast.makeText(
-                    requireContext(), getString(R.string.no_data_to_share), Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-            // Call activity's share method
-            (requireActivity() as ActMain).shareSession()
-        }
-
         binding.imBtnActionUploadSession.setOnClickListener {
             // Check if there is data to upload
             if (AppMain.instance.loggingSession.getSessionFiles().isEmpty()) {
@@ -158,6 +122,11 @@ class FragHome : Fragment() {
                 // Upload the session data
                 viewModel.value.uploadAllSessions()
             }
+        }
+
+        binding.imBtnActionManageSessions.setOnClickListener {
+            // Navigate to the manage sessions fragment
+            findNavController().navigate(R.id.action_homeFragment_to_fragManageSessions)
         }
 
         binding.beaconCountTextView.text = getString(R.string.beacons_detected_zero)
