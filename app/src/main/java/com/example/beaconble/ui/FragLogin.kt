@@ -4,28 +4,22 @@ import android.content.Context
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.R
+import com.example.beaconble.databinding.FragmentLoginBinding
 
 class FragLogin : Fragment() {
-    lateinit var editTextEmail: EditText
-    lateinit var editTextPassword: EditText
-    lateinit var buttonLogin: Button
-    lateinit var buttonGoToRegister: Button
-    lateinit var buttonUseOffline: Button
-    lateinit var progressBar: ProgressBar
+    private var _binding: FragmentLoginBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: FragLoginViewModel by viewModels()
 
@@ -33,14 +27,13 @@ class FragLogin : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_login, container, false)
+        // Inflate the layout for this fragment using view binding
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        editTextEmail = view.findViewById<EditText>(R.id.etEmail)
-        editTextPassword = view.findViewById<EditText>(R.id.etPassword)
-        buttonLogin = view.findViewById<Button>(R.id.btnLogin)
-        buttonGoToRegister = view.findViewById<Button>(R.id.btnGoToRegister)
-        buttonUseOffline = view.findViewById<Button>(R.id.btnUseOffline)
-        progressBar = view.findViewById<ProgressBar>(R.id.pbLogin)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // observe the login status to show the user any errors or return to the main activity
         viewModel.loginStatus.observe(viewLifecycleOwner) { status ->
@@ -50,9 +43,9 @@ class FragLogin : Fragment() {
             } else {
                 // show the user the error message
                 if (status == ApiUserSessionState.ERROR_BAD_IDENTITY) {
-                    editTextEmail.error = getString(R.string.bad_email)
+                    binding.etEmail.error = getString(R.string.bad_email)
                 } else if (status == ApiUserSessionState.ERROR_BAD_PASSWORD) {
-                    editTextPassword.error = getString(R.string.bad_password)
+                    binding.etPassword.error = getString(R.string.bad_password)
                 } else if (status == ApiUserSessionState.CONNECTION_ERROR) {
                     // Create an informative alert dialog
                     val builder = AlertDialog.Builder(requireContext())
@@ -64,41 +57,35 @@ class FragLogin : Fragment() {
                     builder.show()
                 }
             }
-            progressBar.visibility = View.INVISIBLE
+            binding.pbLogin.visibility = View.INVISIBLE
         }
 
         // observe the login button enabled status
         viewModel.loginButtonEnabled.observe(viewLifecycleOwner) { enabled ->
-            buttonLogin.isEnabled = enabled
+            binding.btnLogin.isEnabled = enabled
         }
 
         // observe the email and password invalid flags and set the error messages accordingly
         viewModel.emailInvalid.observe(viewLifecycleOwner) { invalid ->
             if (invalid) {
-                editTextEmail.error = getString(R.string.invalid_email)
+                binding.etEmail.error = getString(R.string.invalid_email)
             } else {
-                editTextEmail.error = null
+                binding.etEmail.error = null
             }
         }
 
         viewModel.passwordInvalid.observe(viewLifecycleOwner) { invalid ->
             if (invalid) {
-                editTextPassword.error = getString(R.string.invalid_password)
+                binding.etPassword.error = getString(R.string.invalid_password)
             } else {
-                editTextPassword.error = null
+                binding.etPassword.error = null
             }
         }
 
-        return view
-    }
+        binding.etEmail.setText(viewModel.email.value, TextView.BufferType.EDITABLE)
+        binding.etPassword.setText(viewModel.password.value, TextView.BufferType.EDITABLE)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        editTextEmail.setText(viewModel.email.value, TextView.BufferType.EDITABLE)
-        editTextPassword.setText(viewModel.password.value, TextView.BufferType.EDITABLE)
-
-        editTextEmail.addTextChangedListener(object : TextWatcher {
+        binding.etEmail.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.email.value = s.toString()
             }
@@ -115,7 +102,7 @@ class FragLogin : Fragment() {
             }
         }
         )
-        editTextPassword.addTextChangedListener(object : TextWatcher {
+        binding.etPassword.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.password.value = s.toString()
             }
@@ -133,7 +120,7 @@ class FragLogin : Fragment() {
         }
         )
 
-        buttonLogin.setOnClickListener {
+        binding.btnLogin.setOnClickListener {
             // close the keyboard
             // Only runs if there is a view that is currently focused
             activity?.currentFocus?.let { view ->
@@ -142,33 +129,34 @@ class FragLogin : Fragment() {
             }
 
             // clear errors on editTexts
-            editTextEmail.error = null
-            editTextPassword.error = null
+            binding.etEmail.error = null
+            binding.etPassword.error = null
 
             // show the user the login is in progress
-            buttonLogin.isEnabled = false
-            progressBar.visibility = View.VISIBLE
+            binding.btnLogin.isEnabled = false
+            binding.pbLogin.visibility = View.VISIBLE
 
-            viewModel.email.value = editTextEmail.text.toString()
-            viewModel.password.value = editTextPassword.text.toString()
+            viewModel.email.value = binding.etEmail.text.toString()
+            viewModel.password.value = binding.etPassword.text.toString()
             viewModel.doLogin()
         }
 
-        buttonGoToRegister.setOnClickListener {
+        binding.btnGoToRegister.setOnClickListener {
             // navigate to the register fragment
             findNavController().navigate(R.id.action_fragLogin_to_fragRegister)
         }
 
-        buttonUseOffline.setOnClickListener {
+        binding.btnUseOffline.setOnClickListener {
             // set the app to offline mode
             viewModel.setOffLineMode()
-            // navigate backpressing to the main activity
+            // navigate back-pressing to the main activity
             findNavController().popBackStack()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        _binding = null
 
         // Callback to use the app in offline mode if exited without never logging in
         if (viewModel.loginStatus.value == ApiUserSessionState.NEVER_LOGGED_IN) {

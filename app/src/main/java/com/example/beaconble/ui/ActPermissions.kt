@@ -10,22 +10,19 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View.OnClickListener
-import android.widget.Button
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.beaconble.R
+import com.example.beaconble.databinding.ActivityPermissionsBinding
 import com.google.android.material.button.MaterialButton
 import android.widget.TableRow
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import com.example.beaconble.R
-
 
 class PermissionsRowAtomicHandler(
     val show: Boolean,
     val rowUI: TableRow,
     val buttonUI: MaterialButton,
-    // val clikedPermissionsCallback: (permissions: Array<String>) -> Unit,
 ) {
     // Group of permissions that are related to a single UI element
     // Ease access, management and UI interaction
@@ -34,7 +31,7 @@ class PermissionsRowAtomicHandler(
     // buttonUI: MaterialButton that is the UI element
 
     init {
-        if (show == false) {
+        if (!show) {
             // Hide the UI element if there are no permissions, as it is not needed
             hide()
         }
@@ -56,22 +53,20 @@ class PermissionsRowAtomicHandler(
     }
 }
 
-
 class ActPermissions : AppCompatActivity() {
-    lateinit var sysSettingsButton: Button
+    private lateinit var binding: ActivityPermissionsBinding
 
-    lateinit var rowPermissionsLocalization: PermissionsRowAtomicHandler
-    lateinit var rowPermissionsBluetooth: PermissionsRowAtomicHandler
-    lateinit var rowPermissionsNotifications: PermissionsRowAtomicHandler
+    private lateinit var rowPermissionsLocalization: PermissionsRowAtomicHandler
+    private lateinit var rowPermissionsBluetooth: PermissionsRowAtomicHandler
+    private lateinit var rowPermissionsNotifications: PermissionsRowAtomicHandler
 
-    lateinit var mapOfRowHandlers: Map<String, PermissionsRowAtomicHandler>
-    lateinit var toolbar: Toolbar
+    private lateinit var mapOfRowHandlers: Map<String, PermissionsRowAtomicHandler>
 
-    val requestPermissionsLauncher =
+    private val requestPermissionsLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            // Map<String, Boolean> donde String=Key permiso y Boolean=resultado
+            // Map<String, Boolean> where String=Key permission and Boolean=result
             permissions.entries.forEach { (permissionName, isGranted) ->
                 Log.d(TAG, "$permissionName permission granted: $isGranted")
                 if (!isGranted) {
@@ -88,22 +83,23 @@ class ActPermissions : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_permissions)
+        binding = ActivityPermissionsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         rowPermissionsLocalization = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Location"] != null,
-            rowUI = findViewById<TableRow>(R.id.row_permission_localization),
-            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_localization),
+            rowUI = binding.rowPermissionLocalization,
+            buttonUI = binding.swPermissionLocalization,
         )
         rowPermissionsBluetooth = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Bluetooth"] != null,
-            rowUI = findViewById<TableRow>(R.id.row_permission_bluetooth),
-            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_bluetooth),
+            rowUI = binding.rowPermissionBluetooth,
+            buttonUI = binding.swPermissionBluetooth,
         )
         rowPermissionsNotifications = PermissionsRowAtomicHandler(
             show = permissionsByGroupMap["Notifications"] != null,
-            rowUI = findViewById<TableRow>(R.id.row_permission_notifications),
-            buttonUI = findViewById<MaterialButton>(R.id.sw_permission_notifications),
+            rowUI = binding.rowPermissionNotifications,
+            buttonUI = binding.swPermissionNotifications,
         )
 
         mapOfRowHandlers = mapOf(
@@ -121,16 +117,14 @@ class ActPermissions : AppCompatActivity() {
             )
         }
 
-        sysSettingsButton = findViewById<Button>(R.id.btn_permissions_show_in_settings)
-        sysSettingsButton.setOnClickListener {
+        binding.btnPermissionsShowInSettings.setOnClickListener {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             val uri: Uri = Uri.fromParts("package", packageName, null)
             intent.data = uri
             startActivity(intent)
         }
 
-        toolbar = findViewById<Toolbar>(R.id.permissions_toolbar)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.permissionsToolbar)
         supportActionBar?.title = getString(R.string.permissions_title)
     }
 
@@ -164,10 +158,6 @@ class ActPermissions : AppCompatActivity() {
                 return
             }
 
-//            val showRationale = permissions.any {
-//                shouldShowRequestPermissionRationale(it)
-//            }
-
             requestPermissionsLauncher.launch(permissions)
         }
     }
@@ -187,10 +177,10 @@ class ActPermissions : AppCompatActivity() {
         fun groupPermissionsGranted(context: Context, groupKey: String): Boolean {
             // Check if all permissions are granted
             val group = permissionsByGroupMap[groupKey]
-            if (group == null) {
-                return true
+            return if (group == null) {
+                true
             } else {
-                return group.all { permission ->
+                group.all { permission ->
                     permissionGranted(context, permission)
                 }
             }

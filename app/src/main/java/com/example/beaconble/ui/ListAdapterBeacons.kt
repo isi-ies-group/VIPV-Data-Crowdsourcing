@@ -5,14 +5,13 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import android.widget.TextView
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.BeaconSimplifiedStatus
 import com.example.beaconble.R
+import com.example.beaconble.databinding.RowItemBeaconBinding
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -31,21 +30,25 @@ class ListAdapterBeacons(
         if (beacon == null) {
             Log.e("BeaconListAdapter", "Beacon is null")
         }
-        val view = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.row_item_beacon, parent, false)
 
-        val beaconIdTextView = view.findViewById<TextView>(R.id.tvBeaconIdentifier)
-        val beaconLastReadingTextView = view.findViewById<TextView>(R.id.tvBeaconLastReading)
-        val beaconLastSeenTextView = view.findViewById<TextView>(R.id.tvBeaconLastSeen)
-        val ivBeaconStatus = view.findViewById<ImageView>(R.id.ivBeaconStatus)
-        val tvBeaconInfoIncomplete = view.findViewById<TextView>(R.id.tvBeaconInfoIncomplete)
+        val binding: RowItemBeaconBinding
+        val view: View
 
-        beaconIdTextView.text = beacon?.id.toString()
-        beaconLastReadingTextView.text = beacon?.sensorData?.value?.lastOrNull()?.data.toString()
-        beaconLastSeenTextView.text = beacon?.sensorData?.value?.lastOrNull()?.timestamp?.let {
+        if (convertView == null) {
+            binding = RowItemBeaconBinding.inflate(LayoutInflater.from(context), parent, false)
+            view = binding.root
+            view.tag = binding
+        } else {
+            binding = convertView.tag as RowItemBeaconBinding
+            view = convertView
+        }
+
+        binding.tvBeaconIdentifier.text = beacon?.id.toString()
+        binding.tvBeaconLastReading.text = beacon?.sensorData?.value?.lastOrNull()?.data.toString()
+        binding.tvBeaconLastSeen.text = beacon?.sensorData?.value?.lastOrNull()?.timestamp?.let {
             timestampFormatter.format(it)  // to local time
         }.orEmpty()
-        tvBeaconInfoIncomplete.visibility =
+        binding.tvBeaconInfoIncomplete.visibility =
             if (beacon?.statusValue?.value != BeaconSimplifiedStatus.INFO_MISSING) View.GONE else View.VISIBLE
 
         // Remove existing observer if any
@@ -73,11 +76,11 @@ class ListAdapterBeacons(
                     context.getString(R.string.beacon_detail_ok)
                 )  // OK
             }
-            ivBeaconStatus.setImageResource(imageResource)
-            ivBeaconStatus.setColorFilter(
+            binding.ivBeaconStatus.setImageResource(imageResource)
+            binding.ivBeaconStatus.setColorFilter(
                 context.getColor(tintColor), android.graphics.PorterDuff.Mode.SRC_IN
             )
-            ivBeaconStatus.contentDescription = contentDescription
+            binding.ivBeaconStatus.contentDescription = contentDescription
         }
 
         // Add new observer

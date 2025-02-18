@@ -1,18 +1,16 @@
 package com.example.beaconble.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
-import android.net.Uri
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -23,30 +21,26 @@ import com.example.beaconble.ApiUserSessionState
 import com.example.beaconble.AppMain
 import com.example.beaconble.BuildConfig
 import com.example.beaconble.R
+import com.example.beaconble.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 import kotlin.concurrent.thread
 
-
 class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-    lateinit var toolbar: Toolbar
-    lateinit var drawerLayout: DrawerLayout
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    private lateinit var navController: NavController
 
-    lateinit var navController: NavController
-    lateinit var navView: NavigationView
-
-    val app = AppMain.instance
+    private val app = AppMain.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        configureToolbar()  // setups .toolbar, .drawerLayout, .actionBarDrawerToggle, .navController, .navView
-        configureNavigationDrawer()  // setups .navView, .menuBtnLogin, .menuBtnLogout
+        configureToolbar()
+        configureNavigationDrawer()
 
-        // Check if all permissions are granted
-        // If not, go to permissions activity and wait for user to grant permissions, so the session can be started later by the user
         // Or if all permissions were already granted, start the session
         val arePermissionsOk = ActPermissions.Companion.allPermissionsGranted(this)
         if (!arePermissionsOk) {  // If any permission is not granted, go to permissions activity and wait for user to grant permissions
@@ -115,61 +109,45 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         return when (item.itemId) {
             R.id.homeFragment -> {
                 // Close the drawer
-                drawerLayout.closeDrawers()
+                binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.homeFragment)
                 true
             }
-
-            R.id.nav_settings -> {  // Settings
-                // Close the drawer
-                drawerLayout.closeDrawers()
+            R.id.nav_settings -> {
+                binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.settingsFragment)
                 true
             }
-
-            R.id.nav_logout -> {  // Logout
-                // Close the drawer
-                drawerLayout.closeDrawers()
-                // Logout
+            R.id.nav_logout -> {
+                binding.mainDrawerLayout.closeDrawers()
                 app.apiUserSession.logout()
-                // Show a toast
                 Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
                 true
             }
-
-            R.id.nav_login -> {  // Login
-                // Close the drawer
-                drawerLayout.closeDrawers()
+            R.id.nav_login -> {
+                binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.fragLogin)
                 true
             }
-
-            R.id.nav_about -> {  // About
-                // Close the drawer
-                drawerLayout.closeDrawers()
-                // Open about page fragment
+            R.id.nav_about -> {
+                binding.mainDrawerLayout.closeDrawers()
                 findNavController(R.id.fragment_main).navigate(R.id.aboutFragment)
                 true
             }
-
-            R.id.nav_help -> {  // Help
-                // TODO("Review")
-                openURL("https://github.com/isi-ies-group/VIPV-Data-Crowdsourcing-Client")
-                // findNavController(R.id.fragment_main).navigate(R.id.helpFragment)
+            R.id.nav_help -> {
+                openURL("${BuildConfig.SERVER_URL}/contact")
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     private fun configureToolbar() {
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
-        drawerLayout = findViewById<DrawerLayout>(R.id.main_drawer_layout)
+        setSupportActionBar(binding.toolbar)
         actionBarDrawerToggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar, R.string.toolbar_open, R.string.toolbar_close
+            this, binding.mainDrawerLayout, binding.toolbar, R.string.toolbar_open, R.string.toolbar_close
         )
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        binding.mainDrawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.isDrawerIndicatorEnabled = true
         actionBarDrawerToggle.syncState()
 
@@ -177,29 +155,26 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
             supportFragmentManager.findFragmentById(R.id.fragment_main) as NavHostFragment
         navController = navHostFragment.navController
 
-        val appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+        val appBarConfiguration = AppBarConfiguration(navController.graph, binding.mainDrawerLayout)
+        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
     }
 
     private fun configureNavigationDrawer() {
-        navView = findViewById<NavigationView>(R.id.nav_view_host)
-        navView.setNavigationItemSelectedListener(this)
-
-        // Only show login or logout (hides the other one)
+        binding.navViewHost.setNavigationItemSelectedListener(this)
         updateDrawerOptionsMenu()
     }
 
     private fun updateDrawerOptionsMenu() {
-        navView.post(Runnable {
+        binding.navViewHost.post {
             // Login and logout buttons in the drawer
-            val menuBtnLogin = navView.menu.findItem(R.id.nav_login)
-            val menuBtnLogout = navView.menu.findItem(R.id.nav_logout)
+            val menuBtnLogin = binding.navViewHost.menu.findItem(R.id.nav_login)
+            val menuBtnLogout = binding.navViewHost.menu.findItem(R.id.nav_logout)
             val isUserLoggedIn =
                 app.apiUserSession.lastKnownState.value == ApiUserSessionState.LOGGED_IN
             menuBtnLogin.isVisible = isUserLoggedIn != true
             menuBtnLogout.isVisible = !menuBtnLogin.isVisible
-            navView.invalidate()
-        })
+            binding.navViewHost.invalidate()
+        }
     }
 
     fun openURL(url: String) {
@@ -212,9 +187,6 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    /**
-     * Save the session to a file and open the send file dialog to share it.
-     */
     fun shareSession() {
         thread {
             val file = app.loggingSession.saveSession()
@@ -240,5 +212,5 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
 
     companion object {
         const val TAG = "ActMain"
-    }  // companion object
+    }
 }

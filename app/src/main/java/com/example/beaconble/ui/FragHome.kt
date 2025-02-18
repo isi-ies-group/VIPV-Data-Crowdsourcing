@@ -15,9 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ImageButton
-import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -26,18 +23,13 @@ import androidx.navigation.fragment.findNavController
 import com.example.beaconble.AppMain
 import com.example.beaconble.BeaconSimplified
 import com.example.beaconble.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.beaconble.databinding.FragmentHomeBinding
 
 class FragHome : Fragment() {
-    lateinit var viewModel: Lazy<FragHomeViewModel>
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
-    // UI elements
-    lateinit var beaconListView: ListView
-    lateinit var beaconCountTextView: TextView
-    lateinit var startStopSessionButton: FloatingActionButton
-    lateinit var emptyAllButton: ImageButton
-    lateinit var shareSessionButton: ImageButton
-    lateinit var uploadSessionButton: ImageButton
+    lateinit var viewModel: Lazy<FragHomeViewModel>
 
     // Adapter for the list view
     lateinit var adapter: ListAdapterBeacons
@@ -63,26 +55,15 @@ class FragHome : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        // Create a ViewModel the first time the system creates this Class.
-        // Re-created fragments receive the same ViewModel instance created by the first one.
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         viewModel = viewModels<FragHomeViewModel>()
 
         // Get the application instance
         appMain = AppMain.Companion.instance
 
-        // Inflate the layout for this fragment and find the IDs of the UI elements.
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        beaconListView = view.findViewById<ListView>(R.id.beaconListView)
-        beaconCountTextView = view.findViewById<TextView>(R.id.beaconCountTextView)
-        startStopSessionButton =
-            view.findViewById<FloatingActionButton>(R.id.startStopSessionButton)
-        emptyAllButton = view.findViewById<ImageButton>(R.id.imBtnActionEmptyAll)
-        shareSessionButton = view.findViewById<ImageButton>(R.id.imBtnActionShareSession)
-        uploadSessionButton = view.findViewById<ImageButton>(R.id.imBtnActionUploadSession)
-
         // Create the adapter for the list view and assign it to the list view.
         adapter = ListAdapterBeacons(requireContext(), ArrayList(), viewLifecycleOwner)
-        beaconListView.adapter = adapter
+        binding.beaconListView.adapter = adapter
 
         // Set the start stop button text and icon according to the session state
         updateStartStopButton(appMain.isSessionActive.value!!)
@@ -92,13 +73,14 @@ class FragHome : Fragment() {
             adapter.updateData(beacons)
         }
 
-        beaconListView.onItemClickListener =
+        binding.beaconListView.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val beacon = parent.getItemAtPosition(position) as BeaconSimplified
                 val beaconId = beacon.id
                 Log.d("FragHome", "Beacon clicked: $beaconId")
                 // navigate to the details fragment, passing the beacon ID
-                findNavController().navigate(R.id.action_homeFragment_to_fragBeaconDetails,
+                findNavController().navigate(
+                    R.id.action_homeFragment_to_fragBeaconDetails,
                     Bundle().apply {
                         putString("beaconId", beaconId.toString())
                     })
@@ -114,19 +96,19 @@ class FragHome : Fragment() {
             updateBeaconCountTextView(viewModel.value.nRangedBeacons.value!!, isSessionActive)
         }
 
-        return view  // Return the view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Set click listeners for the buttons
-        startStopSessionButton.setOnClickListener {
+        binding.startStopSessionButton.setOnClickListener {
             // Check if Bluetooth is enabled and prompt the user to enable it if not
             promptEnableBluetooth()
             viewModel.value.toggleSession()
         }
 
-        emptyAllButton.setOnClickListener {
+        binding.imBtnActionEmptyAll.setOnClickListener {
             if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
                 // If there are no beacons, show a toast message and return
                 Toast.makeText(
@@ -134,21 +116,21 @@ class FragHome : Fragment() {
                     getString(R.string.empty_session_nothing_to_do),
                     Toast.LENGTH_SHORT
                 ).show()
-                return@setOnClickListener
+            } else {
+                // Create alertDialog to confirm the action
+                val alertDialog = AlertDialog.Builder(requireContext())
+                alertDialog.setTitle(getString(R.string.empty_all_data))
+                alertDialog.setMessage(getString(R.string.empty_all_data_confirmation))
+                alertDialog.setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                    viewModel.value.emptyAll()
+                }
+                alertDialog.setNegativeButton(getString(R.string.no)) { dialog, which ->
+                }
+                alertDialog.show()
             }
-            // Create alertDialog to confirm the action
-            val alertDialog = AlertDialog.Builder(requireContext())
-            alertDialog.setTitle(getString(R.string.empty_all_data))
-            alertDialog.setMessage(getString(R.string.empty_all_data_confirmation))
-            alertDialog.setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                viewModel.value.emptyAll()
-            }
-            alertDialog.setNegativeButton(getString(R.string.no)) { dialog, which ->
-            }
-            alertDialog.show()
         }
 
-        shareSessionButton.setOnClickListener {
+        binding.imBtnActionShareSession.setOnClickListener {
             // Check if there is data to export
             if (viewModel.value.rangedBeacons.value!!.isEmpty()) {
                 // If there are no beacons, show a toast message and return
@@ -161,20 +143,29 @@ class FragHome : Fragment() {
             (requireActivity() as ActMain).shareSession()
         }
 
-        uploadSessionButton.setOnClickListener {
+        binding.imBtnActionUploadSession.setOnClickListener {
             // Check if there is data to upload
             if (AppMain.instance.loggingSession.getSessionFiles().isEmpty()) {
                 // If there are no files, show a toast message and return
                 Toast.makeText(
                     requireContext(), getString(R.string.no_data_to_upload), Toast.LENGTH_SHORT
                 ).show()
-                return@setOnClickListener
+            } else {
+                // Toast that the data is being uploaded
+                Toast.makeText(
+                    requireContext(), getString(R.string.uploading_session_data), Toast.LENGTH_SHORT
+                ).show()
+                // Upload the session data
+                viewModel.value.uploadAllSessions()
             }
-            // Upload the session data
-            viewModel.value.uploadAllSessions()
         }
 
-        beaconCountTextView.text = getString(R.string.beacons_detected_zero)
+        binding.beaconCountTextView.text = getString(R.string.beacons_detected_zero)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     /**
@@ -184,13 +175,13 @@ class FragHome : Fragment() {
      */
     private fun updateStartStopButton(isSessionActive: Boolean) {
         if (isSessionActive) {
-            startStopSessionButton.setImageResource(R.drawable.square_stop)
-            startStopSessionButton.tooltipText = getString(R.string.stop_button)
-            startStopSessionButton.contentDescription = getString(R.string.stop_button)
+            binding.startStopSessionButton.setImageResource(R.drawable.square_stop)
+            binding.startStopSessionButton.tooltipText = getString(R.string.stop_button)
+            binding.startStopSessionButton.contentDescription = getString(R.string.stop_button)
         } else {
-            startStopSessionButton.setImageResource(R.drawable.triangle_start)
-            startStopSessionButton.tooltipText = getString(R.string.start_button)
-            startStopSessionButton.contentDescription = getString(R.string.start_button)
+            binding.startStopSessionButton.setImageResource(R.drawable.triangle_start)
+            binding.startStopSessionButton.tooltipText = getString(R.string.start_button)
+            binding.startStopSessionButton.contentDescription = getString(R.string.start_button)
         }
     }
 
@@ -204,13 +195,13 @@ class FragHome : Fragment() {
         if (isSessionActive) {
             // Update the top message textview to show the number of beacons detected
             if (nRangedBeacons == 0) {
-                beaconCountTextView.text = getString(R.string.beacons_detected_zero)
+                binding.beaconCountTextView.text = getString(R.string.beacons_detected_zero)
             } else {
-                beaconCountTextView.text =
+                binding.beaconCountTextView.text =
                     getString(R.string.beacons_detected_nonzero, nRangedBeacons)
             }
         } else {
-            beaconCountTextView.text = getString(R.string.beacons_detected_paused)
+            binding.beaconCountTextView.text = getString(R.string.beacons_detected_paused)
         }
     }
 

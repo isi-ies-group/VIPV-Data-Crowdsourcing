@@ -5,13 +5,12 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import android.widget.TextView
 import android.widget.ArrayAdapter
-import com.example.beaconble.SensorEntry
 import com.example.beaconble.R
+import com.example.beaconble.SensorEntry
+import com.example.beaconble.databinding.RowItemDataLogBinding
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 /**
  * Adapter for the list of logged sensor entries.
@@ -27,16 +26,23 @@ class ListAdapterSensorEntries(activityContext: Context, beaconsList: List<Senso
         if (dataEntry == null) {
             Log.e("ListAdapterSensorEntries", "Data is null")
         }
-        val view = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.row_item_data_log, parent, false)
 
-        val textViewTimestamp = view.findViewById<TextView>(R.id.tvTimestamp)
-        val textViewMeasurement = view.findViewById<TextView>(R.id.tvMeasurement)
+        val binding: RowItemDataLogBinding
+        val view: View
 
-        textViewTimestamp.text = dataEntry?.timestamp?.let {
+        if (convertView == null) {
+            binding = RowItemDataLogBinding.inflate(LayoutInflater.from(context), parent, false)
+            view = binding.root
+            view.tag = binding
+        } else {
+            binding = convertView.tag as RowItemDataLogBinding
+            view = convertView
+        }
+
+        binding.tvTimestamp.text = dataEntry?.timestamp?.let {
             timestampFormatter.format(it)  // to local time
         }.orEmpty()
-        textViewMeasurement.text = dataEntry?.data.toString()
+        binding.tvMeasurement.text = dataEntry?.data.toString()
 
         return view
     }
