@@ -24,7 +24,12 @@ class SessionFilesUploadWorker(appContext: Context, workerParams: WorkerParamete
                 files.all { file -> uploadFile(file) }
             }
 
-            if (allSuccessful) Result.success() else Result.retry()
+            AppMain.instance.wasUploadedSuccessfully.postValue(allSuccessful)
+            if (allSuccessful) {
+                Result.success()
+            } else {
+                Result.retry()
+            }
         } catch (_: Exception) {
             Result.retry() // Retry on failure
         }

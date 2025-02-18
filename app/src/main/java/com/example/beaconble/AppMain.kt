@@ -42,11 +42,12 @@ class AppMain : Application(), ComponentCallbacks2 {
     // to avoid reporting a lower number by mis-skipping them in scans
     private val nRangedBeaconsBuffer = CircularFifoQueue<Int>(5)
 
-    // for public use by UI
+    // -- for public use by UI --
     val nRangedBeacons: MutableLiveData<Int> = MutableLiveData(0)
+    val wasUploadedSuccessfully = MutableLiveData<Boolean>(false)
 
     // Data for the beacon session
-    var sessionRunning = MutableLiveData<Boolean>(false)
+    val sessionRunning = MutableLiveData<Boolean>(false)
     val isSessionActive: LiveData<Boolean> get() = sessionRunning
 
     // Status update handler

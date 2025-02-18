@@ -69,6 +69,12 @@ class ActMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedList
             updateDrawerOptionsMenu()
         }
 
+        app.wasUploadedSuccessfully.observeForever { wasUploadedSuccessfully ->
+            if (wasUploadedSuccessfully) {  // If the data was uploaded successfully, show a message
+                Toast.makeText(this, getString(R.string.upload_successful), Toast.LENGTH_SHORT).show()
+            } // do nothing on else
+        }
+
         // Observe the session state to keep the screen on during a session on Android 14 and higher
         // until we fix this issue in the future
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

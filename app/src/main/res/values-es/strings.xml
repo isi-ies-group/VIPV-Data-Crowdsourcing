@@ -49,6 +49,7 @@
     <string name="beacons_detected_paused">Detección de balizas en pausa</string>
     <string name="empty_all_data_confirmation">Esta acción no se puede deshacer.</string>
     <string name="empty_session_nothing_to_do">Sesión vacía</string>
+    <string name="upload_failed">No se pudieron subir todas las sesiones</string>
     <string name="no_data_to_share">No se puede compartir una sesión vacía</string>
     <string name="session_stopped">Sesión de medida finalizada</string>
     <string name="current_session_share">Compartir sesión en curso</string>
@@ -122,4 +123,6 @@
         <item>Roof</item>
         <item>Trunk</item>
     </array>
+    <string name="uploading_session_data">Subiendo sesiones guardadas…</string>
+    <string name="upload_successful">Sesiones subidas</string>
 </resources>
