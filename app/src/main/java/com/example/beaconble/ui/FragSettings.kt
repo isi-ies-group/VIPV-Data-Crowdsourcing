@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-//import androidx.preference.SwitchPreferenceCompat
 import com.example.beaconble.AppMain
 import com.example.beaconble.BuildConfig
 import com.example.beaconble.R
@@ -20,6 +20,12 @@ class FragSettings : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+
+        // Set the callback to open the manage sessions fragment
+        findPreference<Preference>("manage_sessions")?.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.action_settingsFragment_to_fragManageSessions)
+            true
+        }
 
         // Get the color theme setting
         val colorThemePreference = findPreference<ListPreference>("color_theme")
